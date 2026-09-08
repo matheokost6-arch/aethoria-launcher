@@ -238,17 +238,32 @@ Le launcher se met à jour tout seul via les *Releases* GitHub.
 # 1. Incrémenter la version
 npm version patch          # 1.0.0 → 1.0.1
 
-# 2. Construire et publier
-set GH_TOKEN=ton_token_github   # (Windows ; export GH_TOKEN=... ailleurs)
+# 2. Pousser le commit
+git push
+
+# 3. Construire, publier et vérifier
 npm run publish
 ```
 
-`npm run publish` crée une release brouillon avec l'installateur et le fichier
-`latest.yml`. **Publie la release** depuis GitHub : au prochain démarrage, les
-joueurs voient un bandeau « Version X prête à être installée ».
+`npm run publish` appelle `tools/publish-launcher.js`, qui crée le tag,
+construit l'exe, envoie les fichiers et **vérifie ensuite qu'ils sont bien
+tous en ligne**.
 
-Le token GitHub se crée sur
-<https://github.com/settings/tokens> avec la portée `repo`.
+> **Pourquoi un script maison plutôt que `electron-builder --publish always` ?**
+> electron-builder publie ses cibles (*nsis* et *portable*) en parallèle, et
+> chacune tente de créer la release. Résultat observé lors de la première
+> publication : **deux releases portant le même tag `v1.0.0`**, les fichiers
+> répartis entre les deux, et `latest.yml` manquant — sans la moindre erreur
+> affichée. Or sans `latest.yml`, la mise à jour automatique ne fonctionne plus,
+> en silence. Le script crée la release une seule fois, puis contrôle le
+> résultat.
+
+Le script refuse aussi de publier si `latest.yml` ne correspond pas à
+l'installateur présent dans `dist/` — le symptôme d'un `dist/` mélangeant deux
+constructions.
+
+Au prochain démarrage, les joueurs voient un bandeau
+« Version X prête à être installée ».
 
 ---
 

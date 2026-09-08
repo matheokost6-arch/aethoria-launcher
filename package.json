@@ -10,7 +10,8 @@
     "start": "electron .",
     "dev": "electron . --dev",
     "build": "electron-builder --win",
-    "publish": "electron-builder --win --publish always"
+    "publish": "node tools/publish-launcher.js",
+    "publish:skip-build": "node tools/publish-launcher.js --skip-build"
   },
   "devDependencies": {
     "electron": "^44.2.0",
