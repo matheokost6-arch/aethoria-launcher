@@ -59,10 +59,13 @@ function main() {
 
   if (!process.argv.includes('--skip-build')) {
     console.log('Construction du launcher...');
-    // On appelle le binaire directement plutot que via un shell : avec
-    // shell:true, Node avertit que les arguments ne sont pas echappes.
-    const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    execFileSync(npx, ['electron-builder', '--win'], { stdio: 'inherit' });
+    // On execute le point d'entree d'electron-builder avec le Node courant.
+    // Passer par npx obligerait a lancer un shell (Node refuse d'executer un
+    // .cmd sans shell depuis la v20), et shell:true declenche un avertissement
+    // de securite sur l'echappement des arguments.
+    execFileSync(process.execPath, [require.resolve('electron-builder/out/cli/cli.js'), '--win'], {
+      stdio: 'inherit',
+    });
   }
 
   // Les quatre fichiers attendus par les joueurs et par electron-updater.
