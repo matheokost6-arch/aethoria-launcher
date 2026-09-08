@@ -286,6 +286,11 @@ async function loadModpackInfo() {
     $('server-address').innerHTML = `Serveur : <strong>${escapeHtml(info.server.host)}${info.server.port === 25565 ? '' : `:${info.server.port}`}</strong>`;
     renderNews(info.news || []);
 
+    if (info.links) {
+      state.info.links = { ...state.info.links, ...info.links };
+      $('btn-discord').hidden = !state.info.links.discord;
+    }
+
     refreshServerStatus(info.server);
     // Rafraichissement periodique : le joueur laisse souvent le launcher ouvert.
     clearInterval(state.statusTimer);

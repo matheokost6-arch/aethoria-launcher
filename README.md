@@ -19,7 +19,8 @@ modpack et du launcher, distribué en `.exe` pour Windows.
 6. [Mettre à jour le launcher chez les joueurs](#mettre-à-jour-le-launcher-chez-les-joueurs)
 7. [Structure du projet](#structure-du-projet)
 8. [Format du manifest](#format-du-manifest)
-9. [Dépannage](#dépannage)
+9. [Le lien Discord](#le-lien-discord)
+10. [Dépannage](#dépannage)
 
 ---
 
@@ -322,6 +323,7 @@ tools/
 | | ⚠️ Le pack actuel exige **Forge ≥ 47.4.10** : les mods `easy_npc` refusent de se charger en dessous. |
 | `forgeFullVersion` | Facultatif. Pour les branches Forge au nom irrégulier (1.7.10, 1.8.9). |
 | `server` | Adresse affichée et utilisée pour la connexion directe. |
+| `links.discord` | Invitation Discord du bouton de la barre du bas. Laissé vide, le bouton est masqué. Le manifest **prime sur l'exe** : un lien expiré se remplace ici, sans redistribuer le launcher. |
 | `news` | Actualités de l'écran principal. |
 | `deleteExtraIn` | Dossiers nettoyés quand le joueur désactive « conserver mes mods ». |
 | `files[].path` | Destination, relative au dossier de jeu. |
@@ -330,6 +332,27 @@ tools/
 
 Changer une version dans le manifest suffit : **aucun nouveau `.exe` à
 distribuer** pour une mise à jour de modpack.
+
+---
+
+## Le lien Discord
+
+Le bouton *Discord* de la barre du bas ouvre `links.discord` dans le navigateur
+du joueur. Le lien est lu **en priorité dans le manifest**, et seulement à
+défaut dans `src/shared/config.js` : tu peux donc le corriger à tout moment en
+modifiant `manifest.json` sur GitHub, sans reconstruire ni rediffuser l'`.exe`.
+
+> ⚠️ **Utilise une invitation permanente.** Par défaut, Discord crée des
+> invitations qui expirent au bout de 7 ou 30 jours — un lien mort dans un
+> launcher déjà distribué à tes joueurs. Dans Discord :
+> clic droit sur le salon → *Inviter des amis* → *Modifier le lien d'invitation*
+> → **Expire après : Jamais** et **Nombre max d'utilisations : Illimité**.
+
+Pour vérifier une invitation avant de la diffuser :
+
+```bash
+node -e "fetch('https://discord.com/api/v10/invites/TON_CODE').then(r=>r.json()).then(d=>console.log(d.guild?.name, '| expire:', d.expires_at ?? 'jamais'))"
+```
 
 ---
 

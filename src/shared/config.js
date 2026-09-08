@@ -36,8 +36,10 @@ module.exports = {
 
   // Liens communautaires. Un lien laisse vide masque simplement son bouton
   // dans le launcher : rien a modifier ailleurs.
+  // Valeurs de repli seulement : le manifest distant prime, ce qui permet de
+  // corriger un lien d'invitation expire sans redistribuer le launcher.
   links: {
-    discord: '', // <-- colle ici l'invitation permanente, ex. https://discord.gg/xxxxxxx
+    discord: 'https://discord.gg/Z6du2srwW',
     site: '',
   },
 

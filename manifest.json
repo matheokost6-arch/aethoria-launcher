@@ -6,6 +6,10 @@
     "host": "aethoria.omgcraft.fr",
     "port": 25565
   },
+  "links": {
+    "discord": "https://discord.gg/Z6du2srwW",
+    "site": ""
+  },
   "news": [
     {
       "title": "Bienvenue sur Aethoria",

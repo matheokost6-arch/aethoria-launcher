@@ -192,6 +192,9 @@ function registerIpc() {
       forgeVersion: manifest.forgeVersion || config.fallback.forgeVersion,
       news: manifest.news || [],
       server: { ...config.server, ...(manifest.server || {}) },
+      // Les liens du manifest ecrasent ceux compiles dans l'exe : une
+      // invitation Discord expiree se remplace en modifiant le manifest.
+      links: { ...config.links, ...(manifest.links || {}) },
       fileCount: (manifest.files || manifest.mods || []).length,
     };
   });
