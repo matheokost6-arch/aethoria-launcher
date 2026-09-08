@@ -181,16 +181,45 @@ git add manifest.json && git commit -m "Modpack 1.1.0" && git push
 Pour une mise à jour ultérieure, garde le même tag et ajoute `--clobber` à
 l'étape 1, ou crée un nouveau tag (`pack-1.2.0`) et régénère le manifest avec.
 
-### Mods ajoutés par les joueurs
+### Dossier `mods` verrouillé
 
-Par défaut, le launcher **ne supprime que les mods qu'il a lui-même installés**
-et qui ont disparu du pack. Un joueur peut donc ajouter ses propres mods
-clients (minimap, shaders) sans les perdre à chaque mise à jour.
+Le launcher impose la liste officielle des mods. À **chaque lancement** :
 
-Si tu veux au contraire un dossier `mods` strictement identique pour tout le
-monde, le joueur décoche « Conserver les mods que j'ajoute moi-même » — ou tu
-imposes le comportement en modifiant `keepExtraMods` dans
-`src/main/store.js`.
+- tout fichier du dossier `mods` absent du manifest est **supprimé** ;
+- tout mod officiel manquant ou modifié est **retéléchargé** (contrôle SHA1).
+
+Le joueur n'a aucun moyen de changer ce comportement : il n'y a ni bouton
+« Mods » dans l'interface, ni case à cocher, et `keepExtraMods` fait partie des
+`FORCED_SETTINGS` de `src/main/store.js` — appliqués **après** le fichier de
+réglages, si bien qu'éditer `settings.json` à la main ne change rien.
+
+Vérifié : un `xray-cheat.jar` déposé dans le dossier disparaît à la
+synchronisation, et un mod officiel supprimé revient.
+
+> ### ⚠️ Ce que ce verrou ne fait pas
+>
+> **Ce n'est pas une protection anti-triche.** Le launcher remet le dossier en
+> ordre *avant* de lancer le jeu ; il ne surveille rien ensuite. Un joueur
+> déterminé peut :
+>
+> - déposer un mod dans `mods` **pendant** que le jeu tourne, pour le prochain
+>   démarrage — non, le launcher le retirera ; mais il peut surtout
+> - **lancer Minecraft sans passer par le launcher** (le dossier
+>   `%APPDATA%\.aethoria` reste accessible, et n'importe quel autre launcher
+>   sait s'en servir) ;
+> - utiliser un client tiers déjà équipé de triches.
+>
+> **La seule protection réelle est côté serveur** :
+>
+> - un plugin anti-triche (Matrix, Grim, Vulcan, Spartan…) ;
+> - la vérification de la liste de mods par Forge à la connexion, qui rejette
+>   un client dont les mods ne correspondent pas à ceux du serveur ;
+> - un plugin d'authentification pour empêcher l'usurpation de pseudo.
+>
+> Ce que le verrou apporte réellement, et ce n'est pas rien : plus aucun
+> plantage dû à un mod incompatible ajouté par un joueur, plus de rejet à la
+> connexion après une mise à jour du pack, et un support beaucoup plus simple —
+> tout le monde a rigoureusement la même installation.
 
 ---
 
@@ -380,6 +409,7 @@ node -e "fetch('https://discord.com/api/v10/invites/TON_CODE').then(r=>r.json())
 | « Le pseudo ne peut contenir que… » | 3 à 16 caractères, lettres, chiffres et underscores uniquement — la règle de Mojang. |
 | Le joueur arrive au menu principal au lieu du serveur | L'option « Rejoindre directement le serveur » est décochée dans les paramètres. |
 | Le joueur est éjecté à la connexion | Le serveur n'est pas en `online-mode=false`, ou un plugin d'authentification exige un mot de passe. |
+| Un joueur dit avoir perdu un mod qu'il avait ajouté | Comportement voulu : le dossier `mods` est verrouillé sur la liste officielle. |
 | Le jeu se ferme aussitôt (code 1) | Presque toujours un conflit de mods. *Paramètres → Journaux* donne la cause exacte. |
 | `OutOfMemoryError` | Augmenter la mémoire dans les paramètres (6 Go pour ce modpack). |
 | L'installation de Forge échoue | *Paramètres → Réparer l'installation*, puis relancer. |

@@ -116,7 +116,6 @@
 
       <div class="dock__tools">
         <button class="icon-btn icon-btn--discord" id="btn-discord" title="Rejoindre le Discord" hidden>Discord</button>
-        <button class="icon-btn" id="btn-mods" title="Ouvrir le dossier des mods">Mods</button>
         <button class="icon-btn" id="btn-settings" title="Parametres">Parametres</button>
       </div>
     </footer>
@@ -177,10 +176,11 @@
           <span>Fermer le launcher quand le jeu demarre</span>
         </label>
 
-        <label class="check">
-          <input type="checkbox" id="check-keep-mods">
-          <span>Conserver les mods que j’ajoute moi-meme</span>
-        </label>
+        <p class="field__locked">
+          Les mods sont gérés par le serveur. Le launcher restaure la liste
+          officielle à chaque lancement : tout fichier ajouté ou supprimé dans
+          le dossier <code>mods</code> est corrigé automatiquement.
+        </p>
       </div>
 
       <footer class="modal__foot">

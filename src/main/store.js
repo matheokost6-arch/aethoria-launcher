@@ -62,17 +62,27 @@ const DEFAULT_SETTINGS = {
   javaPath: null,          // null = runtime telecharge automatiquement
   closeOnLaunch: config.defaults.closeOnLaunch,
   joinServerOnLaunch: config.defaults.joinServerOnLaunch,
-  keepExtraMods: true,     // conserver les mods ajoutes manuellement par le joueur
+};
+
+// Reglages imposes par le serveur, que le joueur ne peut pas changer.
+// keepExtraMods a false fait supprimer, a chaque lancement, tout fichier du
+// dossier mods absent du manifest. Tout le monde joue ainsi avec exactement la
+// meme liste : un mod ajoute par erreur ne fait plus planter le jeu, et un mod
+// retire du pack ne provoque plus de rejet a la connexion.
+const FORCED_SETTINGS = {
+  keepExtraMods: false,
 };
 
 const store = {
   getSettings() {
     const saved = readJson(paths.settingsFile, {});
-    return { ...DEFAULT_SETTINGS, ...saved };
+    // FORCED_SETTINGS vient en dernier : meme un settings.json modifie a la
+    // main ne peut pas reactiver la conservation des mods etrangers.
+    return { ...DEFAULT_SETTINGS, ...saved, ...FORCED_SETTINGS };
   },
 
   saveSettings(patch) {
-    const next = { ...this.getSettings(), ...patch };
+    const next = { ...this.getSettings(), ...patch, ...FORCED_SETTINGS };
     // Bornes de securite sur la RAM : en dessous de 1 Go le jeu ne demarre pas,
     // au dessus de la RAM physique le systeme se met a swapper.
     const totalMb = Math.floor(os.totalmem() / 1024 / 1024);

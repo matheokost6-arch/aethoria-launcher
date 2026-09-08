@@ -199,7 +199,6 @@ function openSettings() {
   $('input-jvm-args').value = s.jvmArgs || '';
   $('check-join-server').checked = Boolean(s.joinServerOnLaunch);
   $('check-close-launcher').checked = Boolean(s.closeOnLaunch);
-  $('check-keep-mods').checked = s.keepExtraMods !== false;
   $('modal-settings').hidden = false;
 }
 
@@ -377,10 +376,6 @@ function wireAccountMenu() {
 
 function wireDock() {
   $('btn-play').addEventListener('click', play);
-  $('btn-mods').addEventListener('click', async () => {
-    const dir = await api.folders.mods();
-    toast(`Dossier des mods ouvert :\n${dir}`, 'info', 5000);
-  });
   $('btn-settings').addEventListener('click', openSettings);
 
   $('btn-discord').addEventListener('click', async () => {
@@ -442,7 +437,6 @@ function wireSettings() {
     updateAutojoinNotice(state.info?.server);
   });
   $('check-close-launcher').addEventListener('change', (e) => saveSettings({ closeOnLaunch: e.target.checked }));
-  $('check-keep-mods').addEventListener('change', (e) => saveSettings({ keepExtraMods: e.target.checked }));
 
   $('btn-open-game-folder').addEventListener('click', () => api.folders.game());
   $('btn-open-logs').addEventListener('click', () => api.folders.logs());
