@@ -65,7 +65,30 @@ n'a besoin de rien).
 
 Deux réglages sont à faire **avant** de distribuer le launcher.
 
-### 1. Dépôt GitHub
+### 1. Les deux dépôts
+
+Le projet vit sur **deux dépôts**, et cette séparation n'est pas cosmétique :
+
+| Dépôt | Visibilité | Contenu |
+|---|---|---|
+| `aethoria-launcher` | **privé au choix** | Le code source du launcher |
+| `aethoria` | **public, obligatoire** | Le manifest, les mods, l'installateur |
+
+Le launcher installé chez un joueur n'a aucun moyen de lire un dépôt privé : il
+n'a pas ton compte GitHub. Si le dépôt de distribution passe en privé, tout
+répond `404`, et le launcher se rabat **en silence** sur sa dernière copie
+locale — il affiche alors « Manifest du modpack injoignable » et plus aucune
+mise à jour n'arrive.
+
+Rien de sensible ne se trouve dans le dépôt public : les mods sont déjà publics
+chez leurs auteurs, le manifest ne contient qu'une liste de fichiers et
+l'adresse du serveur, et l'installateur est de toute façon distribué à tous les
+joueurs. **Les mots de passe, eux, sont chez Supabase** et ne transitent jamais
+par GitHub.
+
+`npm run deploy` refuse de publier si le dépôt de distribution n'est pas public.
+
+### 1 bis. Configuration des dépôts
 
 Le dépôt sert à la fois à héberger les mods (via les *Releases*), le manifest et
 les mises à jour du launcher.
@@ -352,14 +375,29 @@ expliquent simplement la manipulation aux joueurs.
 Le launcher se met à jour tout seul via les *Releases* GitHub.
 
 ```bash
-# 1. Incrémenter la version
-npm version patch          # 1.0.0 → 1.0.1
+npm version patch     # 1.0.9 → 1.0.10
+npm run deploy        # et c'est tout
+```
 
-# 2. Pousser le commit
-git push
+`npm run deploy` enchaîne les sept étapes, dans l'ordre :
 
-# 3. Construire, publier et vérifier
-npm run publish
+1. vérifie que `gh` est connecté et que le dépôt de distribution est **public**
+2. régénère le manifest depuis `pack/`
+3. envoie sur la release du modpack **les seuls mods qui manquent en ligne**
+   (comparaison par taille — inutile de réexpédier 456 Mo à chaque fois)
+4. publie le manifest sur le dépôt public, via l'API, sans second clone
+5. construit et publie l'installateur, en vérifiant que `latest.yml` correspond
+6. enregistre et pousse le code sur le dépôt privé
+7. **contrôle qu'un joueur sans compte GitHub peut tout télécharger**
+
+La dernière étape est la plus importante : une publication à moitié faite ne se
+voit pas autrement, et le launcher se figerait en silence sur sa copie locale.
+
+Variantes :
+
+```bash
+npm run deploy:launcher   # ne touche pas aux mods
+npm run deploy:rapide     # ni aux mods, ni à la construction (dist/ tel quel)
 ```
 
 `npm run publish` appelle `tools/publish-launcher.js`, qui crée le tag,

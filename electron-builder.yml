@@ -55,10 +55,12 @@ portable:
 
 # Mises a jour automatiques via les Releases GitHub.
 # Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).
+# Les mises a jour sont cherchees sur le depot PUBLIC : le launcher installe
+# chez un joueur n'a aucun moyen de lire un depot prive.
 publish:
   provider: github
   owner: matheokost6-arch
-  repo: aethoria-launcher
+  repo: aethoria
   releaseType: release
 
 compression: maximum

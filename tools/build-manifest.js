@@ -85,7 +85,9 @@ async function main() {
   const packDir = path.resolve(args.pack || 'pack');
   const outFile = path.resolve(args.out || 'manifest.json');
   const owner = args.owner || config.github.owner;
-  const repo = args.repo || config.github.repo;
+  // Par defaut le depot de distribution : c'est de la que les joueurs
+  // telechargent, le depot du code pouvant rester prive.
+  const repo = args.repo || config.github.dist || config.github.repo;
 
   if (!fs.existsSync(packDir)) {
     console.error(`Erreur : le dossier "${packDir}" n'existe pas.`);
@@ -133,14 +135,18 @@ async function main() {
     }
   }
 
+  // On repart du manifest existant et on n'ecrase QUE ce que ce script produit.
+  // Une liste blanche des champs a preserver serait a rallonger a chaque
+  // nouvelle section : la premiere version de ce script effacait ainsi les mods
+  // optionnels et la consigne d'authentification a chaque regeneration.
   const manifest = {
+    ...previous,
     modpackVersion: args.tag.replace(/^pack-/, ''),
     minecraftVersion: args.mc || previous.minecraftVersion || config.fallback.minecraftVersion,
     forgeVersion: args.forge || previous.forgeVersion || config.fallback.forgeVersion,
     server: previous.server || config.server,
-    // Les liens communautaires ne sont pas deduits du dossier pack : sans cette
-    // reprise, chaque regeneration effacerait l'invitation Discord du manifest.
     links: previous.links || config.links,
+    authNotice: previous.authNotice || config.authNotice,
     news: previous.news || [],
     deleteExtraIn: previous.deleteExtraIn || ['mods'],
     files,

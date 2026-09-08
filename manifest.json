@@ -11,10 +11,6 @@
     "site": "",
     "trailer": "https://www.youtube.com/watch?v=WW6Dqu7jxkQ"
   },
-  "authNotice": {
-    "title": "Protege ton pseudo",
-    "body": "A ta toute premiere connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis a chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
-  },
   "news": [
     {
       "title": "Bienvenue sur Aethoria",
@@ -33,427 +29,427 @@
   "files": [
     {
       "path": "mods/Aethoria-1_1_0-source.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Aethoria-1_1_0-source.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Aethoria-1_1_0-source.jar",
       "sha1": "ccc1523f171f7daf1a89fb4131a13cff8860bc12",
       "size": 19395
     },
     {
       "path": "mods/AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
       "sha1": "87ea0cd8ec56763185ee0db09eec7c676969e4da",
       "size": 53429226
     },
     {
       "path": "mods/Butchersdelight beta 1.20.1 2.1.0.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Butchersdelight.beta.1.20.1.2.1.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Butchersdelight.beta.1.20.1.2.1.0.jar",
       "sha1": "eefde2b0a35ae4380c131ac083116b8f797afe56",
       "size": 3942918
     },
     {
       "path": "mods/Controlling-forge-1.20.1-12.0.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Controlling-forge-1.20.1-12.0.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Controlling-forge-1.20.1-12.0.2.jar",
       "sha1": "f6d3cdd3ec68c5590cf5b2e89c38dbf031824bfd",
       "size": 115280
     },
     {
       "path": "mods/CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
       "sha1": "aef9a8ebdf0be50b6bd8da8ab4153f5085f71a80",
       "size": 1144128
     },
     {
       "path": "mods/FarmersDelight-1.20.1-1.3.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_FarmersDelight-1.20.1-1.3.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_FarmersDelight-1.20.1-1.3.2.jar",
       "sha1": "397763ae36dc2e0f526e0338c875850437580157",
       "size": 3313327
     },
     {
       "path": "mods/Forge 1.20.1 Minecraft Middle Ages 0.0.5.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Forge.1.20.1.Minecraft.Middle.Ages.0.0.5.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Forge.1.20.1.Minecraft.Middle.Ages.0.0.5.jar",
       "sha1": "99daf1ce9bc48bb5a415f7832f202b0cc0752148",
       "size": 2674406
     },
     {
       "path": "mods/GlitchCore-forge-1.20.1-0.0.1.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_GlitchCore-forge-1.20.1-0.0.1.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_GlitchCore-forge-1.20.1-0.0.1.1.jar",
       "sha1": "1a0aaf7c33b9acb26bf75899a43e8941cac1f6e7",
       "size": 87550
     },
     {
       "path": "mods/MouseTweaks-forge-mc1.20.1-2.25.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_MouseTweaks-forge-mc1.20.1-2.25.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "sha1": "d751153e722a4e014691c83f39f5b07c6ec5333c",
       "size": 76237
     },
     {
       "path": "mods/Quick Skin - Forge - 1.20.1-2.6.2.4.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Quick.Skin.-.Forge.-.1.20.1-2.6.2.4.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Quick.Skin.-.Forge.-.1.20.1-2.6.2.4.jar",
       "sha1": "ace85ce63a791ae84d323d469d0b76003ab32718",
       "size": 3793684
     },
     {
       "path": "mods/Recruits Siege Compatibility-2.1.0.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Recruits.Siege.Compatibility-2.1.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Recruits.Siege.Compatibility-2.1.0.jar",
       "sha1": "562c502cac57f4e6c437a99c7c6888e364446405",
       "size": 77665
     },
     {
       "path": "mods/Searchables-forge-1.20.1-1.0.3.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_Searchables-forge-1.20.1-1.0.3.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_Searchables-forge-1.20.1-1.0.3.jar",
       "sha1": "ed5a23ec30c90fd06b3f1d8140614028e1fafaee",
       "size": 77732
     },
     {
       "path": "mods/SereneSeasons-forge-1.20.1-9.1.0.3.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_SereneSeasons-forge-1.20.1-9.1.0.3.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_SereneSeasons-forge-1.20.1-9.1.0.3.jar",
       "sha1": "e553c2a50dc08d7b8b2aee6da1db0dc156fe961a",
       "size": 160885
     },
     {
       "path": "mods/SiegeSystemFix-1.0.0.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_SiegeSystemFix-1.0.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_SiegeSystemFix-1.0.0.jar",
       "sha1": "27252f53af6822f466227bb7d54043583631b8e3",
       "size": 19421
     },
     {
       "path": "mods/TreeChop-1.20.1-forge-0.19.0-fixed.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_TreeChop-1.20.1-forge-0.19.0-fixed.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_TreeChop-1.20.1-forge-0.19.0-fixed.jar",
       "sha1": "ac5a20b5a2fd9ed7d6e9a0c033f53307947e5f3f",
       "size": 517225
     },
     {
       "path": "mods/animal_armor_trims-forge-1.20.1-2.3.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_animal_armor_trims-forge-1.20.1-2.3.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_animal_armor_trims-forge-1.20.1-2.3.1.jar",
       "sha1": "5a1b386d7a90c80e268061acc0121bbc05cdbaf7",
       "size": 272315
     },
     {
       "path": "mods/appleskin-forge-mc1.20.1-2.5.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_appleskin-forge-mc1.20.1-2.5.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_appleskin-forge-mc1.20.1-2.5.1.jar",
       "sha1": "81919356f84eab14258db98924b66c3c38e372b1",
       "size": 47428
     },
     {
       "path": "mods/architectury-9.2.14-forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_architectury-9.2.14-forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_architectury-9.2.14-forge.jar",
       "sha1": "a52918a500ff421180a1cbd1a0cabee712134ec4",
       "size": 580602
     },
     {
       "path": "mods/astikorcartsredux-1.2.3.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_astikorcartsredux-1.2.3.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_astikorcartsredux-1.2.3.jar",
       "sha1": "62c693ee857ff6bd39e7582d02b57874ec0aa8ac",
       "size": 530068
     },
     {
       "path": "mods/athena-forge-1.20.1-3.1.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_athena-forge-1.20.1-3.1.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_athena-forge-1.20.1-3.1.2.jar",
       "sha1": "2acee24454af859988a691f0506271a465f68f7b",
       "size": 91808
     },
     {
       "path": "mods/bettercombat-forge-1.8.6+1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_bettercombat-forge-1.8.6.1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_bettercombat-forge-1.8.6.1.20.1.jar",
       "sha1": "70c20cd81a4051b2ad4289ff6522e80b397d7b3d",
       "size": 1050118
     },
     {
       "path": "mods/bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
       "sha1": "bfddda8c3efc11803a33220fdc99003d3d2ae268",
       "size": 146704
     },
     {
       "path": "mods/chat_heads-0.15.7-forge-1.20.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_chat_heads-0.15.7-forge-1.20.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_chat_heads-0.15.7-forge-1.20.jar",
       "sha1": "80582e413216eb014d83252b05c731a4a151fe9b",
       "size": 724902
     },
     {
       "path": "mods/chipped-forge-1.20.1-3.0.7.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_chipped-forge-1.20.1-3.0.7.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_chipped-forge-1.20.1-3.0.7.jar",
       "sha1": "25ee2a0846059d8f21d28b94b7e0229b60cb5499",
       "size": 15060263
     },
     {
       "path": "mods/cloth-config-11.1.136-forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_cloth-config-11.1.136-forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_cloth-config-11.1.136-forge.jar",
       "sha1": "c65d07748acc57ceb45d53b3964368b84f34d54f",
       "size": 1181413
     },
     {
       "path": "mods/corpse-forge-1.20.1-1.0.23.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_corpse-forge-1.20.1-1.0.23.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_corpse-forge-1.20.1-1.0.23.jar",
       "sha1": "843b16ca88bc5c390bb22a2a84437e6bffdd43dd",
       "size": 245644
     },
     {
       "path": "mods/easy_npc-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_easy_npc-forge-1.20.1-7.4.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_easy_npc-forge-1.20.1-7.4.1.jar",
       "sha1": "4c2cd233e307a5a6aed7860eaf1947c7686b349c",
       "size": 2270248
     },
     {
       "path": "mods/easy_npc_bundle-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_easy_npc_bundle-forge-1.20.1-7.4.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_easy_npc_bundle-forge-1.20.1-7.4.1.jar",
       "sha1": "cee00e8d676c1f71c6182100687570544a29e3cd",
       "size": 25438
     },
     {
       "path": "mods/easy_npc_config_ui-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_easy_npc_config_ui-forge-1.20.1-7.4.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_easy_npc_config_ui-forge-1.20.1-7.4.1.jar",
       "sha1": "061a7f6b5c3eba30846919dc567482c5da67733d",
       "size": 978860
     },
     {
       "path": "mods/embeddium-0.3.31+mc1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_embeddium-0.3.31.mc1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_embeddium-0.3.31.mc1.20.1.jar",
       "sha1": "bb2fa8f3e493af16af9160d049f96c614a1faf2f",
       "size": 1320675
     },
     {
       "path": "mods/epic-knights-1.20.1-forge-10.11.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_epic-knights-1.20.1-forge-10.11.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_epic-knights-1.20.1-forge-10.11.jar",
       "sha1": "b76f56523dcde7ae30f4a3c299b1d104348b92eb",
       "size": 2913733
     },
     {
       "path": "mods/epic-knights-addon-1.20.x-forge-2.6.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_epic-knights-addon-1.20.x-forge-2.6.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_epic-knights-addon-1.20.x-forge-2.6.jar",
       "sha1": "c5d284743d3d59a7ca4cdfdf42e4a01afb10e146",
       "size": 2012821
     },
     {
       "path": "mods/epic-knights-antique-legacy-1.20.x-forge-1.13.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_epic-knights-antique-legacy-1.20.x-forge-1.13.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_epic-knights-antique-legacy-1.20.x-forge-1.13.jar",
       "sha1": "de812ad140b67bbace4ef7be33e035c7e1beca89",
       "size": 5434731
     },
     {
       "path": "mods/epic-knights-slavic-armory-1.20.x-forge-2.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_epic-knights-slavic-armory-1.20.x-forge-2.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_epic-knights-slavic-armory-1.20.x-forge-2.1.jar",
       "sha1": "e54539d7eee96e5441db89ac580bcb4fc3ae534a",
       "size": 1007892
     },
     {
       "path": "mods/ftb-library-forge-2001.2.13.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_ftb-library-forge-2001.2.13.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_ftb-library-forge-2001.2.13.jar",
       "sha1": "a5427d5ff07eb044144ed0b54308370d88bce17e",
       "size": 780558
     },
     {
       "path": "mods/ftb-quests-forge-2001.4.22.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_ftb-quests-forge-2001.4.22.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_ftb-quests-forge-2001.4.22.jar",
       "sha1": "70f3bd771ab3b5921ce1ff5f14166fab694ca1aa",
       "size": 1255469
     },
     {
       "path": "mods/ftb-teams-forge-2001.3.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_ftb-teams-forge-2001.3.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_ftb-teams-forge-2001.3.2.jar",
       "sha1": "c49023f5d471aa1ba7fc624d2565fe9e82b7117e",
       "size": 252579
     },
     {
       "path": "mods/geckolib-forge-1.20.1-4.8.4.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_geckolib-forge-1.20.1-4.8.4.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_geckolib-forge-1.20.1-4.8.4.jar",
       "sha1": "81982cc287f80ffabb2fd36d22cc95e4255c739d",
       "size": 1038209
     },
     {
       "path": "mods/immersive_melodies-0.6.1+1.20.1-forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_immersive_melodies-0.6.1.1.20.1-forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_immersive_melodies-0.6.1.1.20.1-forge.jar",
       "sha1": "4b2f3f2ec9449ecaf5edd8b7a48bec854105c645",
       "size": 5517554
     },
     {
       "path": "mods/immersive_paintings-0.6.13+1.20.1-forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_immersive_paintings-0.6.13.1.20.1-forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_immersive_paintings-0.6.13.1.20.1-forge.jar",
       "sha1": "3f2a668f2235a6a908fde545d140013456b5412f",
       "size": 4856103
     },
     {
       "path": "mods/jei-1.20.1-forge-15.20.0.106.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_jei-1.20.1-forge-15.20.0.106.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_jei-1.20.1-forge-15.20.0.106.jar",
       "sha1": "77928d15d797663846cba44de8f79e4e4c5fdbb7",
       "size": 1379220
     },
     {
       "path": "mods/kaleidoscopetavern-1.2.0-forge+mc1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_kaleidoscopetavern-1.2.0-forge.mc1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_kaleidoscopetavern-1.2.0-forge.mc1.20.1.jar",
       "sha1": "2e8f6370fb4acae9796705b6e84716c4a398b9c5",
       "size": 1749797
     },
     {
       "path": "mods/mcw-doors-1.1.5-mc1.20.1forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mcw-doors-1.1.5-mc1.20.1forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mcw-doors-1.1.5-mc1.20.1forge.jar",
       "sha1": "fe6a9eb2fbc78300a6286fd25854c9f087e689a6",
       "size": 1246753
     },
     {
       "path": "mods/mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
       "sha1": "d24bc6e1ba7f04e058db019ae5ca3d10edd9510a",
       "size": 708634
     },
     {
       "path": "mods/mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
       "sha1": "214da89b2153d496343bde8626283975e358edbd",
       "size": 1320692
     },
     {
       "path": "mods/mcw-roofs-2.3.2-mc1.20.1forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mcw-roofs-2.3.2-mc1.20.1forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mcw-roofs-2.3.2-mc1.20.1forge.jar",
       "sha1": "2b02beb2bd177aa695dc6fc030fc3bb230ca96b1",
       "size": 1864023
     },
     {
       "path": "mods/mcw-trapdoors-1.1.5-mc1.20.1forge.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mcw-trapdoors-1.1.5-mc1.20.1forge.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mcw-trapdoors-1.1.5-mc1.20.1forge.jar",
       "sha1": "1b3b4b40041346b19bc9ab280b288a9f6b77b513",
       "size": 604510
     },
     {
       "path": "mods/mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
       "sha1": "5767ecee24e34efb138403a45de1589e38ddc624",
       "size": 223397
     },
     {
       "path": "mods/monolib-forge-1.20.1-4.0.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_monolib-forge-1.20.1-4.0.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_monolib-forge-1.20.1-4.0.2.jar",
       "sha1": "54b342e2fa8ec915a78016b9aecffd3d95d5216a",
       "size": 173874
     },
     {
       "path": "mods/musketmod-1.20.1-forge-1.5.4.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_musketmod-1.20.1-forge-1.5.4.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_musketmod-1.20.1-forge-1.5.4.jar",
       "sha1": "44ed6aa820e86e9802ad917d4eddda5877982e5a",
       "size": 448661
     },
     {
       "path": "mods/oculus-mc1.20.1-1.8.0.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_oculus-mc1.20.1-1.8.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_oculus-mc1.20.1-1.8.0.jar",
       "sha1": "984f774e71790deaec674c7587bd24e0711871b2",
       "size": 2851119
     },
     {
       "path": "mods/player-animation-lib-forge-1.0.2-rc1+1.20.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_player-animation-lib-forge-1.0.2-rc1.1.20.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_player-animation-lib-forge-1.0.2-rc1.1.20.jar",
       "sha1": "16808f94a41d45d8e986b4e4ea6b02ba57fa058a",
       "size": 181437
     },
     {
       "path": "mods/ranksandtitles-1.2.0.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_ranksandtitles-1.2.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_ranksandtitles-1.2.0.jar",
       "sha1": "3a9320d0a36029dc1113792d88de9edd6f7a622c",
       "size": 68848
     },
     {
       "path": "mods/recruits-1.20.1-1.15.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_recruits-1.20.1-1.15.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_recruits-1.20.1-1.15.2.jar",
       "sha1": "8d2ed3f0ab18c67a1d9394526bcae47b3ec162ab",
       "size": 2811101
     },
     {
       "path": "mods/reforgedplaymod-1.20.1-0.3.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_reforgedplaymod-1.20.1-0.3.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_reforgedplaymod-1.20.1-0.3.1.jar",
       "sha1": "37b714750d0e5487b488b29ff1e1623e5bb18ed6",
       "size": 16661938
     },
     {
       "path": "mods/resourcefullib-forge-1.20.1-2.1.29.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_resourcefullib-forge-1.20.1-2.1.29.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_resourcefullib-forge-1.20.1-2.1.29.jar",
       "sha1": "6fc590a7c56a720fec57e290cbb0a106efbb3ffa",
       "size": 432753
     },
     {
       "path": "mods/rpa-1.6.1-forge-1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_rpa-1.6.1-forge-1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_rpa-1.6.1-forge-1.20.1.jar",
       "sha1": "3b8e222a2db8666f039b6b50ec4df11d212c52de",
       "size": 4574333
     },
     {
       "path": "mods/siege-machines-1.20.1-forge-1.39.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_siege-machines-1.20.1-forge-1.39.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_siege-machines-1.20.1-forge-1.39.jar",
       "sha1": "0b18809ea67014f527984fd07ca01c444beab03c",
       "size": 1973951
     },
     {
       "path": "mods/siegeweapons-1.20.1-0.2.5.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_siegeweapons-1.20.1-0.2.5.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_siegeweapons-1.20.1-0.2.5.jar",
       "sha1": "f4ae32159b78d6d5e9f1c11588107678cd1151bd",
       "size": 1040867
     },
     {
       "path": "mods/sit-1.20.1-1.3.5.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_sit-1.20.1-1.3.5.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_sit-1.20.1-1.3.5.jar",
       "sha1": "228fa17d1bbacbc3e49c20e6d9b91050011f6ee2",
       "size": 14510
     },
     {
       "path": "mods/skinlayers3d-forge-1.11.2-mc1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_skinlayers3d-forge-1.11.2-mc1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_skinlayers3d-forge-1.11.2-mc1.20.1.jar",
       "sha1": "473b49e775f4c9dd746929f20c33f8132b86f235",
       "size": 2168901
     },
     {
       "path": "mods/smallships-forge-1.20.1-2.0.0-b1.4.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_smallships-forge-1.20.1-2.0.0-b1.4.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_smallships-forge-1.20.1-2.0.0-b1.4.jar",
       "sha1": "9998ddc8a278e0b87ab642d289ae2a1e3dbebef6",
       "size": 1816687
     },
     {
       "path": "mods/sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
       "sha1": "d27524e85bed0f0af83c03be46f9ca3eb02a1be9",
       "size": 511601
     },
     {
       "path": "mods/sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
       "sha1": "7529fbf938787ed13a251cbf40936f8c29ec4b6c",
       "size": 443978
     },
     {
       "path": "mods/sophisticatedbackpacks-1.20.1-3.24.62.2017.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_sophisticatedbackpacks-1.20.1-3.24.62.2017.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_sophisticatedbackpacks-1.20.1-3.24.62.2017.jar",
       "sha1": "fe4b90ab03b61ac0901125ce36a65cd188ea9c15",
       "size": 1130880
     },
     {
       "path": "mods/sophisticatedcore-1.20.1-1.3.73.2192.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_sophisticatedcore-1.20.1-1.3.73.2192.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_sophisticatedcore-1.20.1-1.3.73.2192.jar",
       "sha1": "ec4403509162632bbad7f6c7be382a3fa6381a30",
       "size": 1622705
     },
     {
       "path": "mods/terrarialike_respawns-1.0.2-forge-1.20.1.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_terrarialike_respawns-1.0.2-forge-1.20.1.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_terrarialike_respawns-1.0.2-forge-1.20.1.jar",
       "sha1": "fe2839c588b08a12466695b4acfa94744a851cf4",
       "size": 28411
     },
     {
       "path": "mods/twoplayersonehorse-forge-1.20.1-1.0.3.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_twoplayersonehorse-forge-1.20.1-1.0.3.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_twoplayersonehorse-forge-1.20.1-1.0.3.jar",
       "sha1": "95c9c0e3f5e38b756fd7e4d77a9f029d920602ef",
       "size": 24342
     },
     {
       "path": "mods/voicechat-forge-1.20.1-2.6.21.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_voicechat-forge-1.20.1-2.6.21.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_voicechat-forge-1.20.1-2.6.21.jar",
       "sha1": "77ae96b41c9328213659991c113a6e13c95724ba",
       "size": 4918879
     },
     {
       "path": "mods/workers-1.20.1-2.0.3.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_workers-1.20.1-2.0.3.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_workers-1.20.1-2.0.3.jar",
       "sha1": "1f68527132995485145433b07cd459fb4b602d06",
       "size": 1316715
     },
     {
       "path": "mods/zmedievalmusic-1.20.1-2.2.jar",
-      "url": "https://github.com/matheokost6-arch/aethoria-launcher/releases/download/pack-1.1.0/mods_zmedievalmusic-1.20.1-2.2.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_zmedievalmusic-1.20.1-2.2.jar",
       "sha1": "8352744a85f8c6f95e2d9cddb7fed09896c785cb",
       "size": 304415885
     }
@@ -569,5 +565,9 @@
       "size": 29563,
       "page": "https://modrinth.com/mod/full-brightness-toggle"
     }
-  ]
+  ],
+  "authNotice": {
+    "title": "Protege ton pseudo",
+    "body": "A ta toute premiere connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis a chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
+  }
 }

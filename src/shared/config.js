@@ -17,14 +17,20 @@ module.exports = {
   // du launcher (via GitHub Releases / electron-updater).
   github: {
     owner: 'matheokost6-arch',
+    // Depot du code source. Il peut rester prive : le launcher n'y accede
+    // jamais a l'execution.
     repo: 'aethoria-launcher',
+    // Depot de distribution, lui obligatoirement public. Il ne contient que
+    // ce que les joueurs doivent pouvoir telecharger sans compte GitHub :
+    // le manifest, les mods et l'installateur. Rien de secret n'y figure.
+    dist: 'aethoria',
     branch: 'main',
   },
 
   // URL du manifest du modpack. Sert de source de verite pour la version du
   // jeu, la version de Forge et la liste des mods.
   get manifestUrl() {
-    return `https://raw.githubusercontent.com/${this.github.owner}/${this.github.repo}/${this.github.branch}/manifest.json`;
+    return `https://raw.githubusercontent.com/${this.github.owner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },
 
   // Serveur de jeu : affiche dans l'UI et utilise pour le bouton "rejoindre
