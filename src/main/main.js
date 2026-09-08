@@ -133,10 +133,7 @@ function registerIpc() {
     await auth.loginMicrosoft(mainWindow);
     return auth.listAccounts();
   });
-  handle('accounts:inscrire', (pseudo, motDePasse) => auth.inscrire(pseudo, motDePasse));
-  handle('accounts:connecter', (pseudo, motDePasse) => auth.connecter(pseudo, motDePasse));
-  handle('accounts:changerMotDePasse', (nouveau) => auth.changerMotDePasse(nouveau));
-  handle('accounts:sansCompte', (pseudo) => auth.connecterSansCompte(pseudo));
+  handle('accounts:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
   handle('accounts:remove', (id) => auth.removeAccount(id));
   handle('accounts:select', (id) => auth.selectAccount(id));
 
@@ -234,6 +231,7 @@ function registerIpc() {
     onStatus: (message) => send('game:status', { message }),
     onProgress: (progress) => send('game:progress', progress),
     onLog: (line) => send('game:log', { line }),
+    onFirstRun: () => send('game:firstRun', {}),
     onExit: (result) => send('game:exit', result),
   }));
   handle('game:isRunning', () => launcher.isRunning());

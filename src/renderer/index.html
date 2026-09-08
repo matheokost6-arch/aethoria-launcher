@@ -42,33 +42,16 @@
 
       <form id="form-compte" autocomplete="off">
         <input class="input" type="text" id="input-pseudo" placeholder="Ton pseudo"
-               maxlength="16" spellcheck="false" autocomplete="username" autofocus required>
-
-        <div class="champ-mdp" id="champ-mdp-bloc">
-          <input class="input input--flat" type="password" id="input-mdp" placeholder="Ton mot de passe"
-                 maxlength="72" autocomplete="current-password" required>
-          <button class="oeil" type="button" id="btn-voir-mdp" title="Afficher le mot de passe" aria-label="Afficher le mot de passe">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12Z"/>
-              <circle cx="12" cy="12" r="2.8"/>
-            </svg>
-          </button>
-        </div>
-
-        <div class="jauge" id="jauge-mdp" hidden>
-          <div class="jauge__barre"><div class="jauge__niveau" id="jauge-niveau"></div></div>
-          <span class="jauge__libelle" id="jauge-libelle"></span>
-        </div>
-
-        <div class="champ-mdp" id="bloc-confirmation" hidden>
-          <input class="input input--flat" type="password" id="input-mdp-2" placeholder="Confirme ton mot de passe"
-                 maxlength="72" autocomplete="new-password">
-        </div>
-
-        <button class="btn btn--primary btn--block" type="submit" id="btn-valider">Se connecter</button>
+               maxlength="16" spellcheck="false" autofocus required>
+        <button class="btn btn--primary btn--block" type="submit" id="btn-valider">
+          Entrer dans Aethoria
+        </button>
       </form>
 
-      <button class="bascule" id="btn-bascule">Pas encore de compte ? En creer un</button>
+      <p class="login__note">
+        3 a 16 caracteres : lettres, chiffres et underscores.<br>
+        Ce pseudo sera ton identite sur le serveur, garde le meme a chaque partie.
+      </p>
 
       <div class="notice" id="auth-notice" hidden>
         <span class="notice__seal" aria-hidden="true">

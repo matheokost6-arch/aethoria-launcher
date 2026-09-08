@@ -2,7 +2,6 @@
 
 const microsoft = require('./microsoft');
 const offline = require('./offline');
-const compte = require('./compte');
 const store = require('../store');
 
 // Marge avant expiration : on renouvelle 5 minutes avant l'echeance reelle
@@ -10,39 +9,16 @@ const store = require('../store');
 const REFRESH_MARGIN_MS = 5 * 60 * 1000;
 
 /* ------------------------------------------------------------------ *
- *  Comptes Aethoria (pseudo + mot de passe)
+ *  Connexion par pseudo
  * ------------------------------------------------------------------ */
 
-async function inscrire(pseudo, motDePasse) {
-  const account = await compte.inscrire(pseudo, motDePasse);
-  store.upsertAccount(account);
-  return listAccounts();
-}
-
-async function connecter(pseudo, motDePasse) {
-  const account = await compte.connecter(pseudo, motDePasse);
-  store.upsertAccount(account);
-  return listAccounts();
-}
-
-async function changerMotDePasse(nouveauMotDePasse) {
-  const { accounts } = store.getAccounts();
-  const actuel = accounts[0];
-  if (!actuel) throw new Error('Aucun compte connecte.');
-  if (actuel.type !== 'aethoria') {
-    throw new Error('Ce compte n’a pas de mot de passe.');
-  }
-  const account = await compte.changerMotDePasse(actuel, nouveauMotDePasse);
-  store.upsertAccount(account);
-  return listAccounts();
-}
-
 /**
- * Connexion sans mot de passe, utilisee tant que le service de comptes n'est
- * pas configure. Elle evite que le launcher soit inutilisable pendant la mise
- * en place, mais ne protege aucun pseudo : l'interface le dit clairement.
+ * Le joueur choisit un pseudo, sans mot de passe : c'est AuthMe, sur le
+ * serveur, qui protege les comptes. L'UUID est derive du pseudo exactement
+ * comme le fait un serveur en online-mode=false, si bien que l'inventaire et
+ * la progression suivent le joueur d'une session a l'autre.
  */
-function connecterSansCompte(pseudo) {
+function connecterAvecPseudo(pseudo) {
   const account = offline.login(pseudo);
   store.upsertAccount(account);
   return listAccounts();
@@ -62,34 +38,11 @@ async function loginMicrosoft(parentWindow) {
  *  Preparation au lancement
  * ------------------------------------------------------------------ */
 
-/**
- * Renvoie un compte pret a lancer le jeu.
- *
- * Un compte Aethoria voit sa session rouverte a partir du jeton conserve : le
- * joueur ne ressaisit jamais son mot de passe sur une machine ou il s'est deja
- * connecte. Si la session ne peut pas etre rouverte (jeton revoque, mot de
- * passe change ailleurs), le jeu se lance quand meme : le serveur reste seul
- * juge de qui entre, et bloquer le lancement priverait le joueur pour une
- * raison qui ne le concerne pas.
- */
+/** Renvoie un compte pret a lancer le jeu. */
 async function resolveForLaunch(accountId) {
   const { accounts } = store.getAccounts();
   const account = accounts.find((a) => a.id === accountId) || accounts[0];
   if (!account) throw new Error('Aucun compte enregistre. Connecte-toi.');
-
-  if (account.type === 'aethoria') {
-    const encoreValide = account.sessionExpiresAt
-      && account.sessionExpiresAt - REFRESH_MARGIN_MS > Date.now();
-    if (encoreValide) return account;
-
-    try {
-      const rafraichi = await compte.rouvrirSession(account);
-      store.upsertAccount(rafraichi);
-      return rafraichi;
-    } catch {
-      return account;
-    }
-  }
 
   if (account.type === 'offline') return account;
 
@@ -135,17 +88,11 @@ function listAccounts() {
   return {
     accounts: accounts.map(toPublic),
     selectedId,
-    // L'interface adapte son ecran de connexion selon que le service est
-    // configure ou non.
-    comptesActifs: compte.estConfigure(),
   };
 }
 
 module.exports = {
-  inscrire,
-  connecter,
-  changerMotDePasse,
-  connecterSansCompte,
+  connecterAvecPseudo,
   loginMicrosoft,
   resolveForLaunch,
   listAccounts,

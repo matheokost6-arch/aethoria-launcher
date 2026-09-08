@@ -42,21 +42,6 @@ module.exports = {
 
   // Liens communautaires. Un lien laisse vide masque simplement son bouton
   // dans le launcher : rien a modifier ailleurs.
-  // Service de comptes : pseudo + mot de passe, valables sur n'importe quelle
-  // machine. Voir la section "Comptes des joueurs" du README pour la creation
-  // du projet (gratuit, environ dix minutes).
-  //
-  // La cle "anon" n'est pas un secret : Supabase la concoit pour etre livree
-  // dans une application cliente. Elle n'autorise que les operations
-  // d'authentification, jamais la lecture des mots de passe, qui sont haches
-  // et ne quittent jamais le service.
-  supabase: {
-    url: 'https://TON-PROJET.supabase.co',
-    anonKey: 'colle-ici-la-cle-anon-de-ton-projet',
-    // Adresse technique derivee du pseudo. Aucun courriel n'est jamais envoye.
-    domaineJoueurs: 'joueurs.aethoria.fr',
-  },
-
   // Consigne affichee au joueur au moment de choisir son pseudo.
   //
   // Le launcher ne gere volontairement aucun mot de passe : c'est AuthMe, sur

@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -9,6 +10,7 @@ const vanilla = require('./vanilla');
 const forge = require('./forge');
 const modpack = require('./modpack');
 const java = require('./java');
+const diagnostic = require('./diagnostic');
 const auth = require('../auth');
 const store = require('../store');
 const pkg = require('../../../package.json');
@@ -195,7 +197,7 @@ async function checkDiskSpace(onStatus) {
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
  */
-async function launch({ accountId, onStatus, onProgress, onLog, onExit }) {
+async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstRun }) {
   if (running) throw new Error('Le jeu est deja en cours de lancement ou d’execution.');
 
   const settings = store.getSettings();
@@ -203,6 +205,13 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit }) {
   paths.ensureAll();
 
   const status = (message) => { onStatus?.(message); };
+
+  // Premiere installation : rien n'a encore ete telecharge. On previent
+  // le joueur, sinon il croit a un blocage pendant les minutes de
+  // telechargement et ferme le launcher au pire moment.
+  const premiereFois = !fs.existsSync(paths.versions)
+    || fs.readdirSync(paths.versions).length === 0;
+  if (premiereFois) onFirstRun?.();
 
   status('Verification du compte...');
   const account = await auth.resolveForLaunch(accountId);
@@ -281,10 +290,14 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit }) {
       onExit?.({ code });
       return;
     }
+    const journal = tail.join('\n');
     onExit?.({
       code,
       error: `Minecraft s'est ferme avec le code ${code}.`,
-      log: tail.join('\n'),
+      log: journal,
+      // Le journal contient presque toujours la cause : on la traduit ici
+      // plutot que de laisser le joueur devant un code de sortie.
+      diagnostic: diagnostic.analyser(journal, code),
     });
   });
 

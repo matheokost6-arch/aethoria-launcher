@@ -39,10 +39,7 @@ contextBridge.exposeInMainWorld('aethoria', {
   accounts: {
     list: () => call('accounts:list'),
     loginMicrosoft: () => call('accounts:loginMicrosoft'),
-    inscrire: (pseudo, motDePasse) => call('accounts:inscrire', pseudo, motDePasse),
-    connecter: (pseudo, motDePasse) => call('accounts:connecter', pseudo, motDePasse),
-    changerMotDePasse: (nouveau) => call('accounts:changerMotDePasse', nouveau),
-    sansCompte: (pseudo) => call('accounts:sansCompte', pseudo),
+    connecter: (pseudo) => call('accounts:connecter', pseudo),
     remove: (id) => call('accounts:remove', id),
     select: (id) => call('accounts:select', id),
   },
@@ -74,6 +71,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     onStatus: (cb) => subscribe('game:status', cb),
     onProgress: (cb) => subscribe('game:progress', cb),
     onLog: (cb) => subscribe('game:log', cb),
+    onFirstRun: (cb) => subscribe('game:firstRun', cb),
     onExit: (cb) => subscribe('game:exit', cb),
   },
 
