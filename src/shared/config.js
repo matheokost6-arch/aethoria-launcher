@@ -16,8 +16,8 @@ module.exports = {
   // Depot GitHub servant a la fois le manifest du modpack et les mises a jour
   // du launcher (via GitHub Releases / electron-updater).
   github: {
-    owner: 'AETHORIA_OWNER',   // <-- a remplacer par ton compte/organisation GitHub
-    repo: 'aethoria-launcher', // <-- a remplacer par le nom de ton depot
+    owner: 'matheokost6-arch',
+    repo: 'aethoria-launcher',
     branch: 'main',
   },
 

@@ -49,7 +49,7 @@ portable:
 # Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).
 publish:
   provider: github
-  owner: AETHORIA_OWNER
+  owner: matheokost6-arch
   repo: aethoria-launcher
   releaseType: release
 

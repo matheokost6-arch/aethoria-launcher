@@ -138,6 +138,9 @@ async function main() {
     minecraftVersion: args.mc || previous.minecraftVersion || config.fallback.minecraftVersion,
     forgeVersion: args.forge || previous.forgeVersion || config.fallback.forgeVersion,
     server: previous.server || config.server,
+    // Les liens communautaires ne sont pas deduits du dossier pack : sans cette
+    // reprise, chaque regeneration effacerait l'invitation Discord du manifest.
+    links: previous.links || config.links,
     news: previous.news || [],
     deleteExtraIn: previous.deleteExtraIn || ['mods'],
     files,
