@@ -121,6 +121,7 @@ function registerIpc() {
     version: pkg.version,
     server: config.server,
     links: config.links,
+    authNotice: config.authNotice,
     gameRoot: paths.root,
     defaultRoot: paths.defaultRoot(),
     platform: process.platform,
@@ -199,6 +200,7 @@ function registerIpc() {
       // Les liens du manifest ecrasent ceux compiles dans l'exe : une
       // invitation Discord expiree se remplace en modifiant le manifest.
       links: { ...config.links, ...(manifest.links || {}) },
+      authNotice: manifest.authNotice || config.authNotice,
       fileCount: (manifest.files || manifest.mods || []).length,
     };
   });

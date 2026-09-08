@@ -239,6 +239,49 @@ Modrinth, avec l'empreinte SHA1 fournie par l'API. Les joueurs voient la
 nouvelle liste dès que tu pousses le manifest — **sans nouvelle version du
 launcher**.
 
+### Pourquoi le launcher ne demande aucun mot de passe
+
+C'est **AuthMe**, sur le serveur, qui protège les pseudos. Le launcher n'en
+gère volontairement aucun.
+
+La raison est technique : pour vérifier un mot de passe **depuis n'importe
+quelle machine**, il faut le comparer à une référence stockée de façon
+centrale. Le launcher n'a que trois endroits à sa disposition, et aucun ne
+convient :
+
+| Où stocker | Pourquoi c'est impossible |
+|---|---|
+| Le dépôt GitHub | Il est public : tous les mots de passe seraient lisibles |
+| Le launcher lui-même | Le joueur a le fichier, donc la clé — le `.exe` s'extrait en une commande |
+| La machine du joueur | Alors ça ne marche plus depuis une autre machine |
+
+Un mot de passe côté launcher serait donc soit inutile, soit dangereux : il
+donnerait à tes joueurs l'impression d'être protégés sans l'être. Et ils en
+auraient **deux différents** pour la même chose.
+
+À la place, le launcher **explique** la procédure : un encadré sur l'écran de
+saisie du pseudo, et un rappel au moment du lancement. Le texte se règle dans
+`authNotice` — côté manifest en priorité, donc modifiable sans republier le
+launcher. Les lignes qui commencent par `/` sont affichées comme des commandes
+à recopier.
+
+```json
+"authNotice": {
+  "title": "Protege ton pseudo",
+  "body": "A ta toute premiere connexion sur le serveur, tape dans le chat :
+/register motdepasse motdepasse
+Puis a chaque fois que tu reviens :
+/login motdepasse"
+}
+```
+
+> Si tu veux un jour de vrais comptes gérés par le launcher (identifiant, mot
+> de passe, skins personnalisés, multi-machines), la solution est un **serveur
+> d'authentification** : Drasl ou Blessing Skin côté web, `authlib-injector`
+> côté serveur Minecraft. C'est un service à héberger, pas une option à cocher.
+
+---
+
 > ### ⚠️ Ce que ce verrou ne fait pas
 >
 > **Ce n'est pas une protection anti-triche.** Le launcher remet le dossier en

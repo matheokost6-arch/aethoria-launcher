@@ -48,6 +48,19 @@
         </button>
       </form>
 
+      <div class="notice" id="auth-notice" hidden>
+        <span class="notice__seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2.6 4.4 6v6.1c0 4.9 3.2 9.2 7.6 10.3 4.4-1.1 7.6-5.4 7.6-10.3V6L12 2.6Z"/>
+            <path d="M12 10.6v3.2M9.4 10.6h5.2v4.8H9.4z"/>
+          </svg>
+        </span>
+        <div class="notice__body">
+          <strong class="notice__title" id="auth-notice-title"></strong>
+          <p class="notice__text" id="auth-notice-text"></p>
+        </div>
+      </div>
+
       <p class="login__note">
         3 a 16 caracteres : lettres, chiffres et underscores.<br>
         Ce pseudo sera ton identite sur le serveur, garde le meme a chaque partie.

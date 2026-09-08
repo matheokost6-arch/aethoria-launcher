@@ -36,6 +36,25 @@ module.exports = {
 
   // Liens communautaires. Un lien laisse vide masque simplement son bouton
   // dans le launcher : rien a modifier ailleurs.
+  // Consigne affichee au joueur au moment de choisir son pseudo.
+  //
+  // Le launcher ne gere volontairement aucun mot de passe : c'est AuthMe, sur
+  // le serveur, qui protege les pseudos. Un mot de passe cote launcher devrait
+  // etre verifie quelque part, et le seul "quelque part" disponible ici serait
+  // le depot public ou le fichier livre au joueur — donc aucune protection
+  // reelle, avec en prime deux mots de passe differents a retenir.
+  //
+  // Le manifest peut remplacer ce texte : les commandes changent d'un plugin a
+  // l'autre, et l'ajuster ne doit pas demander une nouvelle version du launcher.
+  authNotice: {
+    title: 'Protege ton pseudo',
+    body: 'A ta toute premiere connexion sur le serveur, tape dans le chat :\n'
+      + '/register motdepasse motdepasse\n'
+      + 'Puis a chaque fois que tu reviens :\n'
+      + '/login motdepasse\n'
+      + 'Sans cela, n’importe qui peut jouer sous ton pseudo.',
+  },
+
   // Valeurs de repli seulement : le manifest distant prime, ce qui permet de
   // corriger un lien d'invitation expire sans redistribuer le launcher.
   links: {

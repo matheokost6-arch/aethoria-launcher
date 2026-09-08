@@ -155,6 +155,13 @@ async function play() {
         : 'Minecraft est lance. Bon jeu !',
       'success',
     );
+
+    // Rappel de la consigne au moment ou elle sert : le joueur va arriver sur
+    // le serveur et devoir taper sa commande dans le chat.
+    const notice = state.info?.authNotice;
+    if (notice?.body) toast(`${notice.title}
+
+${notice.body}`, 'info', 20000);
     $('progress').hidden = true;
     $('btn-play-label').textContent = 'EN JEU';
 
@@ -326,6 +333,37 @@ async function saveOptions() {
 }
 
 /**
+ * Affiche la consigne d'authentification sur l'ecran de saisie du pseudo.
+ * C'est le bon moment : le joueur y choisit son identite, autant lui dire
+ * tout de suite comment la proteger. Le launcher ne gere aucun mot de passe,
+ * c'est le plugin du serveur qui s'en charge.
+ */
+function renderAuthNotice(notice) {
+  const bloc = $('auth-notice');
+  if (!notice?.body) {
+    bloc.hidden = true;
+    return;
+  }
+  $('auth-notice-title').textContent = notice.title || '';
+
+  // Les lignes qui commencent par "/" sont des commandes a recopier au
+  // caractere pres : on les detache du texte courant pour qu'elles ne s'y
+  // noient pas. Le texte vient du manifest, donc on l'echappe avant de le
+  // passer en HTML.
+  $('auth-notice-text').innerHTML = String(notice.body)
+    .split('\n')
+    .map((ligne) => {
+      const propre = escapeHtml(ligne);
+      return ligne.trim().startsWith('/')
+        ? `<code class="notice__cmd">${propre.trim()}</code>`
+        : propre;
+    })
+    .join('\n');
+
+  bloc.hidden = false;
+}
+
+/**
  * Ouvre la bande-annonce dans le navigateur du joueur.
  *
  * YouTube refuse d'etre integre au launcher : une iframe depuis une page
@@ -406,6 +444,11 @@ async function loadModpackInfo() {
     renderNews(info.news || []);
 
     updateAutojoinNotice(info.server);
+
+    if (info.authNotice) {
+      state.info.authNotice = info.authNotice;
+      renderAuthNotice(info.authNotice);
+    }
 
     if (info.links) {
       state.info.links = { ...state.info.links, ...info.links };
@@ -701,6 +744,7 @@ async function init() {
     $('launcher-version').textContent = `v${state.info.version}`;
     $('btn-discord').hidden = !state.info.links?.discord;
     $('btn-trailer').hidden = !youtubeId(state.info.links?.trailer);
+    renderAuthNotice(state.info.authNotice);
     state.settings = await api.settings.get();
     applyAccounts(await api.accounts.list());
   } catch (err) {

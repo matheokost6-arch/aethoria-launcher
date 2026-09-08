@@ -11,6 +11,10 @@
     "site": "",
     "trailer": "https://www.youtube.com/watch?v=WW6Dqu7jxkQ"
   },
+  "authNotice": {
+    "title": "Protege ton pseudo",
+    "body": "A ta toute premiere connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis a chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
+  },
   "news": [
     {
       "title": "Bienvenue sur Aethoria",
