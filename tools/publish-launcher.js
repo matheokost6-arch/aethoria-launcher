@@ -70,9 +70,9 @@ function main() {
 
   // Les quatre fichiers attendus par les joueurs et par electron-updater.
   const artifacts = [
-    `Aethoria-Setup-${pkg.version}.exe`,
-    `Aethoria-Portable-${pkg.version}.exe`,
-    `Aethoria-Setup-${pkg.version}.exe.blockmap`,
+    'Aethoria-Setup.exe',
+    'Aethoria-Portable.exe',
+    'Aethoria-Setup.exe.blockmap',
     'latest.yml',
   ].map((name) => path.join(DIST, name));
 
@@ -85,7 +85,7 @@ function main() {
   // provient d'une construction precedente et la mise a jour echouerait.
   const yaml = fs.readFileSync(path.join(DIST, 'latest.yml'), 'utf8');
   const declared = Number((yaml.match(/size: (\d+)/) || [])[1]);
-  const actual = fs.statSync(path.join(DIST, `Aethoria-Setup-${pkg.version}.exe`)).size;
+  const actual = fs.statSync(path.join(DIST, 'Aethoria-Setup.exe')).size;
   if (declared !== actual) {
     fail(`latest.yml est perime (il annonce ${declared} octets, l'installateur en fait ${actual}). Relance la construction.`);
   }
@@ -108,7 +108,7 @@ function main() {
     gh(['release', 'create', TAG, '--repo', REPO,
       '--title', `Aethoria Launcher ${pkg.version}`,
       '--notes', `Version ${pkg.version} du launcher Aethoria.\n\n`
-        + `Telecharge **Aethoria-Setup-${pkg.version}.exe** et lance-le.`], { stdio: 'inherit' });
+        + 'Telecharge **Aethoria-Setup.exe** et lance-le.'], { stdio: 'inherit' });
   } else {
     console.log(`La release ${TAG} existe deja, les fichiers seront remplaces.`);
   }
@@ -126,8 +126,8 @@ function main() {
 
   console.log('\nPublication verifiee. Fichiers en ligne :');
   for (const name of uploaded) console.log(`  ${name}`);
-  console.log(`\nLien a donner aux joueurs :`);
-  console.log(`  https://github.com/${REPO}/releases/latest`);
+  console.log('\nLien permanent a mettre sur le site :');
+  console.log(`  https://github.com/${REPO}/releases/latest/download/Aethoria-Setup.exe`);
 }
 
 try {

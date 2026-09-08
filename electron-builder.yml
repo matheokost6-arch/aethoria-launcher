@@ -11,6 +11,10 @@ directories:
 files:
   - src/**/*
   - package.json
+  # L'icone est referencee a l'execution par les fenetres du launcher. Sans
+  # elle dans le paquet, Electron journalise "Failed to load image from path"
+  # et les fenetres s'affichent sans icone chez les joueurs.
+  - build/icon.ico
   - '!**/*.map'
   - '!**/.git/**'
 
@@ -23,7 +27,11 @@ win:
     - target: portable
       arch: [x64]
   icon: build/icon.ico
-  artifactName: Aethoria-Setup-${version}.${ext}
+  # Nom fige, sans numero de version : le lien de telechargement
+  # .../releases/latest/download/Aethoria-Setup.exe reste ainsi valable pour
+  # toujours et peut etre mis en dur sur un site. Avec un nom versionne, il
+  # faudrait modifier le site a chaque publication.
+  artifactName: Aethoria-Setup.${ext}
 
 nsis:
   oneClick: false                    # laisse le joueur choisir le dossier
@@ -43,7 +51,7 @@ nsis:
   installerHeaderIcon: build/icon.ico
 
 portable:
-  artifactName: Aethoria-Portable-${version}.${ext}
+  artifactName: Aethoria-Portable.${ext}
 
 # Mises a jour automatiques via les Releases GitHub.
 # Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).

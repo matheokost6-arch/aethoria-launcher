@@ -172,7 +172,15 @@ async function play() {
  *  Parametres
  * ------------------------------------------------------------------ */
 
-function openSettings() {
+async function openSettings() {
+  // On relit les reglages plutot que de faire confiance a la copie en memoire :
+  // c'est le processus principal qui fait autorite, et lui seul connait les
+  // valeurs imposees.
+  try {
+    state.settings = await api.settings.get();
+  } catch {
+    // Lecture impossible : on affiche la derniere copie connue.
+  }
   const s = state.settings;
   $('input-max-ram').value = s.maxRamMb;
   $('output-max-ram').textContent = `${(s.maxRamMb / 1024).toFixed(1)} Go`;
@@ -192,8 +200,15 @@ function openSettings() {
 }
 
 async function saveSettings(patch) {
-  state.settings = await api.settings.save(patch);
-  return state.settings;
+  try {
+    state.settings = await api.settings.save(patch);
+    return state.settings;
+  } catch (err) {
+    // Un reglage perdu en silence est pire qu'un reglage refuse bruyamment :
+    // le joueur croirait son choix pris en compte.
+    toast(`Reglage non enregistre : ${err.message}`, 'error', 8000);
+    throw err;
+  }
 }
 
 /* ------------------------------------------------------------------ *
@@ -493,13 +508,30 @@ function wireDock() {
 
 function wireSettings() {
   const modal = $('modal-settings');
+
+  /**
+   * Ferme la fenetre en enregistrant d'abord toute saisie encore en attente.
+   * L'enregistrement ne doit jamais empecher la fermeture : si l'ecriture
+   * echoue (disque plein, droits insuffisants), le joueur se retrouverait
+   * prisonnier d'une fenetre qui refuse de se fermer.
+   */
+  const fermerSettings = async () => {
+    try {
+      if (jvmTimer) await enregistrerJvm();
+    } catch (err) {
+      toast(`Reglages non enregistres : ${err.message}`, 'error', 8000);
+    } finally {
+      modal.hidden = true;
+    }
+  };
+
   for (const el of modal.querySelectorAll('[data-close-modal]')) {
-    el.addEventListener('click', () => { modal.hidden = true; });
+    el.addEventListener('click', fermerSettings);
   }
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (!$('modal-options').hidden) $('modal-options').hidden = true;
-    else if (!modal.hidden) modal.hidden = true;
+    else if (!modal.hidden) fermerSettings();
   });
 
   const ram = $('input-max-ram');
@@ -535,12 +567,28 @@ function wireSettings() {
     toast('Java repasse en mode automatique.', 'success', 4000);
   });
 
-  $('input-jvm-args').addEventListener('change', (e) => saveSettings({ jvmArgs: e.target.value }));
+  // "change" ne se declenche qu'a la perte de focus : fermer la fenetre en
+  // pleine saisie perdait le texte tape. On enregistre donc aussi pendant la
+  // frappe, avec un delai pour ne pas ecrire a chaque touche.
+  const jvm = $('input-jvm-args');
+  let jvmTimer = null;
+  const enregistrerJvm = () => {
+    clearTimeout(jvmTimer);
+    jvmTimer = null;
+    return saveSettings({ jvmArgs: jvm.value });
+  };
+  jvm.addEventListener('input', () => {
+    clearTimeout(jvmTimer);
+    jvmTimer = setTimeout(enregistrerJvm, 600);
+  });
+  jvm.addEventListener('change', enregistrerJvm);
   $('check-join-server').addEventListener('change', async (e) => {
     await saveSettings({ joinServerOnLaunch: e.target.checked });
     updateAutojoinNotice(state.info?.server);
   });
-  $('check-close-launcher').addEventListener('change', (e) => saveSettings({ closeOnLaunch: e.target.checked }));
+  $('check-close-launcher').addEventListener('change', (e) => {
+    saveSettings({ closeOnLaunch: e.target.checked }).catch(() => {});
+  });
 
   $('btn-open-game-folder').addEventListener('click', () => api.folders.game());
   $('btn-open-logs').addEventListener('click', () => api.folders.logs());
