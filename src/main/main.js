@@ -200,6 +200,22 @@ function registerIpc() {
   });
   handle('modpack:extraMods', () => modpack.listExtraMods());
 
+  // --- Mods optionnels (client uniquement) ---
+  handle('modpack:optionalMods', async () => {
+    const { manifest } = await modpack.fetchManifest();
+    return modpack.listOptionalMods(manifest, store.getSettings().optionalMods || []);
+  });
+
+  handle('modpack:setOptionalMods', async (ids) => {
+    const { manifest } = await modpack.fetchManifest();
+    // On ne retient que des identifiants reellement proposes : l'interface ne
+    // doit pas pouvoir faire installer un fichier absent du catalogue.
+    const connus = new Set((manifest.optionalMods || []).map((m) => m.id));
+    const retenus = (Array.isArray(ids) ? ids : []).filter((id) => connus.has(id));
+    store.saveSettings({ optionalMods: retenus });
+    return modpack.listOptionalMods(manifest, retenus);
+  });
+
   // --- Etat du serveur ---
   handle('server:status', async (override) => {
     const target = { ...config.server, ...(override || {}) };

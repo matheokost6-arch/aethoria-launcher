@@ -62,6 +62,8 @@ const DEFAULT_SETTINGS = {
   javaPath: null,          // null = runtime telecharge automatiquement
   closeOnLaunch: config.defaults.closeOnLaunch,
   joinServerOnLaunch: config.defaults.joinServerOnLaunch,
+  // Identifiants des mods optionnels coches par le joueur.
+  optionalMods: [],
 };
 
 // Reglages imposes par le serveur, que le joueur ne peut pas changer.

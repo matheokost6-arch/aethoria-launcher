@@ -453,5 +453,106 @@
       "sha1": "8352744a85f8c6f95e2d9cddb7fed09896c785cb",
       "size": 304415885
     }
+  ],
+  "optionalMods": [
+    {
+      "id": "xaeros-minimap",
+      "name": "Minimap de Xaero",
+      "description": "Une minimap dans le coin de l’ecran, avec les points de repere que tu poses.",
+      "version": "forge-1.20.1-26.4.2",
+      "path": "mods/xaerominimap-forge-1.20.1-26.4.2.jar",
+      "url": "https://cdn.modrinth.com/data/1bokaNcj/versions/A1JacFsh/xaerominimap-forge-1.20.1-26.4.2.jar",
+      "sha1": "8f5f747a33e787aaa3827b00eb0ad098966499ff",
+      "size": 2195245,
+      "page": "https://modrinth.com/mod/xaeros-minimap"
+    },
+    {
+      "id": "xaeros-world-map",
+      "name": "Carte du monde",
+      "description": "La carte complete des regions que tu as explorees, en plein ecran.",
+      "version": "forge-1.20.1-1.45.0",
+      "path": "mods/xaeroworldmap-forge-1.20.1-1.45.0.jar",
+      "url": "https://cdn.modrinth.com/data/NcUtCpym/versions/3fGuLVo4/xaeroworldmap-forge-1.20.1-1.45.0.jar",
+      "sha1": "856b0317f31646ffe3b39a52b604bc7ee8822321",
+      "size": 1424881,
+      "page": "https://modrinth.com/mod/xaeros-world-map"
+    },
+    {
+      "id": "jade",
+      "name": "Jade",
+      "description": "Affiche le nom du bloc ou de la creature que tu regardes, et son etat.",
+      "version": "11.13.3+forge",
+      "path": "mods/Jade-1.20.1-Forge-11.13.3.jar",
+      "url": "https://cdn.modrinth.com/data/nvQzSEkH/versions/xJQHCmWJ/Jade-1.20.1-Forge-11.13.3.jar",
+      "sha1": "d08e64e66521d69e083c8525f1fc507f1c202384",
+      "size": 553487,
+      "page": "https://modrinth.com/mod/jade"
+    },
+    {
+      "id": "just-zoom",
+      "name": "Zoom",
+      "description": "Une touche pour zoomer au loin, comme avec une longue-vue.",
+      "version": "2.1.1-1.20.1-forge",
+      "path": "mods/justzoom_forge_2.1.1_MC_1.20.1.jar",
+      "url": "https://cdn.modrinth.com/data/iAiqcykM/versions/HrSzoCLd/justzoom_forge_2.1.1_MC_1.20.1.jar",
+      "sha1": "8bbcdfb61e9f0f738af0efff12c93b8f9daf2fb0",
+      "size": 204574,
+      "page": "https://modrinth.com/mod/just-zoom"
+    },
+    {
+      "id": "sound-physics-remastered",
+      "name": "Acoustique realiste",
+      "description": "Echo dans les grottes, sons etouffes derriere les murs. Tres immersif.",
+      "version": "forge-1.20.1-1.5.1",
+      "path": "mods/sound-physics-remastered-forge-1.20.1-1.5.1.jar",
+      "url": "https://cdn.modrinth.com/data/qyVF9oeo/versions/x0sJ9PeR/sound-physics-remastered-forge-1.20.1-1.5.1.jar",
+      "sha1": "944b4673bcab118f411d050b2cd6b693262bb664",
+      "size": 206984,
+      "page": "https://modrinth.com/mod/sound-physics-remastered"
+    },
+    {
+      "id": "legendary-tooltips",
+      "name": "Infobulles ameliorees",
+      "description": "Des infobulles d’objets plus lisibles et plus soignees.",
+      "version": "1.4.5",
+      "path": "mods/LegendaryTooltips-1.20.1-forge-1.4.5.jar",
+      "url": "https://cdn.modrinth.com/data/atHH8NyV/versions/JhxD2e6J/LegendaryTooltips-1.20.1-forge-1.4.5.jar",
+      "sha1": "7d83a56572d333ea352706872f565b8b8537085c",
+      "size": 55258,
+      "page": "https://modrinth.com/mod/legendary-tooltips"
+    },
+    {
+      "id": "better-advancements",
+      "name": "Progres ameliores",
+      "description": "Un ecran de progres plus clair et plus agreable a parcourir.",
+      "version": "0.6.0.73",
+      "path": "mods/BetterAdvancements-Forge-1.20.1-0.6.0.73.jar",
+      "url": "https://cdn.modrinth.com/data/Q2OqKxDG/versions/zKOCnRdK/BetterAdvancements-Forge-1.20.1-0.6.0.73.jar",
+      "sha1": "a62ed641fe95d9fea041dea8689f5a037aece597",
+      "size": 100436,
+      "page": "https://modrinth.com/mod/better-advancements"
+    },
+    {
+      "id": "betterf3",
+      "name": "Ecran technique",
+      "description": "Remplace l’ecran F3 par un affichage lisible et configurable.",
+      "version": "7.0.2",
+      "path": "mods/BetterF3-7.0.2-Forge-1.20.1.jar",
+      "url": "https://cdn.modrinth.com/data/8shC1gFX/versions/xo6HmgWj/BetterF3-7.0.2-Forge-1.20.1.jar",
+      "sha1": "b65cba59e87dc6c6d1aa9c47f09b9996b4e5075d",
+      "size": 468517,
+      "page": "https://modrinth.com/mod/betterf3"
+    },
+    {
+      "id": "toast-control",
+      "name": "Controle des notifications",
+      "description": "Choisis quelles notifications apparaissent en haut de l’ecran.",
+      "version": "8.0.3",
+      "path": "mods/ToastControl-1.20.1-8.0.3.jar",
+      "url": "https://cdn.modrinth.com/data/CnOG2wlS/versions/q8jNIVj8/ToastControl-1.20.1-8.0.3.jar",
+      "sha1": "e9ef48672f01b076ea3b8c7c5e6a139c2491a67c",
+      "size": 26957,
+      "page": "https://modrinth.com/mod/toast-control"
+    }
   ]
 }

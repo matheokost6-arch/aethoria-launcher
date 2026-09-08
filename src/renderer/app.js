@@ -242,6 +242,85 @@ function youtubeId(url) {
   return match ? match[1] : null;
 }
 
+/* ------------------------------------------------------------------ *
+ *  Mods optionnels
+ * ------------------------------------------------------------------ */
+
+function formatSize(octets) {
+  return octets >= 1024 * 1024
+    ? `${(octets / 1024 / 1024).toFixed(1)} Mo`
+    : `${Math.round(octets / 1024)} Ko`;
+}
+
+/** Met a jour le total affiche en bas de la fenetre. */
+function refreshOptionsCount() {
+  const coches = [...document.querySelectorAll('.option__check:checked')];
+  const octets = coches.reduce((total, el) => total + Number(el.dataset.size || 0), 0);
+  $('options-count').textContent = coches.length
+    ? `${coches.length} mod${coches.length > 1 ? 's' : ''} selectionne${coches.length > 1 ? 's' : ''} — ${formatSize(octets)}`
+    : 'Aucun mod selectionne';
+}
+
+function renderOptionalMods(mods) {
+  const liste = $('options-list');
+  if (!mods.length) {
+    liste.innerHTML = '<p class="options__loading">Aucun mod optionnel propose pour le moment.</p>';
+    $('options-count').textContent = '';
+    return;
+  }
+
+  liste.innerHTML = '';
+  for (const mod of mods) {
+    const item = document.createElement('label');
+    item.className = 'option';
+    item.innerHTML = `
+      <input type="checkbox" class="option__check" value="${escapeHtml(mod.id)}"
+             data-size="${mod.size}" ${mod.enabled ? 'checked' : ''}>
+      <span class="option__body">
+        <span class="option__name">${escapeHtml(mod.name)}</span>
+        <span class="option__desc">${escapeHtml(mod.description || '')}</span>
+      </span>
+      <span class="option__size">${formatSize(mod.size)}</span>`;
+    item.querySelector('.option__check').addEventListener('change', refreshOptionsCount);
+    liste.appendChild(item);
+  }
+  refreshOptionsCount();
+}
+
+async function openOptions() {
+  $('modal-options').hidden = false;
+  $('options-list').innerHTML = '<p class="options__loading">Chargement de la liste...</p>';
+  $('options-count').textContent = '';
+  try {
+    renderOptionalMods(await api.modpack.optionalMods());
+  } catch (err) {
+    $('options-list').innerHTML = `<p class="options__loading">Liste indisponible : ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+async function saveOptions() {
+  const ids = [...document.querySelectorAll('.option__check:checked')].map((el) => el.value);
+  const bouton = $('btn-options-save');
+  bouton.disabled = true;
+  try {
+    await api.modpack.setOptionalMods(ids);
+    $('modal-options').hidden = true;
+    // Les mods sont installes au lancement, pas tout de suite : le joueur doit
+    // savoir pourquoi rien ne se telecharge a l'instant.
+    toast(
+      ids.length
+        ? `${ids.length} mod${ids.length > 1 ? 's' : ''} sera installe au prochain lancement.`
+        : 'Les mods optionnels seront retires au prochain lancement.',
+      'success',
+      7000,
+    );
+  } catch (err) {
+    toast(`Enregistrement impossible : ${err.message}`, 'error');
+  } finally {
+    bouton.disabled = false;
+  }
+}
+
 /**
  * Ouvre la bande-annonce dans le navigateur du joueur.
  *
@@ -413,6 +492,12 @@ function wireDock() {
 
   $('btn-trailer').addEventListener('click', openTrailer);
 
+  $('btn-options').addEventListener('click', openOptions);
+  for (const el of $('modal-options').querySelectorAll('[data-close-options]')) {
+    el.addEventListener('click', () => { $('modal-options').hidden = true; });
+  }
+  $('btn-options-save').addEventListener('click', saveOptions);
+
   $('btn-discord').addEventListener('click', async () => {
     const url = state.info?.links?.discord;
     if (!url) return;
@@ -430,7 +515,9 @@ function wireSettings() {
     el.addEventListener('click', () => { modal.hidden = true; });
   }
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !modal.hidden) modal.hidden = true;
+    if (e.key !== 'Escape') return;
+    if (!$('modal-options').hidden) $('modal-options').hidden = true;
+    else if (!modal.hidden) modal.hidden = true;
   });
 
   const ram = $('input-max-ram');

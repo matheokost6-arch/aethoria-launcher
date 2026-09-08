@@ -54,6 +54,8 @@ contextBridge.exposeInMainWorld('aethoria', {
   modpack: {
     info: () => call('modpack:info'),
     extraMods: () => call('modpack:extraMods'),
+    optionalMods: () => call('modpack:optionalMods'),
+    setOptionalMods: (ids) => call('modpack:setOptionalMods', ids),
   },
 
   server: {

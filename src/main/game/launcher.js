@@ -198,7 +198,12 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit }) {
   const installed = await vanilla.install(versionId, { onStatus: status, onProgress });
 
   if (!offline) {
-    await modpack.sync(manifest, { settings, onStatus: status, onProgress });
+    await modpack.sync(manifest, {
+      settings,
+      optionalEnabled: settings.optionalMods || [],
+      onStatus: status,
+      onProgress,
+    });
   }
 
   const server = settings.joinServerOnLaunch

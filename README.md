@@ -197,6 +197,37 @@ réglages, si bien qu'éditer `settings.json` à la main ne change rien.
 Vérifié : un `xray-cheat.jar` déposé dans le dossier disparaît à la
 synchronisation, et un mod officiel supprimé revient.
 
+### Mods optionnels côté client
+
+Le verrou n'interdit pas tout : le launcher propose une **liste blanche** de
+mods de confort, que tu contrôles. Le joueur les coche dans **Options de jeu**,
+et le launcher les installe au lancement suivant.
+
+Ces mods sont **uniquement clients** : rien à installer sur le serveur, et un
+joueur qui n'en prend aucun joue exactement la même partie. Aucun ne touche au
+gameplay — minimap, zoom, infobulles, acoustique, affichage.
+
+Pour reconstruire ou mettre à jour la liste :
+
+```bash
+# Reconstruit la liste par défaut, en récupérant les dernières versions
+node tools/build-optional-mods.js
+
+# Ajoute un mod précis (identifiant Modrinth, visible dans l'URL de sa page)
+node tools/build-optional-mods.js --add sodium-extra
+
+git add manifest.json && git commit -m "Mods optionnels" && git push
+```
+
+L'outil interroge Modrinth, vérifie qu'une version existe pour ton couple
+Minecraft/Forge, **refuse tout mod exigeant une installation serveur**
+(`server_side: required`) et ignore ceux déjà présents dans le pack.
+
+Le manifest ne rediffuse aucun fichier : il pointe vers le CDN officiel de
+Modrinth, avec l'empreinte SHA1 fournie par l'API. Les joueurs voient la
+nouvelle liste dès que tu pousses le manifest — **sans nouvelle version du
+launcher**.
+
 > ### ⚠️ Ce que ce verrou ne fait pas
 >
 > **Ce n'est pas une protection anti-triche.** Le launcher remet le dossier en
@@ -377,6 +408,7 @@ tools/
 | `files[].path` | Destination, relative au dossier de jeu. |
 | `files[].sha1` | Empreinte vérifiée à chaque lancement. |
 | `files[].optional` | `true` : téléchargé uniquement si le joueur l'active. |
+| `optionalMods[]` | Liste blanche des mods clients proposés dans « Options de jeu ». Générée par `tools/build-optional-mods.js`. |
 
 Changer une version dans le manifest suffit : **aucun nouveau `.exe` à
 distribuer** pour une mise à jour de modpack.

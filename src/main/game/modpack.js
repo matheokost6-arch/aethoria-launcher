@@ -77,10 +77,16 @@ async function fetchManifest({ onStatus } = {}) {
  * Normalise les entrees du manifest. Deux ecritures sont acceptees :
  *   { "path": "mods/jei.jar", "url": "...", "sha1": "..." }
  *   { "name": "jei.jar", "url": "..." }            -> place dans mods/
+ *
+ * La section optionalMods rejoint la liste, mais seulement pour les mods que
+ * le joueur a coches. Ceux qu'il decoche sont volontairement absents du
+ * resultat : la synchronisation les supprimera donc du dossier.
  */
 function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
   const entries = manifest.files || manifest.mods || [];
-  return entries
+  const optionnels = (manifest.optionalMods || []).filter((m) => optionalEnabled.includes(m.id));
+
+  return [...entries, ...optionnels]
     .filter((entry) => !entry.optional || optionalEnabled.includes(entry.path || entry.name))
     .map((entry) => {
       const relative = entry.path || path.posix.join('mods', entry.name);
@@ -174,4 +180,23 @@ async function listExtraMods() {
     .filter((f) => /\.jar$/i.test(f) && !managed.has(f));
 }
 
-module.exports = { fetchManifest, sync, listExtraMods, normalizeFiles, readLedger };
+/**
+ * Catalogue des mods optionnels, enrichi de l'etat choisi par le joueur.
+ * Ces mods sont purement clients : le serveur n'a rien a installer, et un
+ * joueur qui n'en prend aucun joue exactement la meme partie.
+ */
+function listOptionalMods(manifest, enabled = []) {
+  return (manifest.optionalMods || []).map((mod) => ({
+    id: mod.id,
+    name: mod.name,
+    description: mod.description,
+    version: mod.version,
+    size: mod.size,
+    page: mod.page || null,
+    enabled: enabled.includes(mod.id),
+  }));
+}
+
+module.exports = {
+  fetchManifest, sync, listExtraMods, normalizeFiles, readLedger, listOptionalMods,
+};

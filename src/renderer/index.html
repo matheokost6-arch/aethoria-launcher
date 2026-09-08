@@ -121,6 +121,7 @@
       </div>
 
       <div class="dock__tools">
+        <button class="icon-btn" id="btn-options" title="Mods optionnels">Options de jeu</button>
         <button class="icon-btn icon-btn--discord" id="btn-discord" title="Rejoindre le Discord" hidden>Discord</button>
         <button class="icon-btn" id="btn-settings" title="Parametres">Parametres</button>
       </div>
@@ -193,6 +194,35 @@
         <button class="btn btn--ghost" id="btn-open-game-folder">Dossier du jeu</button>
         <button class="btn btn--ghost" id="btn-open-logs">Journaux</button>
         <button class="btn btn--danger" id="btn-repair">Reparer l’installation</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Mods optionnels, cote client uniquement                             -->
+  <!-- ------------------------------------------------------------------ -->
+  <div class="modal" id="modal-options" hidden>
+    <div class="modal__backdrop" data-close-options></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="options-title">
+      <header class="modal__head">
+        <h2 id="options-title">Options de jeu</h2>
+        <button class="modal__close" data-close-options aria-label="Fermer">&#10005;</button>
+      </header>
+
+      <div class="modal__body">
+        <p class="options__intro">
+          Ces mods ne changent rien au jeu des autres : ils ameliorent seulement
+          ton confort. Rien a installer sur le serveur, et tu peux les activer
+          ou les retirer quand tu veux.
+        </p>
+        <div class="options" id="options-list">
+          <p class="options__loading">Chargement de la liste...</p>
+        </div>
+      </div>
+
+      <footer class="modal__foot">
+        <span class="options__count" id="options-count"></span>
+        <button class="btn btn--primary" id="btn-options-save">Appliquer</button>
       </footer>
     </div>
   </div>
