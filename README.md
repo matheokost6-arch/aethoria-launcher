@@ -19,9 +19,10 @@ automatique du modpack et du launcher, distribué en `.exe` pour Windows.
 6. [Mettre à jour le launcher chez les joueurs](#mettre-à-jour-le-launcher-chez-les-joueurs)
 7. [Structure du projet](#structure-du-projet)
 8. [Format du manifest](#format-du-manifest)
-9. [La bande-annonce](#la-bande-annonce)
-10. [Le lien Discord](#le-lien-discord)
-11. [Dépannage](#dépannage)
+9. [Confort du joueur](#confort-du-joueur)
+10. [La bande-annonce](#la-bande-annonce)
+11. [Le lien Discord](#le-lien-discord)
+12. [Dépannage](#dépannage)
 
 ---
 
@@ -110,6 +111,11 @@ Cette adresse est affichée sur l'écran principal et sert au réglage
 Le launcher utilise **uniquement la connexion par pseudo**. Le joueur saisit un
 pseudo de 3 à 16 caractères et entre en jeu : ni compte Minecraft, ni mot de
 passe, ni fenêtre Microsoft.
+
+Le launcher ne gère **qu'un seul pseudo**. Le bouton en bas à gauche permet de
+le changer, ce qui remplace le précédent — il n'y a pas de liste de comptes.
+Un fichier hérité d'une version antérieure est ramené au pseudo qui était
+sélectionné.
 
 L'UUID est calculé **exactement comme le fait un serveur en
 `online-mode=false`** : un UUID de version 3 sur la chaîne
@@ -465,6 +471,22 @@ Pour vérifier une invitation avant de la diffuser :
 ```bash
 node -e "fetch('https://discord.com/api/v10/invites/TON_CODE').then(r=>r.json()).then(d=>console.log(d.guild?.name, '| expire:', d.expires_at ?? 'jamais'))"
 ```
+
+---
+
+## Confort du joueur
+
+Quelques automatismes évitent les problèmes les plus courants sur un modpack :
+
+| | |
+|---|---|
+| **Mémoire adaptée** | Au premier lancement, la mémoire allouée est calculée depuis la machine : la moitié de la RAM physique, plafonnée à 8 Go et plancher à 2 Go. Une machine de 8 Go reçoit 4 Go, une de 16 Go en reçoit 8. Les réglages affichent la RAM détectée et la valeur conseillée. |
+| **Espace disque** | Avant de lancer plus d'un gigaoctet de téléchargement, le launcher vérifie qu'il reste ~3 Go. Sans ce contrôle, l'échec survient après plusieurs minutes sur un message incompréhensible. |
+| **Débit et temps restant** | La progression affiche le volume, la vitesse et le temps restant, mesurés sur une fenêtre glissante de 4 secondes. |
+| **Adresse copiable** | Un clic sur l'adresse du serveur la copie dans le presse-papiers. |
+
+Le plafond de 8 Go n'est pas une économie : au-delà, les pauses du ramasse-miettes
+de Java s'allongent et le jeu devient moins fluide, pas plus.
 
 ---
 

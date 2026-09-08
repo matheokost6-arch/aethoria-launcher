@@ -45,6 +45,15 @@ function showLoginError(message) {
   el.hidden = !message;
 }
 
+/** Duree restante en clair : "3 min 20 s", "45 s". */
+function formatDuration(secondes) {
+  if (secondes < 60) return `${secondes} s restantes`;
+  const min = Math.floor(secondes / 60);
+  const reste = secondes % 60;
+  if (min < 60) return reste ? `${min} min ${reste} s restantes` : `${min} min restantes`;
+  return `${Math.floor(min / 60)} h ${min % 60} min restantes`;
+}
+
 function formatBytes(bytes) {
   if (!bytes) return '';
   const units = ['o', 'Ko', 'Mo', 'Go'];
@@ -67,12 +76,8 @@ function showView(name) {
  *  Comptes
  * ------------------------------------------------------------------ */
 
-function accountTypeLabel() {
-  return 'Joueur Aethoria';
-}
-
 function renderAccounts() {
-  const selected = state.accounts.find((a) => a.id === state.selectedId) || state.accounts[0] || null;
+  const selected = state.accounts[0] || null;
   state.selectedId = selected?.id || null;
 
   if (!selected) {
@@ -82,34 +87,16 @@ function renderAccounts() {
   }
 
   showView('main');
-  // Les informations du modpack ne dependent pas du compte : un seul chargement
-  // suffit, declenche des qu'un compte existe.
+  $('account-name').textContent = selected.name;
+  $('account-avatar').src = selected.avatarUrl;
+  $('account-avatar').alt = `Avatar de ${selected.name}`;
+
+  // Les informations du modpack ne dependent pas du compte : un seul
+  // chargement suffit, declenche des qu'un pseudo existe.
   if (!state.modpackLoaded) {
     state.modpackLoaded = true;
     loadModpackInfo();
   }
-  $('account-name').textContent = selected.name;
-  $('account-type').textContent = accountTypeLabel();
-  $('account-avatar').src = selected.avatarUrl;
-  $('account-avatar').alt = `Avatar de ${selected.name}`;
-
-  const list = $('account-list');
-  list.innerHTML = '';
-  for (const account of state.accounts) {
-    const item = document.createElement('button');
-    item.className = `menu__item${account.id === state.selectedId ? ' is-selected' : ''}`;
-    item.innerHTML = `
-      <img src="${account.avatarUrl}" alt="">
-      <span>${escapeHtml(account.name)}</span>`;
-    item.addEventListener('click', async () => {
-      const result = await api.accounts.select(account.id);
-      applyAccounts(result);
-      closeAccountMenu();
-    });
-    list.appendChild(item);
-  }
-
-  $('btn-remove-account').textContent = `Retirer ${selected.name}`;
 }
 
 function escapeHtml(text) {
@@ -122,11 +109,6 @@ function applyAccounts(result) {
   state.accounts = result.accounts;
   state.selectedId = result.selectedId;
   renderAccounts();
-}
-
-function closeAccountMenu() {
-  $('account-menu').hidden = true;
-  $('btn-account').setAttribute('aria-expanded', 'false');
 }
 
 /* ------------------------------------------------------------------ *
@@ -194,6 +176,13 @@ function openSettings() {
   const s = state.settings;
   $('input-max-ram').value = s.maxRamMb;
   $('output-max-ram').textContent = `${(s.maxRamMb / 1024).toFixed(1)} Go`;
+  // Le curseur ne doit pas laisser depasser la memoire physique.
+  if (s.systemRamMb) $('input-max-ram').max = Math.min(16384, s.systemRamMb);
+  $('ram-help').textContent = s.systemRamMb
+    ? `Ta machine dispose de ${(s.systemRamMb / 1024).toFixed(0)} Go. `
+      + `Valeur conseillee : ${(s.recommendedRamMb / 1024).toFixed(1)} Go. `
+      + 'Au-dela de la moitie de ta memoire, le systeme ralentit au lieu de gagner.'
+    : 'Ne depasse pas la moitie de la memoire de ta machine.';
   $('input-game-root').value = s.gameRoot || state.info.defaultRoot;
   $('input-java-path').value = s.javaPath || '';
   $('input-jvm-args').value = s.jvmArgs || '';
@@ -396,7 +385,9 @@ async function loadModpackInfo() {
     $('pack-version').textContent = info.modpackVersion
       ? `Modpack ${info.modpackVersion} — Minecraft ${info.minecraftVersion} / Forge ${info.forgeVersion}`
       : `Minecraft ${info.minecraftVersion} — Forge ${info.forgeVersion}`;
-    $('server-address').innerHTML = `Serveur : <strong>${escapeHtml(info.server.host)}${info.server.port === 25565 ? '' : `:${info.server.port}`}</strong>`;
+    const adresse = info.server.host + (info.server.port === 25565 ? '' : `:${info.server.port}`);
+    $('server-address').textContent = adresse;
+    state.serverAddress = adresse;
     renderNews(info.news || []);
 
     updateAutojoinNotice(info.server);
@@ -456,33 +447,14 @@ function wireLogin() {
   });
 }
 
-function wireAccountMenu() {
-  const menu = $('account-menu');
-  const button = $('btn-account');
-
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const willOpen = menu.hidden;
-    menu.hidden = !willOpen;
-    button.setAttribute('aria-expanded', String(willOpen));
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!menu.hidden && !$('account-switcher').contains(e.target)) closeAccountMenu();
-  });
-
-  $('btn-add-offline').addEventListener('click', () => {
-    closeAccountMenu();
+/** Le bouton du pseudo ramene a l'ecran de saisie, sans perdre le pseudo actuel. */
+function wireAccountButton() {
+  $('btn-account').addEventListener('click', () => {
     showView('login');
-    $('login-back').hidden = false; // il y a deja un compte : on doit pouvoir revenir
-    $('input-offline-name').value = '';
+    $('login-back').hidden = false;
+    $('input-offline-name').value = state.accounts[0]?.name || '';
     $('input-offline-name').focus();
-  });
-
-  $('btn-remove-account').addEventListener('click', async () => {
-    if (!state.selectedId) return;
-    closeAccountMenu();
-    applyAccounts(await api.accounts.remove(state.selectedId));
+    $('input-offline-name').select();
   });
 }
 
@@ -491,6 +463,16 @@ function wireDock() {
   $('btn-settings').addEventListener('click', openSettings);
 
   $('btn-trailer').addEventListener('click', openTrailer);
+
+  $('btn-copy-ip').addEventListener('click', async () => {
+    if (!state.serverAddress) return;
+    try {
+      await navigator.clipboard.writeText(state.serverAddress);
+      toast(`Adresse copiee : ${state.serverAddress}`, 'success', 3500);
+    } catch {
+      toast('Copie impossible depuis cette fenetre.', 'error', 4000);
+    }
+  });
 
   $('btn-options').addEventListener('click', openOptions);
   for (const el of $('modal-options').querySelectorAll('[data-close-options]')) {
@@ -584,9 +566,21 @@ function wireGameEvents() {
   api.game.onProgress((p) => {
     const percent = Math.max(0, Math.min(100, p.percent || 0));
     $('progress-fill').style.width = `${percent}%`;
-    $('progress-percent').textContent = p.totalBytes
-      ? `${formatBytes(p.bytes)} / ${formatBytes(p.totalBytes)}`
-      : `${Math.round(percent)} %`;
+
+    if (!p.totalBytes) {
+      $('progress-percent').textContent = `${Math.round(percent)} %`;
+      return;
+    }
+
+    // Volume, puis debit et temps restant quand ils sont fiables : sur plus
+    // d'un gigaoctet, "284 Mo / 1,3 Go" seul ne dit pas s'il faut attendre une
+    // minute ou un quart d'heure.
+    const morceaux = [`${formatBytes(p.bytes)} / ${formatBytes(p.totalBytes)}`];
+    if (p.bytesPerSecond > 0) morceaux.push(`${formatBytes(p.bytesPerSecond)}/s`);
+    if (p.etaSeconds !== null && p.etaSeconds !== undefined && p.etaSeconds > 2) {
+      morceaux.push(formatDuration(p.etaSeconds));
+    }
+    $('progress-percent').textContent = morceaux.join('  ·  ');
   });
 
   api.game.onExit(({ code, error, log }) => {
@@ -647,7 +641,7 @@ function wireUpdater() {
 async function init() {
   wireTitlebar();
   wireLogin();
-  wireAccountMenu();
+  wireAccountButton();
   wireDock();
   wireSettings();
   wireGameEvents();

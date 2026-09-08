@@ -54,8 +54,27 @@ function writeJson(file, data) {
   fs.renameSync(tmp, file); // ecriture atomique : pas de fichier tronque si crash
 }
 
+/**
+ * Memoire a allouer au jeu, deduite de la machine du joueur.
+ *
+ * C'est la premiere cause de mauvaise experience sur un modpack : trop peu de
+ * memoire et le jeu se fige ou plante en OutOfMemoryError, trop et le systeme
+ * se met a swapper, ce qui est pire encore. Les regles retenues :
+ *   - jamais plus de la moitie de la memoire physique, l'OS et le launcher
+ *     doivent respirer ;
+ *   - plafond a 8 Go : au-dela, les pauses du ramasse-miettes s'allongent
+ *     sans que le jeu tourne mieux ;
+ *   - plancher a 2 Go, en dessous duquel ce modpack ne demarre pas.
+ */
+function recommendedRamMb() {
+  const totalMb = Math.floor(os.totalmem() / 1024 / 1024);
+  const moitie = Math.floor(totalMb / 2 / 512) * 512;
+  return Math.min(8192, Math.max(2048, moitie));
+}
+
 const DEFAULT_SETTINGS = {
   gameRoot: null,          // null = emplacement par defaut
+  // Ces deux valeurs sont recalculees au premier demarrage, cf. getSettings.
   minRamMb: config.defaults.minRamMb,
   maxRamMb: config.defaults.maxRamMb,
   jvmArgs: config.defaults.jvmArgs.join(' '),
@@ -78,10 +97,27 @@ const FORCED_SETTINGS = {
 const store = {
   getSettings() {
     const saved = readJson(paths.settingsFile, {});
+
+    // Au tout premier lancement, la memoire est calee sur la machine plutot
+    // que sur une valeur arbitraire. Des que le joueur y touche, son choix est
+    // enregistre et prime.
+    if (saved.maxRamMb === undefined) {
+      const recommande = recommendedRamMb();
+      saved.maxRamMb = recommande;
+      saved.minRamMb = Math.max(1024, Math.floor(recommande / 2 / 512) * 512);
+    }
+
     // FORCED_SETTINGS vient en dernier : meme un settings.json modifie a la
     // main ne peut pas reactiver la conservation des mods etrangers.
     return { ...DEFAULT_SETTINGS, ...saved, ...FORCED_SETTINGS };
   },
+
+  /** Memoire physique de la machine, pour l'affichage des parametres. */
+  getSystemRamMb() {
+    return Math.floor(os.totalmem() / 1024 / 1024);
+  },
+
+  getRecommendedRamMb: recommendedRamMb,
 
   saveSettings(patch) {
     const next = { ...this.getSettings(), ...patch, ...FORCED_SETTINGS };
@@ -95,15 +131,25 @@ const store = {
     return next;
   },
 
-  /** { accounts: [...], selectedId: string|null } */
+  /**
+   * { accounts: [le seul compte] | [], selectedId }
+   *
+   * Le launcher a connu une version a plusieurs pseudos. Un fichier herite de
+   * cette epoque est ramene ici a un seul compte, en gardant celui que le
+   * joueur avait selectionne — et non le premier de la liste, qui n'est
+   * generalement pas le bon.
+   */
   getAccounts() {
     const data = readJson(paths.accountsFile, { accounts: [], selectedId: null });
+    const tous = (data.accounts || []).map((a) => ({
+      ...a,
+      refreshToken: a.refreshToken ? decrypt(a.refreshToken) : null,
+    }));
+
+    const retenu = tous.find((a) => a.id === data.selectedId) || tous[0] || null;
     return {
-      accounts: (data.accounts || []).map((a) => ({
-        ...a,
-        refreshToken: a.refreshToken ? decrypt(a.refreshToken) : null,
-      })),
-      selectedId: data.selectedId || null,
+      accounts: retenu ? [retenu] : [],
+      selectedId: retenu?.id || null,
     };
   },
 
@@ -119,12 +165,13 @@ const store = {
     });
   },
 
+  /**
+   * Enregistre le compte du joueur. Il n'y en a qu'un : changer de pseudo
+   * remplace le precedent au lieu d'allonger une liste. Un serveur ou seul le
+   * pseudo fait foi n'a aucune raison de proposer plusieurs identites.
+   */
   upsertAccount(account) {
-    const state = this.getAccounts();
-    const idx = state.accounts.findIndex((a) => a.id === account.id);
-    if (idx >= 0) state.accounts[idx] = { ...state.accounts[idx], ...account };
-    else state.accounts.push(account);
-    state.selectedId = account.id;
+    const state = { accounts: [account], selectedId: account.id };
     this.saveAccounts(state);
     return state;
   },

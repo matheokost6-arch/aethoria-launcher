@@ -123,14 +123,45 @@ async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgres
   let bytes = 0;
   const errors = [];
 
-  const report = (currentName) => {
+  // Debit mesure sur une fenetre glissante : une moyenne depuis le debut
+  // resterait bloquee sur les premieres secondes, quand rien n'est encore
+  // etabli, et l'estimation ne bougerait plus.
+  const FENETRE_MS = 4000;
+  const echantillons = [{ at: Date.now(), bytes: 0 }];
+  let dernierRapport = 0;
+
+  const debit = () => {
+    const maintenant = Date.now();
+    while (echantillons.length > 1 && maintenant - echantillons[0].at > FENETRE_MS) {
+      echantillons.shift();
+    }
+    const premier = echantillons[0];
+    const duree = (maintenant - premier.at) / 1000;
+    if (duree < 0.4) return 0;
+    return Math.max(0, (bytes - premier.bytes) / duree);
+  };
+
+  const report = (currentName, forcer = false) => {
     if (!onProgress) return;
+    const maintenant = Date.now();
+    // On limite a environ 8 rapports par seconde : au-dela, l'interface passe
+    // son temps a se redessiner pour rien.
+    if (!forcer && maintenant - dernierRapport < 120) return;
+    dernierRapport = maintenant;
+
+    echantillons.push({ at: maintenant, bytes });
+    const vitesse = debit();
+    const restant = Math.max(0, totalBytes - bytes);
+
     onProgress({
       done,
       total,
       bytes,
       totalBytes,
       current: currentName,
+      bytesPerSecond: vitesse,
+      // Sans debit mesurable, mieux vaut ne rien annoncer qu'un chiffre faux.
+      etaSeconds: vitesse > 0 && totalBytes > 0 ? Math.round(restant / vitesse) : null,
       percent: totalBytes > 0
         ? Math.min(100, (bytes / totalBytes) * 100)
         : (total ? (done / total) * 100 : 100),
@@ -145,6 +176,7 @@ async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgres
         const result = await downloadFile(task.url, task.dest, { sha1: task.sha1, size: task.size }, (n) => {
           counted += n;
           bytes += n;
+          report(task.name);
         });
         // Un fichier deja present ne passe pas par onChunk : on comptabilise sa
         // taille ici, sinon la barre n'atteindrait jamais 100% sur une
@@ -158,12 +190,12 @@ async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgres
         errors.push({ task, err });
       } finally {
         done += 1;
-        report(task.name);
+        report(task.name, true);
       }
     }
   }
 
-  report(null);
+  report(null, true);
   await Promise.all(Array.from({ length: Math.min(concurrency, Math.max(1, total)) }, worker));
 
   if (errors.length) {

@@ -68,7 +68,16 @@
       <div class="hero__content">
         <h1 class="hero__title"><img src="assets/logo.png" alt="Aethoria" width="420"></h1>
         <p class="hero__eyebrow" id="pack-version">Modpack Aethoria</p>
-        <p class="hero__server" id="server-address"></p>
+        <p class="hero__server">
+          Serveur :
+          <button class="copy" id="btn-copy-ip" title="Copier l’adresse">
+            <span id="server-address">-</span>
+            <svg class="copy__icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="9" width="11" height="11" rx="2"/>
+              <path d="M5 15V5a2 2 0 0 1 2-2h8"/>
+            </svg>
+          </button>
+        </p>
         <p class="status" id="server-status">
           <span class="status__dot" id="status-dot"></span>
           <span id="status-text">Verification du serveur...</span>
@@ -90,22 +99,17 @@
     </section>
 
     <footer class="dock">
-      <div class="dock__account" id="account-switcher">
-        <button class="account" id="btn-account" aria-haspopup="true" aria-expanded="false">
+      <div class="dock__account">
+        <button class="account" id="btn-account" title="Changer de pseudo">
           <img class="account__avatar" id="account-avatar" alt="" width="36" height="36">
           <span class="account__meta">
             <span class="account__name" id="account-name">-</span>
-            <span class="account__type" id="account-type">-</span>
+            <span class="account__type">Changer de pseudo</span>
           </span>
-          <span class="account__chevron">&#9662;</span>
+          <svg class="account__edit" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m14.5 5.5 4 4M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1Z"/>
+          </svg>
         </button>
-        <div class="menu" id="account-menu" hidden>
-          <div class="menu__list" id="account-list"></div>
-          <div class="menu__sep"></div>
-          <button class="menu__item" id="btn-add-offline">Ajouter un pseudo</button>
-          <div class="menu__sep"></div>
-          <button class="menu__item menu__item--danger" id="btn-remove-account">Retirer ce compte</button>
-        </div>
       </div>
 
       <div class="dock__center">
@@ -167,7 +171,7 @@
             <input type="range" id="input-max-ram" min="1024" max="16384" step="512" class="range">
             <output class="field__value" id="output-max-ram">4096 Mo</output>
           </div>
-          <p class="field__help">2 a 6 Go conviennent a la plupart des modpacks. Ne depasse pas la moitie de la memoire de ta machine.</p>
+          <p class="field__help" id="ram-help"></p>
         </div>
 
         <div class="field">

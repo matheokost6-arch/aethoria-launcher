@@ -140,7 +140,11 @@ function registerIpc() {
   handle('accounts:select', (id) => auth.selectAccount(id));
 
   // --- Parametres ---
-  handle('settings:get', () => store.getSettings());
+  handle('settings:get', () => ({
+    ...store.getSettings(),
+    systemRamMb: store.getSystemRamMb(),
+    recommendedRamMb: store.getRecommendedRamMb(),
+  }));
   handle('settings:save', (patch) => store.saveSettings(patch));
   handle('settings:pickFolder', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {

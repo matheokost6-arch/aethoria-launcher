@@ -160,6 +160,36 @@ function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHo
  *  Preparation et lancement
  * ------------------------------------------------------------------ */
 
+// Place necessaire a une installation complete : client, bibliotheques,
+// ressources, runtime Java et modpack, avec une marge de securite.
+const ESPACE_REQUIS_OCTETS = 3 * 1024 * 1024 * 1024;
+
+/**
+ * Verifie qu'il reste assez de place avant de lancer plus d'un gigaoctet de
+ * telechargement. Sans ce controle, le disque se remplit en cours de route et
+ * l'echec survient au bout de plusieurs minutes, sur un message technique
+ * incomprehensible pour le joueur.
+ */
+async function checkDiskSpace(onStatus) {
+  try {
+    const stats = await fsp.statfs(paths.root);
+    const libre = stats.bavail * stats.bsize;
+    if (libre >= ESPACE_REQUIS_OCTETS) return;
+
+    const enGo = (octets) => (octets / 1024 / 1024 / 1024).toFixed(1);
+    throw new Error(
+      `Espace disque insuffisant : ${enGo(libre)} Go disponibles sur ${path.parse(paths.root).root}, `
+      + `il en faut environ ${enGo(ESPACE_REQUIS_OCTETS)} Go. `
+      + 'Libere de la place, ou choisis un autre dossier de jeu dans les parametres.',
+    );
+  } catch (err) {
+    // statfs n'existe pas partout : l'absence de mesure ne doit pas empecher
+    // de jouer, on ne bloque que sur un manque de place avere.
+    if (err.message.startsWith('Espace disque insuffisant')) throw err;
+    onStatus?.('Espace disque non verifiable, poursuite du lancement.');
+  }
+}
+
 /**
  * Prepare tout ce qui est necessaire puis demarre le jeu.
  * Les etapes sont volontairement sequentielles et annoncees une par une :
@@ -176,6 +206,8 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit }) {
 
   status('Verification du compte...');
   const account = await auth.resolveForLaunch(accountId);
+
+  await checkDiskSpace(status);
 
   const { manifest, offline } = await modpack.fetchManifest({ onStatus: status });
   if (offline) status('Mode hors ligne : le modpack ne sera pas verifie.');
