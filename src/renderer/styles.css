@@ -823,3 +823,48 @@ button { font-family: inherit; }
 }
 
 .icon-btn[hidden] { display: none; }
+
+/* ------------------------------------------------------------------ *
+ *  Connexion par pseudo
+ * ------------------------------------------------------------------ */
+
+.login__note {
+  margin: 14px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-faint);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Annonce de connexion directe au serveur
+ * ------------------------------------------------------------------ */
+
+.autojoin {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.autojoin[hidden] { display: none; }
+
+.autojoin strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* Petite fleche d'entree, dessinee en CSS pour ne charger aucune image. */
+.autojoin::before {
+  content: '';
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+  background: currentColor;
+  opacity: 0.65;
+  -webkit-mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E");
+  mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4'/%3E%3Cpolyline points='10 17 15 12 10 7'/%3E%3Cline x1='15' y1='12' x2='3' y2='12'/%3E%3C/svg%3E");
+}

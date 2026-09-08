@@ -61,7 +61,7 @@ const DEFAULT_SETTINGS = {
   jvmArgs: config.defaults.jvmArgs.join(' '),
   javaPath: null,          // null = runtime telecharge automatiquement
   closeOnLaunch: config.defaults.closeOnLaunch,
-  joinServerOnLaunch: false,
+  joinServerOnLaunch: config.defaults.joinServerOnLaunch,
   keepExtraMods: true,     // conserver les mods ajoutes manuellement par le joueur
 };
 

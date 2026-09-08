@@ -67,8 +67,8 @@ function showView(name) {
  *  Comptes
  * ------------------------------------------------------------------ */
 
-function accountTypeLabel(account) {
-  return account.type === 'microsoft' ? 'Compte Microsoft' : 'Compte hors-ligne';
+function accountTypeLabel() {
+  return 'Joueur Aethoria';
 }
 
 function renderAccounts() {
@@ -89,7 +89,7 @@ function renderAccounts() {
     loadModpackInfo();
   }
   $('account-name').textContent = selected.name;
-  $('account-type').textContent = accountTypeLabel(selected);
+  $('account-type').textContent = accountTypeLabel();
   $('account-avatar').src = selected.avatarUrl;
   $('account-avatar').alt = `Avatar de ${selected.name}`;
 
@@ -100,8 +100,7 @@ function renderAccounts() {
     item.className = `menu__item${account.id === state.selectedId ? ' is-selected' : ''}`;
     item.innerHTML = `
       <img src="${account.avatarUrl}" alt="">
-      <span>${escapeHtml(account.name)}</span>
-      <small>${account.type === 'microsoft' ? 'Microsoft' : 'Hors-ligne'}</small>`;
+      <span>${escapeHtml(account.name)}</span>`;
     item.addEventListener('click', async () => {
       const result = await api.accounts.select(account.id);
       applyAccounts(result);
@@ -134,26 +133,6 @@ function closeAccountMenu() {
  *  Connexion
  * ------------------------------------------------------------------ */
 
-async function loginMicrosoft(button) {
-  const original = button.textContent;
-  button.disabled = true;
-  button.textContent = 'Connexion en cours...';
-  showLoginError('');
-  try {
-    applyAccounts(await api.accounts.loginMicrosoft());
-    toast('Compte Microsoft connecte.', 'success', 4000);
-  } catch (err) {
-    // Une fermeture de fenetre n'est pas une erreur a signaler bruyamment.
-    if (!/fermee avant la fin|annulee/i.test(err.message)) {
-      showLoginError(err.message);
-      toast(err.message, 'error', 9000);
-    }
-  } finally {
-    button.disabled = false;
-    button.textContent = original;
-  }
-}
-
 async function loginOffline(name) {
   showLoginError('');
   try {
@@ -172,6 +151,7 @@ function setLaunching(active) {
   $('btn-play').disabled = active;
   $('btn-play').textContent = active ? 'LANCEMENT...' : 'JOUER';
   $('progress').hidden = !active;
+  $('autojoin').hidden = active;
   if (!active) {
     $('progress-fill').style.width = '0%';
     $('progress-percent').textContent = '';
@@ -186,7 +166,13 @@ async function play() {
 
   try {
     await api.game.launch(state.selectedId);
-    setHint('Minecraft est lance. Bon jeu !', 'success');
+    const host = state.info?.server?.host;
+    setHint(
+      state.settings?.joinServerOnLaunch !== false && host
+        ? `Minecraft est lance, connexion a ${host} en cours. Bon jeu !`
+        : 'Minecraft est lance. Bon jeu !',
+      'success',
+    );
     $('progress').hidden = true;
     $('btn-play').textContent = 'EN JEU';
 
@@ -245,6 +231,23 @@ function renderNews(items) {
 }
 
 /**
+ * Annonce au joueur qu'il sera emmene directement sur le serveur.
+ * Le texte suit le reglage : s'il decoche l'option, il doit comprendre que le
+ * jeu s'ouvrira sur le menu principal au lieu du serveur.
+ */
+function updateAutojoinNotice(server) {
+  const notice = $('autojoin');
+  const active = state.settings?.joinServerOnLaunch !== false;
+  notice.hidden = state.launching;
+  if (active) {
+    const host = server?.host || state.info?.server?.host || 'le serveur';
+    notice.innerHTML = `Tu rejoindras directement <strong>${escapeHtml(host)}</strong> au lancement.`;
+  } else {
+    notice.textContent = 'Le jeu s’ouvrira sur le menu principal, sans rejoindre le serveur.';
+  }
+}
+
+/**
  * Interroge le serveur et met a jour la pastille d'etat.
  * Le serveur du manifest prime : il peut changer sans nouveau launcher.
  */
@@ -285,6 +288,8 @@ async function loadModpackInfo() {
       : `Minecraft ${info.minecraftVersion} — Forge ${info.forgeVersion}`;
     $('server-address').innerHTML = `Serveur : <strong>${escapeHtml(info.server.host)}${info.server.port === 25565 ? '' : `:${info.server.port}`}</strong>`;
     renderNews(info.news || []);
+
+    updateAutojoinNotice(info.server);
 
     if (info.links) {
       state.info.links = { ...state.info.links, ...info.links };
@@ -330,24 +335,6 @@ function wireTitlebar() {
 }
 
 function wireLogin() {
-  const tabs = [
-    { tab: $('tab-microsoft'), panel: $('panel-microsoft') },
-    { tab: $('tab-offline'), panel: $('panel-offline') },
-  ];
-  for (const { tab, panel } of tabs) {
-    tab.addEventListener('click', () => {
-      showLoginError('');
-      for (const other of tabs) {
-        const active = other.tab === tab;
-        other.tab.classList.toggle('is-active', active);
-        other.tab.setAttribute('aria-selected', String(active));
-        other.panel.classList.toggle('is-active', active);
-      }
-      if (panel === $('panel-offline')) $('input-offline-name').focus();
-    });
-  }
-
-  $('btn-login-microsoft').addEventListener('click', (e) => loginMicrosoft(e.currentTarget));
   $('login-back').addEventListener('click', () => {
     showLoginError('');
     showView('main');
@@ -373,17 +360,12 @@ function wireAccountMenu() {
     if (!menu.hidden && !$('account-switcher').contains(e.target)) closeAccountMenu();
   });
 
-  $('btn-add-microsoft').addEventListener('click', async (e) => {
-    closeAccountMenu();
-    await loginMicrosoft(e.currentTarget);
-  });
-
   $('btn-add-offline').addEventListener('click', () => {
     closeAccountMenu();
     showView('login');
     $('login-back').hidden = false; // il y a deja un compte : on doit pouvoir revenir
-    $('tab-offline').click();
     $('input-offline-name').value = '';
+    $('input-offline-name').focus();
   });
 
   $('btn-remove-account').addEventListener('click', async () => {
@@ -455,7 +437,10 @@ function wireSettings() {
   });
 
   $('input-jvm-args').addEventListener('change', (e) => saveSettings({ jvmArgs: e.target.value }));
-  $('check-join-server').addEventListener('change', (e) => saveSettings({ joinServerOnLaunch: e.target.checked }));
+  $('check-join-server').addEventListener('change', async (e) => {
+    await saveSettings({ joinServerOnLaunch: e.target.checked });
+    updateAutojoinNotice(state.info?.server);
+  });
   $('check-close-launcher').addEventListener('change', (e) => saveSettings({ closeOnLaunch: e.target.checked }));
   $('check-keep-mods').addEventListener('change', (e) => saveSettings({ keepExtraMods: e.target.checked }));
 

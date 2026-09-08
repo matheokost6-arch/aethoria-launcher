@@ -38,34 +38,20 @@
   <main class="view view--login" id="view-login">
     <div class="login">
       <img class="login__logo" src="assets/logo.png" alt="Aethoria" width="300">
-      <p class="login__subtitle">Connecte-toi pour rejoindre l’aventure.</p>
+      <p class="login__subtitle">Choisis ton pseudo pour rejoindre l’aventure.</p>
 
-      <div class="tabs" role="tablist">
-        <button class="tabs__tab is-active" id="tab-microsoft" role="tab" aria-selected="true">Compte Microsoft</button>
-        <button class="tabs__tab" id="tab-offline" role="tab" aria-selected="false">Compte hors-ligne</button>
-      </div>
-
-      <section class="tabpanel is-active" id="panel-microsoft" role="tabpanel">
-        <p class="tabpanel__hint">
-          Connexion officielle : ton pseudo, ton skin et tes capes Minecraft sont conserves.
-        </p>
-        <button class="btn btn--primary btn--block" id="btn-login-microsoft">
-          Se connecter avec Microsoft
+      <form id="form-offline" autocomplete="off">
+        <input class="input" type="text" id="input-offline-name" placeholder="Ton pseudo"
+               maxlength="16" spellcheck="false" autofocus required>
+        <button class="btn btn--primary btn--block" type="submit" id="btn-login-offline">
+          Entrer dans Aethoria
         </button>
-      </section>
+      </form>
 
-      <section class="tabpanel" id="panel-offline" role="tabpanel">
-        <p class="tabpanel__hint">
-          Sans compte Minecraft. Choisis un pseudo : il servira d’identite sur le serveur.
-        </p>
-        <form id="form-offline" autocomplete="off">
-          <input class="input" type="text" id="input-offline-name" placeholder="Pseudo (3 a 16 caracteres)"
-                 maxlength="16" spellcheck="false" required>
-          <button class="btn btn--primary btn--block" type="submit" id="btn-login-offline">
-            Jouer hors-ligne
-          </button>
-        </form>
-      </section>
+      <p class="login__note">
+        3 a 16 caracteres : lettres, chiffres et underscores.<br>
+        Ce pseudo sera ton identite sur le serveur, garde le meme a chaque partie.
+      </p>
 
       <p class="login__error" id="login-error" role="alert" hidden></p>
 
@@ -110,8 +96,7 @@
         <div class="menu" id="account-menu" hidden>
           <div class="menu__list" id="account-list"></div>
           <div class="menu__sep"></div>
-          <button class="menu__item" id="btn-add-microsoft">Ajouter un compte Microsoft</button>
-          <button class="menu__item" id="btn-add-offline">Ajouter un compte hors-ligne</button>
+          <button class="menu__item" id="btn-add-offline">Ajouter un pseudo</button>
           <div class="menu__sep"></div>
           <button class="menu__item menu__item--danger" id="btn-remove-account">Retirer ce compte</button>
         </div>
@@ -123,6 +108,9 @@
           <div class="progress__bar"><div class="progress__fill" id="progress-fill"></div></div>
           <p class="progress__label"><span id="progress-status">Preparation...</span><span id="progress-percent"></span></p>
         </div>
+        <p class="autojoin" id="autojoin">
+          Tu rejoindras directement <strong id="autojoin-server">le serveur</strong> au lancement.
+        </p>
         <p class="dock__hint" id="game-hint" hidden></p>
       </div>
 

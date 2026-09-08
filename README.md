@@ -1,8 +1,8 @@
 # Launcher Aethoria
 
 Launcher Minecraft du serveur **Aethoria** : modpack Forge 1.20.1 (71 mods),
-connexion **compte Microsoft** ou **hors-ligne**, mise à jour automatique du
-modpack et du launcher, distribué en `.exe` pour Windows.
+connexion par **pseudo**, **connexion automatique au serveur**, mise à jour
+automatique du modpack et du launcher, distribué en `.exe` pour Windows.
 
 ---
 
@@ -13,7 +13,7 @@ modpack et du launcher, distribué en `.exe` pour Windows.
 3. [Configuration obligatoire](#configuration-obligatoire)
    - [Dépôt GitHub](#1-dépôt-github)
    - [Adresse du serveur](#2-adresse-du-serveur)
-   - [Authentification Microsoft](#3-authentification-microsoft)
+   - [Connexion des joueurs](#3-connexion-des-joueurs)
 4. [Publier le modpack](#publier-le-modpack)
 5. [Construire le .exe](#construire-le-exe)
 6. [Mettre à jour le launcher chez les joueurs](#mettre-à-jour-le-launcher-chez-les-joueurs)
@@ -28,7 +28,7 @@ modpack et du launcher, distribué en `.exe` pour Windows.
 
 À chaque clic sur **JOUER**, le launcher exécute la chaîne suivante :
 
-1. **Compte** — vérifie le compte sélectionné et renouvelle le jeton Microsoft si besoin.
+1. **Compte** — récupère le pseudo choisi par le joueur.
 2. **Manifest** — récupère `manifest.json` sur GitHub (versions du jeu et liste des mods).
 3. **Java** — télécharge le runtime Java officiel de Mojang correspondant à la version.
    Le joueur n'a **rien à installer**.
@@ -37,7 +37,8 @@ modpack et du launcher, distribué en `.exe` pour Windows.
    en vérifiant le SHA1 de chaque fichier.
 6. **Modpack** — synchronise les mods : ajoute les nouveaux, remplace les modifiés,
    supprime ceux qui ont été retirés du pack.
-7. **Lancement** — construit la ligne de commande Java et démarre Minecraft.
+7. **Lancement** — construit la ligne de commande Java, démarre Minecraft et
+   **connecte directement le joueur au serveur** (`--quickPlayMultiplayer`).
 
 Le jeu s'installe dans `%APPDATA%\.aethoria`, séparé du `.minecraft` officiel du
 joueur : ses mondes solo et ses autres installations ne sont jamais touchés.
@@ -60,7 +61,7 @@ n'a besoin de rien).
 
 ## Configuration obligatoire
 
-Trois réglages sont à faire **avant** de distribuer le launcher.
+Deux réglages sont à faire **avant** de distribuer le launcher.
 
 ### 1. Dépôt GitHub
 
@@ -103,49 +104,50 @@ server: {
 Cette adresse est affichée sur l'écran principal et sert au réglage
 « rejoindre directement le serveur au lancement ».
 
-### 3. Authentification Microsoft
+### 3. Connexion des joueurs
 
-La connexion Microsoft demande un **Client ID Azure**. Sans lui, seule la
-connexion hors-ligne fonctionne (le launcher affiche un message explicite).
+Le launcher utilise **uniquement la connexion par pseudo**. Le joueur saisit un
+pseudo de 3 à 16 caractères et entre en jeu : ni compte Minecraft, ni mot de
+passe, ni fenêtre Microsoft.
 
-**Étape A — créer l'application Azure**
+L'UUID est calculé **exactement comme le fait un serveur en
+`online-mode=false`** : un UUID de version 3 sur la chaîne
+`OfflinePlayer:<pseudo>`. C'est essentiel — le serveur recalcule ce même UUID de
+son côté, donc l'inventaire, la position et les permissions d'un joueur sont
+conservés d'une session à l'autre, tant qu'il garde le même pseudo.
 
-1. Va sur [portal.azure.com](https://portal.azure.com) → *Microsoft Entra ID* →
-   *Inscriptions d'applications* → **Nouvelle inscription**.
-2. Nom : `Aethoria Launcher`.
-3. Types de comptes pris en charge :
-   **« Comptes Microsoft personnels uniquement »**.
-4. Ne mets pas d'URI de redirection à cette étape, puis **Inscrire**.
-5. Dans *Authentification* → **Ajouter une plateforme** →
-   *Applications mobiles et de bureau* → coche l'URI :
-   ```
-   https://login.microsoftonline.com/common/oauth2/nativeclient
-   ```
-6. Toujours dans *Authentification*, vérifie que
-   **« Autoriser les flux de clients publics »** est sur **Oui**.
-7. Copie l'**ID d'application (client)** depuis la page *Vue d'ensemble*.
+> ⚠️ **Le serveur doit tourner en `online-mode=false`.** C'est le cas
+> d'Aethoria, vérifié en jeu : un client connecté sous le pseudo « Baron »
+> apparaît bien dans la liste des joueurs.
 
-**Étape B — demander l'accès à l'API Minecraft**
+> ⚠️ **Rien n'empêche un joueur de prendre le pseudo d'un autre.** En
+> `online-mode=false`, seul le pseudo fait foi. Protège au minimum les comptes
+> du staff avec un plugin d'authentification (AuthMe, nLogin…) — sinon
+> n'importe qui peut se connecter sous ton pseudo d'administrateur.
 
-Microsoft restreint l'accès à l'API d'authentification Minecraft. Une
-application non approuvée reçoit une erreur au moment du
-`login_with_xbox`. Remplis le formulaire officiel :
+#### Connexion automatique au serveur
 
-<https://help.minecraft.net/hc/en-us/articles/16254801392141>
+Le launcher ajoute `--quickPlayMultiplayer <serveur>` à la commande de
+lancement : le joueur passe du bouton **JOUER** au serveur sans voir le menu
+multijoueur. L'écran principal l'en informe (« Tu rejoindras directement
+… au lancement »).
 
-Indique qu'il s'agit d'un launcher pour un serveur communautaire et donne ton
-Client ID. La réponse arrive généralement sous quelques jours.
+C'est activé par défaut via `defaults.joinServerOnLaunch` dans
+`src/shared/config.js`. Un joueur peut le décocher dans les paramètres s'il veut
+accéder au menu principal — le message d'accueil s'adapte alors.
 
-**Étape C — renseigner le Client ID**
+#### Réactiver la connexion Microsoft
 
-```js
-// src/shared/config.js
-msalClientId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-```
+Le code de l'authentification Microsoft (OAuth2 + PKCE → Xbox Live → XSTS →
+services Minecraft) est conservé dans `src/main/auth/microsoft.js` et reste
+branché sur le canal IPC `accounts:loginMicrosoft`. Pour la remettre en service,
+il faut renseigner `msalClientId` dans `src/shared/config.js`, puis rétablir
+l'onglet correspondant dans `src/renderer/index.html`.
 
-> **Sécurité** : ce Client ID n'est pas un secret. Le launcher est un « client
-> public » et utilise PKCE ; aucun mot de passe Microsoft ne transite par le
-> launcher, la saisie se fait dans une fenêtre Microsoft officielle.
+Elle exige une application Azure **approuvée manuellement par Mojang**
+(formulaire : <https://aka.ms/mce-reviewappid>), avec un délai d'approbation
+qui va de quelques semaines à plusieurs mois. C'est la raison pour laquelle le
+launcher ne s'appuie pas dessus.
 
 ---
 
@@ -375,9 +377,9 @@ node -e "fetch('https://discord.com/api/v10/invites/TON_CODE').then(r=>r.json())
 
 | Symptôme | Cause et solution |
 |---|---|
-| « Aucun Client ID Azure n'est configuré » | Voir [Authentification Microsoft](#3-authentification-microsoft). |
-| « Ce compte Microsoft n'a pas de profil Xbox » | Le joueur doit se connecter une fois sur minecraft.net, puis réessayer. |
-| « Ce compte ne possède pas Minecraft: Java Edition » | Compte Microsoft sans le jeu : utiliser la connexion hors-ligne. |
+| « Le pseudo ne peut contenir que… » | 3 à 16 caractères, lettres, chiffres et underscores uniquement — la règle de Mojang. |
+| Le joueur arrive au menu principal au lieu du serveur | L'option « Rejoindre directement le serveur » est décochée dans les paramètres. |
+| Le joueur est éjecté à la connexion | Le serveur n'est pas en `online-mode=false`, ou un plugin d'authentification exige un mot de passe. |
 | Le jeu se ferme aussitôt (code 1) | Presque toujours un conflit de mods. *Paramètres → Journaux* donne la cause exacte. |
 | `OutOfMemoryError` | Augmenter la mémoire dans les paramètres (6 Go pour ce modpack). |
 | L'installation de Forge échoue | *Paramètres → Réparer l'installation*, puis relancer. |
@@ -392,12 +394,6 @@ Le jeton d'accès y est masqué : un joueur peut envoyer ce fichier sans risque.
 
 ## Notes
 
-- **Mode hors-ligne** : l'UUID est calculé comme le fait un serveur en
-  `online-mode=false` (UUID v3 sur `OfflinePlayer:<pseudo>`). L'inventaire et
-  la progression d'un joueur sont donc conservés d'une session à l'autre. Le
-  serveur doit être configuré avec `online-mode=false` pour accepter ces
-  connexions ; pense à protéger les pseudos du staff avec un plugin
-  d'authentification.
 - **Sécurité de l'interface** : le renderer n'a aucun accès à Node
   (`contextIsolation`, pas de `nodeIntegration`) et ne peut appeler que les
   canaux listés dans `preload.js`.

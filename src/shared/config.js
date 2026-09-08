@@ -68,6 +68,8 @@ module.exports = {
       '-XX:G1HeapRegionSize=32M',
     ],
     closeOnLaunch: false,
+    // Le launcher sert un serveur unique : on y emmene le joueur directement.
+    joinServerOnLaunch: true,
   },
 
   // Endpoints officiels Mojang / Microsoft
