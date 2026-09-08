@@ -133,10 +133,10 @@ function registerIpc() {
     await auth.loginMicrosoft(mainWindow);
     return auth.listAccounts();
   });
-  handle('accounts:loginOffline', (name) => {
-    auth.loginOffline(name);
-    return auth.listAccounts();
-  });
+  handle('accounts:inscrire', (pseudo, motDePasse) => auth.inscrire(pseudo, motDePasse));
+  handle('accounts:connecter', (pseudo, motDePasse) => auth.connecter(pseudo, motDePasse));
+  handle('accounts:changerMotDePasse', (nouveau) => auth.changerMotDePasse(nouveau));
+  handle('accounts:sansCompte', (pseudo) => auth.connecterSansCompte(pseudo));
   handle('accounts:remove', (id) => auth.removeAccount(id));
   handle('accounts:select', (id) => auth.selectAccount(id));
 

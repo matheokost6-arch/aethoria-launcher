@@ -245,12 +245,22 @@ button { font-family: inherit; }
 
 /* --- Ecran de connexion : une feuille de parchemin posee au centre --- */
 
-.view--login { align-items: center; justify-content: center; }
+/* En mode creation de compte, la carte gagne deux champs et une jauge : sur une
+   fenetre de 680 px elle depasse. On laisse donc la vue defiler plutot que de
+   rogner le contenu. */
+.view--login {
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding: 18px 0;
+}
+
+.view--login .login { margin: auto 0; flex: 0 0 auto; }
 
 .login {
   position: relative;
   width: 396px;
-  padding: 34px 34px 28px;
+  padding: 28px 32px 24px;
   border: 1px solid rgba(90, 66, 30, 0.55);
   border-radius: var(--radius-lg);
   text-align: center;
@@ -285,16 +295,16 @@ button { font-family: inherit; }
 
 .login__logo {
   display: block;
-  width: 292px;
+  width: 276px;
   height: auto;
-  margin: 2px auto 16px;
+  margin: 2px auto 14px;
   /* Le logo est concu pour un fond sombre : sur parchemin, une ombre portee
      lui redonne du detachement. */
   filter: drop-shadow(0 3px 6px rgba(60, 40, 15, 0.45));
 }
 
 .login__subtitle {
-  margin: 0 0 22px;
+  margin: 0 0 18px;
   font-family: var(--titre);
   font-size: 13px;
   font-weight: 600;
@@ -1554,3 +1564,109 @@ button { font-family: inherit; }
   white-space: pre-line;
   user-select: text;
 }
+
+/* ------------------------------------------------------------------ *
+ *  Champ de mot de passe
+ * ------------------------------------------------------------------ */
+
+.champ-mdp {
+  position: relative;
+  margin-bottom: 13px;
+}
+
+.champ-mdp[hidden] { display: none; }
+.champ-mdp .input { padding-right: 42px; }
+
+/* Oeil : rendre le mot de passe lisible le temps de le relire. */
+.oeil {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--encre-pale);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.oeil:hover { background: rgba(120, 92, 44, 0.14); color: var(--encre); }
+.oeil.is-actif { color: var(--rouge); }
+
+.oeil svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Jauge de solidite du mot de passe
+ * ------------------------------------------------------------------ */
+
+.jauge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -4px 0 13px;
+}
+
+.jauge[hidden] { display: none; }
+
+.jauge__barre {
+  flex: 1;
+  height: 5px;
+  border-radius: 2px;
+  background: rgba(90, 66, 30, 0.3);
+  overflow: hidden;
+}
+
+.jauge__niveau {
+  height: 100%;
+  width: 0;
+  border-radius: 2px;
+  background: var(--rouge);
+  transition: width 0.25s, background 0.25s;
+}
+
+/* La couleur suit la note : du rouge de l'alerte au vert de l'aval. */
+.jauge__niveau[data-note='2'] { background: #c98a1e; }
+.jauge__niveau[data-note='3'] { background: #8a9a2e; }
+.jauge__niveau[data-note='4'] { background: var(--vert); }
+
+.jauge__libelle {
+  flex: 0 0 auto;
+  min-width: 74px;
+  text-align: right;
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--encre-pale);
+}
+
+/* ------------------------------------------------------------------ *
+ *  Bascule connexion / creation de compte
+ * ------------------------------------------------------------------ */
+
+.bascule {
+  margin: 14px 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--encre-pale);
+  font-family: var(--corps);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bascule:hover { color: var(--encre); }
+.bascule[hidden] { display: none; }

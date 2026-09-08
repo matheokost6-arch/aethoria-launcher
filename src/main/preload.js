@@ -39,7 +39,10 @@ contextBridge.exposeInMainWorld('aethoria', {
   accounts: {
     list: () => call('accounts:list'),
     loginMicrosoft: () => call('accounts:loginMicrosoft'),
-    loginOffline: (name) => call('accounts:loginOffline', name),
+    inscrire: (pseudo, motDePasse) => call('accounts:inscrire', pseudo, motDePasse),
+    connecter: (pseudo, motDePasse) => call('accounts:connecter', pseudo, motDePasse),
+    changerMotDePasse: (nouveau) => call('accounts:changerMotDePasse', nouveau),
+    sansCompte: (pseudo) => call('accounts:sansCompte', pseudo),
     remove: (id) => call('accounts:remove', id),
     select: (id) => call('accounts:select', id),
   },

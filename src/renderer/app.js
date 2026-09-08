@@ -15,6 +15,7 @@ const state = {
   launching: false,
   modpackLoaded: false,
   statusTimer: null,
+  comptesActifs: undefined,
 };
 
 /* ------------------------------------------------------------------ *
@@ -108,6 +109,10 @@ function escapeHtml(text) {
 function applyAccounts(result) {
   state.accounts = result.accounts;
   state.selectedId = result.selectedId;
+  if (result.comptesActifs !== undefined) {
+    state.comptesActifs = result.comptesActifs;
+    appliquerMode();
+  }
   renderAccounts();
 }
 
@@ -115,12 +120,116 @@ function applyAccounts(result) {
  *  Connexion
  * ------------------------------------------------------------------ */
 
-async function loginOffline(name) {
+/* ------------------------------------------------------------------ *
+ *  Connexion et creation de compte
+ * ------------------------------------------------------------------ */
+
+// L'ecran sert aux deux usages : se connecter, ou creer son compte.
+let modeInscription = false;
+
+function appliquerMode() {
+  // Tant que le service de comptes n'est pas configure, le launcher reste
+  // utilisable avec le seul pseudo : mieux vaut un launcher qui fonctionne
+  // sans protection qu'un launcher bloque. L'interface le dit franchement.
+  if (state.comptesActifs === false) {
+    $('login-subtitle').textContent = 'Choisis ton pseudo pour rejoindre l’aventure.';
+    $('btn-valider').textContent = 'Entrer dans Aethoria';
+    $('champ-mdp-bloc').hidden = true;
+    $('bloc-confirmation').hidden = true;
+    $('jauge-mdp').hidden = true;
+    $('btn-bascule').hidden = true;
+    $('input-mdp').required = false;
+    $('input-mdp-2').required = false;
+    return;
+  }
+
+  $('champ-mdp-bloc').hidden = false;
+  $('btn-bascule').hidden = false;
+  $('input-mdp').required = true;
+
+  $('login-subtitle').textContent = modeInscription
+    ? 'Cree ton compte pour rejoindre l’aventure.'
+    : 'Connecte-toi pour rejoindre l’aventure.';
+  $('btn-valider').textContent = modeInscription ? 'Creer mon compte' : 'Se connecter';
+  $('btn-bascule').textContent = modeInscription
+    ? 'J’ai deja un compte, me connecter'
+    : 'Pas encore de compte ? En creer un';
+
+  $('bloc-confirmation').hidden = !modeInscription;
+  $('input-mdp-2').required = modeInscription;
+  $('input-mdp').autocomplete = modeInscription ? 'new-password' : 'current-password';
+
+  // La jauge n'a de sens qu'au moment de choisir un mot de passe.
+  $('jauge-mdp').hidden = !modeInscription || !$('input-mdp').value;
   showLoginError('');
+}
+
+function majJauge() {
+  const valeur = $('input-mdp').value;
+  const jauge = $('jauge-mdp');
+  if (!modeInscription || !valeur) {
+    jauge.hidden = true;
+    return;
+  }
+  const { note, libelle } = evaluerForce(valeur);
+  jauge.hidden = false;
+  $('jauge-niveau').style.width = `${(note / 4) * 100}%`;
+  $('jauge-niveau').dataset.note = String(note);
+  $('jauge-libelle').textContent = libelle;
+}
+
+/**
+ * Meme calcul que cote processus principal, duplique ici pour que la jauge
+ * reagisse a chaque frappe sans aller-retour. La validation qui fait foi reste
+ * celle du processus principal.
+ */
+function evaluerForce(mdp) {
+  const familles = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter((r) => r.test(mdp)).length;
+  let note = 0;
+  if (mdp.length >= 8) note += 1;
+  if (mdp.length >= 12) note += 1;
+  if (familles >= 2) note += 1;
+  if (familles >= 3 && mdp.length >= 10) note += 1;
+  const libelles = ['Trop faible', 'Faible', 'Correct', 'Bon', 'Excellent'];
+  return { note, libelle: libelles[note] };
+}
+
+async function validerFormulaire() {
+  const pseudo = $('input-pseudo').value.trim();
+  const mdp = $('input-mdp').value;
+  const bouton = $('btn-valider');
+  const libelleInitial = bouton.textContent;
+
+  showLoginError('');
+
+  if (state.comptesActifs !== false && modeInscription && mdp !== $('input-mdp-2').value) {
+    showLoginError('Les deux mots de passe ne correspondent pas.');
+    return;
+  }
+
+  bouton.disabled = true;
+  bouton.textContent = modeInscription ? 'Creation...' : 'Connexion...';
+
   try {
-    applyAccounts(await api.accounts.loginOffline(name));
+    let resultat;
+    if (state.comptesActifs === false) {
+      resultat = await api.accounts.sansCompte(pseudo);
+    } else {
+      resultat = modeInscription
+        ? await api.accounts.inscrire(pseudo, mdp)
+        : await api.accounts.connecter(pseudo, mdp);
+    }
+    applyAccounts(resultat);
+    $('input-mdp').value = '';
+    $('input-mdp-2').value = '';
+    if (state.comptesActifs !== false) {
+      toast(modeInscription ? 'Compte cree. Bienvenue !' : `Content de te revoir, ${pseudo}.`, 'success', 5000);
+    }
   } catch (err) {
     showLoginError(err.message);
+  } finally {
+    bouton.disabled = false;
+    bouton.textContent = libelleInitial;
   }
 }
 
@@ -495,24 +604,47 @@ function wireTitlebar() {
 }
 
 function wireLogin() {
+  $('form-compte').addEventListener('submit', (e) => {
+    e.preventDefault();
+    validerFormulaire();
+  });
+
+  $('btn-bascule').addEventListener('click', () => {
+    modeInscription = !modeInscription;
+    appliquerMode();
+    $('input-pseudo').focus();
+  });
+
+  $('input-mdp').addEventListener('input', majJauge);
+
+  // Oeil : rendre le mot de passe lisible le temps de le verifier.
+  $('btn-voir-mdp').addEventListener('click', () => {
+    const champ = $('input-mdp');
+    const visible = champ.type === 'text';
+    champ.type = visible ? 'password' : 'text';
+    $('btn-voir-mdp').classList.toggle('is-actif', !visible);
+    $('btn-voir-mdp').title = visible ? 'Afficher le mot de passe' : 'Masquer le mot de passe';
+    champ.focus();
+  });
+
   $('login-back').addEventListener('click', () => {
     showLoginError('');
     showView('main');
   });
-  $('form-offline').addEventListener('submit', (e) => {
-    e.preventDefault();
-    loginOffline($('input-offline-name').value);
-  });
+
+  appliquerMode();
 }
 
 /** Le bouton du pseudo ramene a l'ecran de saisie, sans perdre le pseudo actuel. */
 function wireAccountButton() {
   $('btn-account').addEventListener('click', () => {
+    modeInscription = false;
+    appliquerMode();
     showView('login');
     $('login-back').hidden = false;
-    $('input-offline-name').value = state.accounts[0]?.name || '';
-    $('input-offline-name').focus();
-    $('input-offline-name').select();
+    $('input-pseudo').value = state.accounts[0]?.name || '';
+    $('input-mdp').value = '';
+    $('input-mdp').focus();
   });
 }
 
