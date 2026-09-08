@@ -109,7 +109,7 @@
       </div>
 
       <div class="dock__center">
-        <button class="btn btn--play" id="btn-play">JOUER</button>
+        <button class="btn btn--play" id="btn-play"><span id="btn-play-label">JOUER</span></button>
         <div class="progress" id="progress" hidden>
           <div class="progress__bar"><div class="progress__fill" id="progress-fill"></div></div>
           <p class="progress__label"><span id="progress-status">Preparation...</span><span id="progress-percent"></span></p>
@@ -121,9 +121,30 @@
       </div>
 
       <div class="dock__tools">
-        <button class="icon-btn" id="btn-options" title="Mods optionnels">Options de jeu</button>
-        <button class="icon-btn icon-btn--discord" id="btn-discord" title="Rejoindre le Discord" hidden>Discord</button>
-        <button class="icon-btn" id="btn-settings" title="Parametres">Parametres</button>
+        <button class="tool" id="btn-options" title="Mods optionnels">
+          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2 4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6l-8-4Z"/>
+            <path d="m9 12 2 2 4-4" class="tool__check"/>
+          </svg>
+          <span>Options de jeu</span>
+        </button>
+
+        <button class="tool tool--discord" id="btn-discord" title="Rejoindre le Discord" hidden>
+          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 6c-2 .3-3.6 1-3.6 1C3 9.5 2.6 12 2.7 14.5c1.4 1 2.8 1.6 4.1 2l.9-1.4c-.5-.2-1-.4-1.4-.7 1.7.9 3.6 1.3 5.7 1.3s4-.4 5.7-1.3c-.4.3-.9.5-1.4.7l.9 1.4c1.3-.4 2.7-1 4.1-2 .1-2.5-.3-5-1.7-7.5 0 0-1.6-.7-3.6-1l-.6 1.1c-1.9-.3-3.8-.3-5.7 0L8 6Z"/>
+            <circle cx="9" cy="12" r="1.3" class="tool__dot"/>
+            <circle cx="15" cy="12" r="1.3" class="tool__dot"/>
+          </svg>
+          <span>Discord</span>
+        </button>
+
+        <button class="tool" id="btn-settings" title="Parametres">
+          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.2"/>
+            <path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>
+          </svg>
+          <span>Parametres</span>
+        </button>
       </div>
     </footer>
   </main>
@@ -227,10 +248,19 @@
     </div>
   </div>
 
-  <!-- Bandeau de mise a jour du launcher -->
-  <div class="updatebar" id="updatebar" hidden>
-    <span id="updatebar-text"></span>
-    <button class="btn btn--small" id="btn-update-install" hidden>Redemarrer et installer</button>
+  <!-- Banniere de mise a jour du launcher -->
+  <div class="update" id="updatebar" hidden>
+    <span class="update__badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3v11M12 14l-4-4M12 14l4-4"/>
+        <path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/>
+      </svg>
+    </span>
+    <span class="update__body">
+      <strong class="update__title" id="updatebar-title">Mise a jour</strong>
+      <span class="update__text" id="updatebar-text"></span>
+    </span>
+    <button class="btn btn--gold" id="btn-update-install" hidden>Redemarrer et installer</button>
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>

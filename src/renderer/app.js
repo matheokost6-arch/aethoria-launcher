@@ -149,7 +149,7 @@ async function loginOffline(name) {
 function setLaunching(active) {
   state.launching = active;
   $('btn-play').disabled = active;
-  $('btn-play').textContent = active ? 'LANCEMENT...' : 'JOUER';
+  $('btn-play-label').textContent = active ? 'LANCEMENT...' : 'JOUER';
   $('progress').hidden = !active;
   $('autojoin').hidden = active;
   if (!active) {
@@ -174,7 +174,7 @@ async function play() {
       'success',
     );
     $('progress').hidden = true;
-    $('btn-play').textContent = 'EN JEU';
+    $('btn-play-label').textContent = 'EN JEU';
 
     if (state.settings?.closeOnLaunch) {
       setTimeout(() => api.window.close(), 1200);
@@ -611,19 +611,24 @@ function wireUpdater() {
   const text = $('updatebar-text');
   const install = $('btn-update-install');
 
+  const titre = $('updatebar-title');
+
   api.updater.onStatus((status) => {
     switch (status.state) {
       case 'available':
         bar.hidden = false;
-        text.textContent = `Mise a jour ${status.version} en telechargement...`;
+        titre.textContent = `Mise a jour ${status.version}`;
+        text.textContent = 'Telechargement en cours...';
         break;
       case 'downloading':
         bar.hidden = false;
-        text.textContent = `Telechargement de la mise a jour : ${Math.round(status.percent)} %`;
+        titre.textContent = 'Mise a jour en telechargement';
+        text.textContent = `${Math.round(status.percent)} % recus`;
         break;
       case 'ready':
         bar.hidden = false;
-        text.textContent = `Version ${status.version} prete a etre installee.`;
+        titre.textContent = `Version ${status.version} prete`;
+        text.textContent = 'Redemarre le launcher pour en profiter.';
         install.hidden = false;
         break;
       default:
