@@ -60,6 +60,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     status: (target) => call('server:status', target),
   },
 
+
   game: {
     launch: (accountId) => call('game:launch', accountId),
     isRunning: () => call('game:isRunning'),

@@ -230,6 +230,38 @@ function renderNews(items) {
 }
 
 /**
+ * Extrait l'identifiant d'une video YouTube, quelle que soit la forme du lien
+ * (youtube.com/watch?v=..., youtu.be/..., /embed/...). Renvoie null si le lien
+ * ne pointe pas vers YouTube : on refuse alors d'ouvrir la fenetre plutot que
+ * d'injecter une URL arbitraire dans l'iframe.
+ */
+function youtubeId(url) {
+  const match = String(url || '').match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  );
+  return match ? match[1] : null;
+}
+
+/**
+ * Ouvre la bande-annonce dans le navigateur du joueur.
+ *
+ * YouTube refuse d'etre integre au launcher : une iframe depuis une page
+ * file:// n'a pas d'origine valide (erreur 153), et charger la page YouTube
+ * dans une fenetre Electron fait apparaitre la banniere de consentement aux
+ * cookies par-dessus la video. Le navigateur du joueur, lui, est deja
+ * configure : la lecture y est immediate et en pleine qualite.
+ */
+async function openTrailer() {
+  const url = state.info?.links?.trailer;
+  if (!youtubeId(url)) return;
+  try {
+    await api.folders.external(url);
+  } catch (err) {
+    toast(`Impossible d'ouvrir la bande-annonce : ${err.message}`, 'error');
+  }
+}
+
+/**
  * Annonce au joueur qu'il sera emmene directement sur le serveur.
  * Le texte suit le reglage : s'il decoche l'option, il doit comprendre que le
  * jeu s'ouvrira sur le menu principal au lieu du serveur.
@@ -293,6 +325,7 @@ async function loadModpackInfo() {
     if (info.links) {
       state.info.links = { ...state.info.links, ...info.links };
       $('btn-discord').hidden = !state.info.links.discord;
+      $('btn-trailer').hidden = !youtubeId(state.info.links.trailer);
     }
 
     refreshServerStatus(info.server);
@@ -377,6 +410,8 @@ function wireAccountMenu() {
 function wireDock() {
   $('btn-play').addEventListener('click', play);
   $('btn-settings').addEventListener('click', openSettings);
+
+  $('btn-trailer').addEventListener('click', openTrailer);
 
   $('btn-discord').addEventListener('click', async () => {
     const url = state.info?.links?.discord;
@@ -531,6 +566,7 @@ async function init() {
     state.info = await api.app.info();
     $('launcher-version').textContent = `v${state.info.version}`;
     $('btn-discord').hidden = !state.info.links?.discord;
+    $('btn-trailer').hidden = !youtubeId(state.info.links?.trailer);
     state.settings = await api.settings.get();
     applyAccounts(await api.accounts.list());
   } catch (err) {

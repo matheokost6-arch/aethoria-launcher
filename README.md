@@ -19,8 +19,9 @@ automatique du modpack et du launcher, distribué en `.exe` pour Windows.
 6. [Mettre à jour le launcher chez les joueurs](#mettre-à-jour-le-launcher-chez-les-joueurs)
 7. [Structure du projet](#structure-du-projet)
 8. [Format du manifest](#format-du-manifest)
-9. [Le lien Discord](#le-lien-discord)
-10. [Dépannage](#dépannage)
+9. [La bande-annonce](#la-bande-annonce)
+10. [Le lien Discord](#le-lien-discord)
+11. [Dépannage](#dépannage)
 
 ---
 
@@ -369,6 +370,7 @@ tools/
 | | ⚠️ Le pack actuel exige **Forge ≥ 47.4.10** : les mods `easy_npc` refusent de se charger en dessous. |
 | `forgeFullVersion` | Facultatif. Pour les branches Forge au nom irrégulier (1.7.10, 1.8.9). |
 | `server` | Adresse affichée et utilisée pour la connexion directe. |
+| `links.trailer` | Lien YouTube de la bande-annonce. Vide ou non-YouTube : la vignette est masquée. |
 | `links.discord` | Invitation Discord du bouton de la barre du bas. Laissé vide, le bouton est masqué. Le manifest **prime sur l'exe** : un lien expiré se remplace ici, sans redistribuer le launcher. |
 | `news` | Actualités de l'écran principal. |
 | `deleteExtraIn` | Dossiers nettoyés quand le joueur désactive « conserver mes mods ». |
@@ -378,6 +380,38 @@ tools/
 
 Changer une version dans le manifest suffit : **aucun nouveau `.exe` à
 distribuer** pour une mise à jour de modpack.
+
+---
+
+## La bande-annonce
+
+L'écran principal affiche une vignette **Voir la bande-annonce**. Le clic ouvre
+la vidéo dans le **navigateur du joueur**, pas dans le launcher.
+
+Le lien se règle dans `links.trailer` — au choix dans `manifest.json` (qui
+prime) ou dans `src/shared/config.js`. Tous les formats YouTube sont acceptés
+(`youtube.com/watch?v=…`, `youtu.be/…`, `/embed/…`). Un lien qui ne pointe pas
+vers YouTube est refusé et la vignette reste masquée.
+
+La miniature est embarquée en local (`src/renderer/assets/trailer.jpg`) : elle
+s'affiche instantanément et même sans connexion. **Si tu changes de vidéo,
+remplace aussi cette image**, sinon la vignette montrera l'ancienne :
+
+```bash
+curl -o src/renderer/assets/trailer.jpg   https://i.ytimg.com/vi/IDENTIFIANT_VIDEO/maxresdefault.jpg
+```
+
+> **Pourquoi la vidéo ne se lit pas dans le launcher ?** Trois approches ont été
+> essayées :
+>
+> | Approche | Résultat |
+> |---|---|
+> | `<iframe>` YouTube dans la page | **Erreur 153** — la page est chargée en `file://`, donc sans origine valide |
+> | Fenêtre Electron sur `/embed/` | **Erreur 153** également, et `youtube-nocookie` refuse la requête |
+> | Fenêtre Electron sur la page `watch` | Fonctionne, mais la bannière de consentement Google masque la vidéo |
+>
+> Le navigateur du joueur, lui, a déjà ses préférences YouTube : lecture
+> immédiate, pleine qualité, plein écran. C'est la solution la plus fiable.
 
 ---
 

@@ -40,6 +40,7 @@ module.exports = {
   // corriger un lien d'invitation expire sans redistribuer le launcher.
   links: {
     discord: 'https://discord.gg/Z6du2srwW',
+    trailer: 'https://www.youtube.com/watch?v=WW6Dqu7jxkQ',
     site: '',
   },
 
