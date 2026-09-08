@@ -1,0 +1,23 @@
+{
+  "name": "aethoria-launcher",
+  "version": "1.0.0",
+  "description": "Launcher officiel du serveur Minecraft Aethoria",
+  "main": "src/main/main.js",
+  "author": "Aethoria",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "publish": "electron-builder --win --publish always"
+  },
+  "devDependencies": {
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.0",
+    "electron-updater": "^6.8.9"
+  }
+}

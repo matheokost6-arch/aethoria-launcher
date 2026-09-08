@@ -1,0 +1,51 @@
+appId: fr.aethoria.launcher
+productName: Aethoria
+copyright: Copyright © 2026 Aethoria
+
+directories:
+  output: dist
+  buildResources: build
+
+# Seuls les fichiers reellement necessaires a l'execution sont embarques :
+# inutile d'alourdir l'installateur avec les sources de developpement.
+files:
+  - src/**/*
+  - package.json
+  - '!**/*.map'
+  - '!**/.git/**'
+
+win:
+  target:
+    # Installateur classique, celui a distribuer aux joueurs.
+    - target: nsis
+      arch: [x64]
+    # Version portable : un seul .exe, sans installation, pratique pour depanner.
+    - target: portable
+      arch: [x64]
+  icon: build/icon.ico
+  artifactName: Aethoria-Setup-${version}.${ext}
+
+nsis:
+  oneClick: false                    # laisse le joueur choisir le dossier
+  perMachine: false                  # installation utilisateur : pas de demande admin
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Aethoria
+  deleteAppDataOnUninstall: false     # on ne supprime jamais les sauvegardes du joueur
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+
+portable:
+  artifactName: Aethoria-Portable-${version}.${ext}
+
+# Mises a jour automatiques via les Releases GitHub.
+# Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).
+publish:
+  provider: github
+  owner: AETHORIA_OWNER
+  repo: aethoria-launcher
+  releaseType: release
+
+compression: maximum

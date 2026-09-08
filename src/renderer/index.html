@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: https://crafatar.com https://textures.minecraft.net; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Aethoria</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Decor : captures du serveur qui se succedent en fondu -->
+  <div class="backdrop" id="backdrop" aria-hidden="true">
+    <div class="backdrop__layer is-visible" style="background-image: url('assets/bg-village.jpg')"></div>
+    <div class="backdrop__layer" style="background-image: url('assets/bg-keep.jpg')"></div>
+    <div class="backdrop__layer" style="background-image: url('assets/bg-sea.jpg')"></div>
+    <div class="backdrop__veil"></div>
+  </div>
+
+  <!-- Barre de titre personnalisee (la fenetre est sans cadre) -->
+  <header class="titlebar">
+    <div class="titlebar__brand">
+      <img class="titlebar__mark" src="assets/icon.png" alt="" width="22" height="22">
+      <span class="titlebar__name">Aethoria</span>
+      <span class="titlebar__version" id="launcher-version"></span>
+    </div>
+    <div class="titlebar__actions">
+      <button class="titlebar__btn" id="btn-minimize" title="Reduire" aria-label="Reduire">&#8211;</button>
+      <button class="titlebar__btn titlebar__btn--close" id="btn-close" title="Fermer" aria-label="Fermer">&#10005;</button>
+    </div>
+  </header>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Ecran de connexion                                                  -->
+  <!-- ------------------------------------------------------------------ -->
+  <main class="view view--login" id="view-login">
+    <div class="login">
+      <img class="login__logo" src="assets/logo.png" alt="Aethoria" width="300">
+      <p class="login__subtitle">Connecte-toi pour rejoindre l’aventure.</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tabs__tab is-active" id="tab-microsoft" role="tab" aria-selected="true">Compte Microsoft</button>
+        <button class="tabs__tab" id="tab-offline" role="tab" aria-selected="false">Compte hors-ligne</button>
+      </div>
+
+      <section class="tabpanel is-active" id="panel-microsoft" role="tabpanel">
+        <p class="tabpanel__hint">
+          Connexion officielle : ton pseudo, ton skin et tes capes Minecraft sont conserves.
+        </p>
+        <button class="btn btn--primary btn--block" id="btn-login-microsoft">
+          Se connecter avec Microsoft
+        </button>
+      </section>
+
+      <section class="tabpanel" id="panel-offline" role="tabpanel">
+        <p class="tabpanel__hint">
+          Sans compte Minecraft. Choisis un pseudo : il servira d’identite sur le serveur.
+        </p>
+        <form id="form-offline" autocomplete="off">
+          <input class="input" type="text" id="input-offline-name" placeholder="Pseudo (3 a 16 caracteres)"
+                 maxlength="16" spellcheck="false" required>
+          <button class="btn btn--primary btn--block" type="submit" id="btn-login-offline">
+            Jouer hors-ligne
+          </button>
+        </form>
+      </section>
+
+      <p class="login__error" id="login-error" role="alert" hidden></p>
+
+      <button class="login__back" id="login-back" hidden>&#8592; Retour</button>
+    </div>
+  </main>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Ecran principal                                                     -->
+  <!-- ------------------------------------------------------------------ -->
+  <main class="view view--main" id="view-main" hidden>
+
+    <section class="hero">
+      <div class="hero__content">
+        <h1 class="hero__title"><img src="assets/logo.png" alt="Aethoria" width="420"></h1>
+        <p class="hero__eyebrow" id="pack-version">Modpack Aethoria</p>
+        <p class="hero__server" id="server-address"></p>
+      </div>
+
+      <div class="news" id="news">
+        <h2 class="news__title">Actualites</h2>
+        <ul class="news__list" id="news-list">
+          <li class="news__empty">Aucune actualite pour le moment.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="dock">
+      <div class="dock__account" id="account-switcher">
+        <button class="account" id="btn-account" aria-haspopup="true" aria-expanded="false">
+          <img class="account__avatar" id="account-avatar" alt="" width="36" height="36">
+          <span class="account__meta">
+            <span class="account__name" id="account-name">-</span>
+            <span class="account__type" id="account-type">-</span>
+          </span>
+          <span class="account__chevron">&#9662;</span>
+        </button>
+        <div class="menu" id="account-menu" hidden>
+          <div class="menu__list" id="account-list"></div>
+          <div class="menu__sep"></div>
+          <button class="menu__item" id="btn-add-microsoft">Ajouter un compte Microsoft</button>
+          <button class="menu__item" id="btn-add-offline">Ajouter un compte hors-ligne</button>
+          <div class="menu__sep"></div>
+          <button class="menu__item menu__item--danger" id="btn-remove-account">Retirer ce compte</button>
+        </div>
+      </div>
+
+      <div class="dock__center">
+        <button class="btn btn--play" id="btn-play">JOUER</button>
+        <div class="progress" id="progress" hidden>
+          <div class="progress__bar"><div class="progress__fill" id="progress-fill"></div></div>
+          <p class="progress__label"><span id="progress-status">Preparation...</span><span id="progress-percent"></span></p>
+        </div>
+        <p class="dock__hint" id="game-hint" hidden></p>
+      </div>
+
+      <div class="dock__tools">
+        <button class="icon-btn" id="btn-mods" title="Ouvrir le dossier des mods">Mods</button>
+        <button class="icon-btn" id="btn-settings" title="Parametres">Parametres</button>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Parametres                                                          -->
+  <!-- ------------------------------------------------------------------ -->
+  <div class="modal" id="modal-settings" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <header class="modal__head">
+        <h2 id="settings-title">Parametres</h2>
+        <button class="modal__close" data-close-modal aria-label="Fermer">&#10005;</button>
+      </header>
+
+      <div class="modal__body">
+        <div class="field">
+          <label class="field__label" for="input-max-ram">Memoire allouee</label>
+          <div class="field__row">
+            <input type="range" id="input-max-ram" min="1024" max="16384" step="512" class="range">
+            <output class="field__value" id="output-max-ram">4096 Mo</output>
+          </div>
+          <p class="field__help">2 a 6 Go conviennent a la plupart des modpacks. Ne depasse pas la moitie de la memoire de ta machine.</p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="input-game-root">Dossier du jeu</label>
+          <div class="field__row">
+            <input type="text" id="input-game-root" class="input input--flat" readonly>
+            <button class="btn btn--ghost" id="btn-pick-folder">Changer</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="input-java-path">Java</label>
+          <div class="field__row">
+            <input type="text" id="input-java-path" class="input input--flat" readonly
+                   placeholder="Automatique (telecharge par le launcher)">
+            <button class="btn btn--ghost" id="btn-pick-java">Choisir</button>
+            <button class="btn btn--ghost" id="btn-reset-java">Auto</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="input-jvm-args">Arguments JVM</label>
+          <input type="text" id="input-jvm-args" class="input input--flat" spellcheck="false">
+          <p class="field__help">A ne modifier que si tu sais ce que tu fais.</p>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="check-join-server">
+          <span>Rejoindre directement le serveur au lancement</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="check-close-launcher">
+          <span>Fermer le launcher quand le jeu demarre</span>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="check-keep-mods">
+          <span>Conserver les mods que j’ajoute moi-meme</span>
+        </label>
+      </div>
+
+      <footer class="modal__foot">
+        <button class="btn btn--ghost" id="btn-open-game-folder">Dossier du jeu</button>
+        <button class="btn btn--ghost" id="btn-open-logs">Journaux</button>
+        <button class="btn btn--danger" id="btn-repair">Reparer l’installation</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Bandeau de mise a jour du launcher -->
+  <div class="updatebar" id="updatebar" hidden>
+    <span id="updatebar-text"></span>
+    <button class="btn btn--small" id="btn-update-install" hidden>Redemarrer et installer</button>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
