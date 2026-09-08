@@ -808,3 +808,18 @@ button { font-family: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .status__dot.is-checking { animation: none; }
 }
+
+/* Bouton Discord : reprend la couleur de la marque, sans crier plus fort
+   que le bouton JOUER. */
+.icon-btn--discord {
+  border-color: rgba(88, 101, 242, 0.4);
+  color: #a9b2f5;
+}
+
+.icon-btn--discord:hover {
+  background: rgba(88, 101, 242, 0.14);
+  border-color: rgba(88, 101, 242, 0.7);
+  color: #ffffff;
+}
+
+.icon-btn[hidden] { display: none; }

@@ -395,6 +395,16 @@ function wireDock() {
     toast(`Dossier des mods ouvert :\n${dir}`, 'info', 5000);
   });
   $('btn-settings').addEventListener('click', openSettings);
+
+  $('btn-discord').addEventListener('click', async () => {
+    const url = state.info?.links?.discord;
+    if (!url) return;
+    try {
+      await api.folders.external(url);
+    } catch (err) {
+      toast(`Impossible d'ouvrir le Discord : ${err.message}`, 'error');
+    }
+  });
 }
 
 function wireSettings() {
@@ -536,6 +546,7 @@ async function init() {
   try {
     state.info = await api.app.info();
     $('launcher-version').textContent = `v${state.info.version}`;
+    $('btn-discord').hidden = !state.info.links?.discord;
     state.settings = await api.settings.get();
     applyAccounts(await api.accounts.list());
   } catch (err) {

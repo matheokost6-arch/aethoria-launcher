@@ -34,6 +34,13 @@ module.exports = {
     port: 25565,
   },
 
+  // Liens communautaires. Un lien laisse vide masque simplement son bouton
+  // dans le launcher : rien a modifier ailleurs.
+  links: {
+    discord: '', // <-- colle ici l'invitation permanente, ex. https://discord.gg/xxxxxxx
+    site: '',
+  },
+
   // Client ID Azure pour l'authentification Microsoft.
   // Voir README.md, section "Authentification Microsoft" : il faut enregistrer
   // une application Azure AD puis demander l'acces a l'API Minecraft.

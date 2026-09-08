@@ -29,8 +29,13 @@ nsis:
   oneClick: false                    # laisse le joueur choisir le dossier
   perMachine: false                  # installation utilisateur : pas de demande admin
   allowToChangeInstallationDirectory: true
-  createDesktopShortcut: true
+  # "always" et non "true" : avec true, le raccourci n'est pas recree lors d'une
+  # mise a jour si le joueur l'avait supprime, et certaines installations
+  # silencieuses le sautent. "always" garantit sa presence a chaque fois.
+  createDesktopShortcut: always
   createStartMenuShortcut: true
+  menuCategory: false
+  runAfterFinish: true
   shortcutName: Aethoria
   deleteAppDataOnUninstall: false     # on ne supprime jamais les sauvegardes du joueur
   installerIcon: build/icon.ico

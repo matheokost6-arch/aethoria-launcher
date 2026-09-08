@@ -120,6 +120,7 @@ function registerIpc() {
     name: config.appName,
     version: pkg.version,
     server: config.server,
+    links: config.links,
     gameRoot: paths.root,
     defaultRoot: paths.defaultRoot(),
     platform: process.platform,
