@@ -229,6 +229,11 @@ L'outil interroge Modrinth, vérifie qu'une version existe pour ton couple
 Minecraft/Forge, **refuse tout mod exigeant une installation serveur**
 (`server_side: required`) et ignore ceux déjà présents dans le pack.
 
+> **Luminosité maximale** (touche G) fait partie de la liste. C'est le seul mod
+> proposé qui donne un avantage réel : voir dans le noir aide en exploration
+> comme en combat nocturne. Pour le retirer, supprime sa ligne dans
+> `tools/build-optional-mods.js` et relance le script.
+
 Le manifest ne rediffuse aucun fichier : il pointe vers le CDN officiel de
 Modrinth, avec l'empreinte SHA1 fournie par l'API. Les joueurs voient la
 nouvelle liste dès que tu pousses le manifest — **sans nouvelle version du
@@ -484,6 +489,7 @@ Quelques automatismes évitent les problèmes les plus courants sur un modpack :
 | **Espace disque** | Avant de lancer plus d'un gigaoctet de téléchargement, le launcher vérifie qu'il reste ~3 Go. Sans ce contrôle, l'échec survient après plusieurs minutes sur un message incompréhensible. |
 | **Débit et temps restant** | La progression affiche le volume, la vitesse et le temps restant, mesurés sur une fenêtre glissante de 4 secondes. |
 | **Adresse copiable** | Un clic sur l'adresse du serveur la copie dans le presse-papiers. |
+| **Habillage** | Thème médiéval : parchemin pour tout ce qui se lit, pierre et bois pour ce qui encadre, or pour les ornements. Les textures sont procédurales (turbulence SVG en URI de données) : aucune image à charger. Les titres sont en Cinzel, le texte en Spectral, toutes deux embarquées sous licence SIL OFL (94 Ko). |
 
 Le plafond de 8 Go n'est pas une économie : au-delà, les pauses du ramasse-miettes
 de Java s'allongent et le jeu devient moins fluide, pas plus.

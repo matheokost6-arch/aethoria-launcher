@@ -1,0 +1,7 @@
+Cinzel et Spectral sont distribuees sous SIL Open Font License 1.1,
+qui autorise leur redistribution au sein d'une application.
+
+Cinzel   - Natanael Gama          https://fonts.google.com/specimen/Cinzel
+Spectral - Production Type        https://fonts.google.com/specimen/Spectral
+
+Texte integral de la licence : https://scripts.sil.org/OFL

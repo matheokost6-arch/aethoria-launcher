@@ -24,9 +24,13 @@ const path = require('path');
 const API = 'https://api.modrinth.com/v2';
 const UA = 'aethoria-launcher (github.com/matheokost6-arch/aethoria-launcher)';
 
-// Liste par defaut : uniquement du confort visuel ou ergonomique, rien qui
-// touche au gameplay — un joueur equipe et un joueur sans doivent vivre la
-// meme partie.
+// Liste par defaut : du confort visuel et ergonomique. Aucun de ces mods ne
+// modifie les regles du jeu ni ne demande quoi que ce soit au serveur.
+//
+// "Luminosite maximale" est le seul a donner un avantage reel : voir dans le
+// noir aide en exploration comme en combat nocturne. Il est propose ici a la
+// demande de l'administrateur du serveur ; le retirer se fait en supprimant
+// sa ligne puis en relancant ce script.
 const PAR_DEFAUT = [
   { slug: 'xaeros-minimap', nom: 'Minimap de Xaero', description: 'Une minimap dans le coin de l’ecran, avec les points de repere que tu poses.' },
   { slug: 'xaeros-world-map', nom: 'Carte du monde', description: 'La carte complete des regions que tu as explorees, en plein ecran.' },
@@ -37,6 +41,7 @@ const PAR_DEFAUT = [
   { slug: 'better-advancements', nom: 'Progres ameliores', description: 'Un ecran de progres plus clair et plus agreable a parcourir.' },
   { slug: 'betterf3', nom: 'Ecran technique', description: 'Remplace l’ecran F3 par un affichage lisible et configurable.' },
   { slug: 'toast-control', nom: 'Controle des notifications', description: 'Choisis quelles notifications apparaissent en haut de l’ecran.' },
+  { slug: 'full-brightness-toggle', nom: 'Luminosite maximale', description: 'La touche G eclaire tout : grottes, donjons et nuits deviennent parfaitement visibles.' },
 ];
 
 function parseArgs(argv) {

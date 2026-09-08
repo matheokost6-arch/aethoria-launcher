@@ -355,9 +355,9 @@ function updateAutojoinNotice(server) {
   notice.hidden = state.launching;
   if (active) {
     const host = server?.host || state.info?.server?.host || 'le serveur';
-    notice.innerHTML = `Tu rejoindras directement <strong>${escapeHtml(host)}</strong> au lancement.`;
+    notice.innerHTML = `Connexion directe a <strong>${escapeHtml(host)}</strong>`;
   } else {
-    notice.textContent = 'Le jeu s’ouvrira sur le menu principal, sans rejoindre le serveur.';
+    notice.textContent = 'Ouverture sur le menu principal';
   }
 }
 
