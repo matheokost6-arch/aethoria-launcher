@@ -59,7 +59,10 @@ function main() {
 
   if (!process.argv.includes('--skip-build')) {
     console.log('Construction du launcher...');
-    execFileSync('npx', ['electron-builder', '--win'], { stdio: 'inherit', shell: true });
+    // On appelle le binaire directement plutot que via un shell : avec
+    // shell:true, Node avertit que les arguments ne sont pas echappes.
+    const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+    execFileSync(npx, ['electron-builder', '--win'], { stdio: 'inherit' });
   }
 
   // Les quatre fichiers attendus par les joueurs et par electron-updater.
