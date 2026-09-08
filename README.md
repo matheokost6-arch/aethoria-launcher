@@ -169,7 +169,7 @@ rien à faire dans un dépôt. Les fichiers passent par les *Releases*.
 node tools/publish-pack.js --tag pack-1.1.0
 
 # 2. Générer le manifest (SHA1 + taille + URL de chaque fichier)
-node tools/build-manifest.js --tag pack-1.1.0 --mc 1.20.1 --forge 47.3.0
+node tools/build-manifest.js --tag pack-1.1.0 --mc 1.20.1 --forge 47.4.10
 
 # 3. Publier le manifest : les joueurs reçoivent la mise à jour au prochain lancement
 git add manifest.json && git commit -m "Modpack 1.1.0" && git push
@@ -294,7 +294,7 @@ tools/
 {
   "modpackVersion": "1.1.0",
   "minecraftVersion": "1.20.1",
-  "forgeVersion": "47.3.0",
+  "forgeVersion": "47.4.10",
 
   "server": { "host": "play.aethoria.fr", "port": 25565 },
 
@@ -319,6 +319,7 @@ tools/
 | Champ | Rôle |
 |---|---|
 | `minecraftVersion` / `forgeVersion` | Versions installées. Les changer met à jour tous les joueurs. |
+| | ⚠️ Le pack actuel exige **Forge ≥ 47.4.10** : les mods `easy_npc` refusent de se charger en dessous. |
 | `forgeFullVersion` | Facultatif. Pour les branches Forge au nom irrégulier (1.7.10, 1.8.9). |
 | `server` | Adresse affichée et utilisée pour la connexion directe. |
 | `news` | Actualités de l'écran principal. |

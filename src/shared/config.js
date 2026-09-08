@@ -42,7 +42,7 @@ module.exports = {
   // Repli utilise seulement si le manifest distant est injoignable.
   fallback: {
     minecraftVersion: '1.20.1',
-    forgeVersion: '47.3.0',
+    forgeVersion: '47.4.10',
     mods: [],
   },
 

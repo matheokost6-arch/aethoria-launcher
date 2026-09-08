@@ -25,7 +25,8 @@ let rootOverride = null;
 
 const paths = {
   setRoot(dir) {
-    rootOverride = dir || null;
+    // path.resolve normalise les separateurs : un chemin melangeant / et     // empeche Forge de retrouver le dossier mods a partir de --gameDir.
+    rootOverride = dir ? path.resolve(dir) : null;
   },
   get root() {
     return rootOverride || defaultRoot();
