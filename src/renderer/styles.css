@@ -763,3 +763,48 @@ button { font-family: inherit; }
 
 .login__back:hover { color: var(--text); }
 .login__back[hidden] { display: none; }
+
+/* ------------------------------------------------------------------ *
+ *  Etat du serveur
+ * ------------------------------------------------------------------ */
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.status__dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status__dot.is-online {
+  background: var(--success);
+  box-shadow: 0 0 0 3px rgba(98, 196, 141, 0.2);
+}
+
+.status__dot.is-offline {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px rgba(224, 92, 107, 0.18);
+}
+
+/* Pouls discret pendant la verification */
+.status__dot.is-checking { animation: status-pulse 1.4s ease-in-out infinite; }
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status__dot.is-checking { animation: none; }
+}

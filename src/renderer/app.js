@@ -14,6 +14,7 @@ const state = {
   settings: null,
   launching: false,
   modpackLoaded: false,
+  statusTimer: null,
 };
 
 /* ------------------------------------------------------------------ *
@@ -243,6 +244,39 @@ function renderNews(items) {
   }
 }
 
+/**
+ * Interroge le serveur et met a jour la pastille d'etat.
+ * Le serveur du manifest prime : il peut changer sans nouveau launcher.
+ */
+async function refreshServerStatus(target) {
+  const dot = $('status-dot');
+  const text = $('status-text');
+  dot.className = 'status__dot is-checking';
+  text.textContent = 'Verification du serveur...';
+
+  try {
+    const status = await api.server.status(target);
+    if (status.online) {
+      dot.className = 'status__dot is-online';
+      const { online, max } = status.players;
+      const joueurs = online === 0
+        ? 'aucun joueur connecte'
+        : `${online} joueur${online > 1 ? 's' : ''} en ligne`;
+      text.textContent = `En ligne — ${joueurs}${max ? ` (max ${max})` : ''}`;
+      text.title = status.motd || '';
+    } else {
+      dot.className = 'status__dot is-offline';
+      text.textContent = 'Serveur hors ligne';
+      text.title = '';
+    }
+  } catch {
+    // L'etat du serveur est purement informatif : en cas d'echec on reste muet
+    // plutot que d'alarmer le joueur, qui peut tres bien vouloir jouer quand meme.
+    dot.className = 'status__dot';
+    text.textContent = '';
+  }
+}
+
 async function loadModpackInfo() {
   try {
     const info = await api.modpack.info();
@@ -251,6 +285,11 @@ async function loadModpackInfo() {
       : `Minecraft ${info.minecraftVersion} — Forge ${info.forgeVersion}`;
     $('server-address').innerHTML = `Serveur : <strong>${escapeHtml(info.server.host)}${info.server.port === 25565 ? '' : `:${info.server.port}`}</strong>`;
     renderNews(info.news || []);
+
+    refreshServerStatus(info.server);
+    // Rafraichissement periodique : le joueur laisse souvent le launcher ouvert.
+    clearInterval(state.statusTimer);
+    state.statusTimer = setInterval(() => refreshServerStatus(info.server), 60000);
     if (info.offline) {
       toast('Manifest du modpack injoignable : le launcher utilise sa derniere copie locale.', 'error', 8000);
     }

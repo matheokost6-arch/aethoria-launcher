@@ -56,6 +56,10 @@ contextBridge.exposeInMainWorld('aethoria', {
     extraMods: () => call('modpack:extraMods'),
   },
 
+  server: {
+    status: (target) => call('server:status', target),
+  },
+
   game: {
     launch: (accountId) => call('game:launch', accountId),
     isRunning: () => call('game:isRunning'),

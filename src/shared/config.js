@@ -30,7 +30,7 @@ module.exports = {
   // Serveur de jeu : affiche dans l'UI et utilise pour le bouton "rejoindre
   // directement le serveur" au lancement.
   server: {
-    host: 'play.aethoria.fr', // <-- a remplacer par l'IP/domaine de ton serveur
+    host: 'aethoria.omgcraft.fr',
     port: 25565,
   },
 

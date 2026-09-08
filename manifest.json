@@ -3,7 +3,7 @@
   "minecraftVersion": "1.20.1",
   "forgeVersion": "47.4.10",
   "server": {
-    "host": "play.aethoria.fr",
+    "host": "aethoria.omgcraft.fr",
     "port": 25565
   },
   "news": [

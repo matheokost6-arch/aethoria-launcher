@@ -94,7 +94,7 @@ Toujours dans `src/shared/config.js` :
 
 ```js
 server: {
-  host: 'play.aethoria.fr',   // ← l'IP ou le domaine de ton serveur
+  host: 'aethoria.omgcraft.fr',   // ← l'IP ou le domaine de ton serveur
   port: 25565,
 },
 ```
@@ -296,7 +296,7 @@ tools/
   "minecraftVersion": "1.20.1",
   "forgeVersion": "47.4.10",
 
-  "server": { "host": "play.aethoria.fr", "port": 25565 },
+  "server": { "host": "aethoria.omgcraft.fr", "port": 25565 },
 
   "news": [
     { "title": "Titre", "body": "Texte affiché.", "date": "8 septembre 2026" }

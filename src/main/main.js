@@ -9,6 +9,7 @@ const store = require('./store');
 const auth = require('./auth');
 const launcher = require('./game/launcher');
 const modpack = require('./game/modpack');
+const serverStatus = require('./game/serverStatus');
 const pkg = require('../../package.json');
 
 const isDev = process.argv.includes('--dev');
@@ -194,6 +195,12 @@ function registerIpc() {
     };
   });
   handle('modpack:extraMods', () => modpack.listExtraMods());
+
+  // --- Etat du serveur ---
+  handle('server:status', async (override) => {
+    const target = { ...config.server, ...(override || {}) };
+    return serverStatus.ping(target.host, target.port);
+  });
 
   // --- Jeu ---
   handle('game:launch', async (accountId) => launcher.launch({
