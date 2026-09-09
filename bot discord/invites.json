@@ -1,0 +1,32 @@
+{
+    "actif": true,
+    "invites": {},
+    "en_attente": {},
+    "snapshots": {},
+    "royaumes": {},
+    "jeu_histoire": {
+        "mots": [],
+        "dernier_joueur_id": null
+    },
+    "tournoi": {
+        "nom": null,
+        "statut": "ferme",
+        "participants": []
+    },
+    "tickets_config": {
+        "channel_logs_id": null,
+        "tickets_actifs": {}
+    },
+    "tableau_bord": {
+        "channel_id": null,
+        "message_id": null
+    },
+    "statistiques": {
+        "aujourdhui_plus": 0,
+        "aujourdhui_moins": 0,
+        "semaine_plus": 0,
+        "semaine_moins": 0,
+        "record_membres": 237,
+        "historique_7j": {}
+    }
+}

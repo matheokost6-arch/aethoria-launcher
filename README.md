@@ -19,7 +19,8 @@ automatique du modpack et du launcher, distribué en `.exe` pour Windows.
 6. [Mettre à jour le launcher chez les joueurs](#mettre-à-jour-le-launcher-chez-les-joueurs)
 7. [Structure du projet](#structure-du-projet)
 8. [Format du manifest](#format-du-manifest)
-9. [Confort du joueur](#confort-du-joueur)
+9. [Actualités depuis Discord](#actualités-depuis-discord)
+10. [Confort du joueur](#confort-du-joueur)
 10. [La bande-annonce](#la-bande-annonce)
 11. [Le lien Discord](#le-lien-discord)
 12. [Dépannage](#dépannage)
@@ -536,6 +537,62 @@ curl -o src/renderer/assets/trailer.jpg   https://i.ytimg.com/vi/IDENTIFIANT_VID
 >
 > Le navigateur du joueur, lui, a déjà ses préférences YouTube : lecture
 > immédiate, pleine qualité, plein écran. C'est la solution la plus fiable.
+
+---
+
+## Actualités depuis Discord
+
+Le dossier `bot/` contient de quoi publier tes annonces dans le launcher
+**depuis ton bot Discord existant**. Tu écris une fois, sur Discord, et
+l'annonce apparaît dans le panneau « Actualités » du launcher.
+
+### Mise en place
+
+1. **Copie `bot/actualites.js`** dans ton bot. Aucune dépendance : tout passe
+   par `fetch`, natif depuis Node 18.
+
+2. **Crée un jeton GitHub** sur
+   <https://github.com/settings/personal-access-tokens> :
+   - *Fine-grained token*, limité au **seul dépôt public** `aethoria`
+   - permission **Contents : Read and write**
+   - rien d'autre
+
+3. **Ajoute la variable** `GITHUB_TOKEN` à ton bot, avec ce jeton.
+   Il reste chez ton bot et n'est jamais livré dans le launcher.
+
+4. **Branche l'une des deux façons de publier** (voir `bot/exemple-discord.js`) :
+
+   | Façon | Comment ça marche |
+   |---|---|
+   | Commande `/annonce` | Titre + texte, réservée à ceux qui gèrent le serveur |
+   | Surveillance d'un salon | Tout message posté dans `#annonces` devient une actualité |
+
+   La seconde est la plus pratique : tu écris ton annonce comme d'habitude, le
+   bot réagit avec 📜 pour confirmer.
+
+### Ce que fait le module
+
+```js
+const actualites = require('./actualites');
+
+await actualites.publier('Siege de Valmyre', 'Rendez-vous samedi 21h.');
+await actualites.publierDepuisMessage(message);  // depuis un message Discord
+await actualites.retirerDerniere();              // en cas de fausse manoeuvre
+await actualites.lister();                       // ce que voient les joueurs
+```
+
+Le texte est nettoyé avant affichage : mentions, emojis personnalisés et liens
+Markdown deviendraient illisibles dans le launcher (`<@123456789>`,
+`<:epee:987654>`). Les six annonces les plus récentes sont conservées, les
+plus anciennes disparaissent d'elles-mêmes.
+
+Le module écrit dans `manifest.json` du dépôt public, que le launcher relit à
+chaque démarrage : **les joueurs voient l'annonce à leur prochain lancement**,
+sans mise à jour du launcher.
+
+> L'écriture utilise l'empreinte de la version courante du fichier. Si deux
+> annonces partent en même temps, la seconde est refusée plutôt que d'écraser
+> la première — le bot répond alors de relancer la commande.
 
 ---
 
