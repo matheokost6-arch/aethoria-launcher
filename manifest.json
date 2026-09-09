@@ -457,6 +457,7 @@
   "optionalMods": [
     {
       "id": "xaeros-minimap",
+      "requires": [],
       "name": "Minimap de Xaero",
       "description": "Une minimap dans le coin de l’ecran, avec les points de repere que tu poses.",
       "version": "forge-1.20.1-26.4.2",
@@ -468,6 +469,7 @@
     },
     {
       "id": "xaeros-world-map",
+      "requires": [],
       "name": "Carte du monde",
       "description": "La carte complete des regions que tu as explorees, en plein ecran.",
       "version": "forge-1.20.1-1.45.0",
@@ -479,6 +481,7 @@
     },
     {
       "id": "jade",
+      "requires": [],
       "name": "Jade",
       "description": "Affiche le nom du bloc ou de la creature que tu regardes, et son etat.",
       "version": "11.13.3+forge",
@@ -490,6 +493,17 @@
     },
     {
       "id": "just-zoom",
+      "requires": [
+        {
+          "id": "konkrete",
+          "name": "Konkrete",
+          "version": "1.8.0-1.20-1.20.1-forge",
+          "path": "mods/konkrete_forge_1.8.0_MC_1.20-1.20.1.jar",
+          "url": "https://cdn.modrinth.com/data/J81TRJWm/versions/skYziQQL/konkrete_forge_1.8.0_MC_1.20-1.20.1.jar",
+          "sha1": "2019d821bed9071daabed43979433a5473ceee49",
+          "size": 625185
+        }
+      ],
       "name": "Zoom",
       "description": "Une touche pour zoomer au loin, comme avec une longue-vue.",
       "version": "2.1.1-1.20.1-forge",
@@ -501,6 +515,7 @@
     },
     {
       "id": "sound-physics-remastered",
+      "requires": [],
       "name": "Acoustique realiste",
       "description": "Echo dans les grottes, sons etouffes derriere les murs. Tres immersif.",
       "version": "forge-1.20.1-1.5.1",
@@ -512,6 +527,26 @@
     },
     {
       "id": "legendary-tooltips",
+      "requires": [
+        {
+          "id": "iceberg",
+          "name": "Iceberg",
+          "version": "1.1.25",
+          "path": "mods/Iceberg-1.20.1-forge-1.1.25.jar",
+          "url": "https://cdn.modrinth.com/data/5faXoLqX/versions/BQ8rJPXV/Iceberg-1.20.1-forge-1.1.25.jar",
+          "sha1": "d551ff55814cfb01403b812459ee5a02b020d87b",
+          "size": 134551
+        },
+        {
+          "id": "prism-lib",
+          "name": "Prism",
+          "version": "1.0.5",
+          "path": "mods/Prism-1.20.1-forge-1.0.5.jar",
+          "url": "https://cdn.modrinth.com/data/1OE8wbN0/versions/FFyss87M/Prism-1.20.1-forge-1.0.5.jar",
+          "sha1": "bcb4bbb1052f49ed4fe6e7d5d7f91f68d45c3fe3",
+          "size": 52205
+        }
+      ],
       "name": "Infobulles ameliorees",
       "description": "Des infobulles d’objets plus lisibles et plus soignees.",
       "version": "1.4.5",
@@ -523,6 +558,7 @@
     },
     {
       "id": "better-advancements",
+      "requires": [],
       "name": "Progres ameliores",
       "description": "Un ecran de progres plus clair et plus agreable a parcourir.",
       "version": "0.6.0.73",
@@ -534,6 +570,7 @@
     },
     {
       "id": "betterf3",
+      "requires": [],
       "name": "Ecran technique",
       "description": "Remplace l’ecran F3 par un affichage lisible et configurable.",
       "version": "7.0.2",
@@ -545,6 +582,17 @@
     },
     {
       "id": "toast-control",
+      "requires": [
+        {
+          "id": "placebo",
+          "name": "Placebo",
+          "version": "8.6.3",
+          "path": "mods/Placebo-1.20.1-8.6.3.jar",
+          "url": "https://cdn.modrinth.com/data/tCkE8p2N/versions/6SkuAGoz/Placebo-1.20.1-8.6.3.jar",
+          "sha1": "e85f53de2e582a79ce25ff1df1e7b5b5fc08440f",
+          "size": 282474
+        }
+      ],
       "name": "Controle des notifications",
       "description": "Choisis quelles notifications apparaissent en haut de l’ecran.",
       "version": "8.0.3",
@@ -556,6 +604,17 @@
     },
     {
       "id": "full-brightness-toggle",
+      "requires": [
+        {
+          "id": "collective",
+          "name": "Collective",
+          "version": "1.20.1-8.39-fabric+forge+neo",
+          "path": "mods/collective-1.20.1-8.39.jar",
+          "url": "https://cdn.modrinth.com/data/e0M1UDsY/versions/ZrHXYjUf/collective-1.20.1-8.39.jar",
+          "sha1": "4622cf120fd3eb82972dc6634d6a5910d04e3c91",
+          "size": 745947
+        }
+      ],
       "name": "Luminosite maximale",
       "description": "La touche G eclaire tout : grottes, donjons et nuits deviennent parfaitement visibles.",
       "version": "1.20.1-4.4-fabric+forge+neo",

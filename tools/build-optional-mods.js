@@ -63,8 +63,50 @@ async function api(chemin) {
   return res.json();
 }
 
+/**
+ * Resout les bibliotheques dont un mod a besoin pour demarrer.
+ *
+ * Sans elles, Forge refuse de charger le jeu : "Mod justzoom requires konkrete
+ * 1.8.0 or above". Le joueur voit alors un plantage au demarrage, sans rapport
+ * apparent avec la case qu'il vient de cocher.
+ *
+ * Les bibliotheques deja imposees par le pack sont ignorees : les reinstaller
+ * en double provoquerait un conflit de versions.
+ */
+async function resoudreDependances(version, mcVersion, loader, dejaInstalles) {
+  const requises = (version.dependencies || []).filter((d) => d.dependency_type === 'required');
+  const resultats = [];
+
+  for (const dep of requises) {
+    if (!dep.project_id) continue; // dependance sur une version precise, deja resolue
+
+    const projet = await api(`/project/${dep.project_id}`);
+    const versions = await api(
+      `/project/${dep.project_id}/version?loaders=["${loader}"]&game_versions=["${mcVersion}"]`,
+    );
+    if (!versions.length) {
+      throw new Error(`aucune version ${loader} ${mcVersion} pour la dependance "${projet.title}"`);
+    }
+
+    const fichier = versions[0].files.find((f) => f.primary) || versions[0].files[0];
+    if (dejaInstalles.has(fichier.filename.toLowerCase())) continue;
+
+    resultats.push({
+      id: projet.slug,
+      name: projet.title,
+      version: versions[0].version_number,
+      path: `mods/${fichier.filename}`,
+      url: fichier.url,
+      sha1: fichier.hashes.sha1,
+      size: fichier.size,
+    });
+  }
+
+  return resultats;
+}
+
 /** Recupere le fichier a telecharger pour un mod, dans la bonne version. */
-async function resoudre(entree, mcVersion, loader) {
+async function resoudre(entree, mcVersion, loader, dejaInstalles) {
   const projet = await api(`/project/${entree.slug}`);
 
   // Un mod dont le serveur est "required" n'a rien a faire ici : il faudrait
@@ -83,9 +125,11 @@ async function resoudre(entree, mcVersion, loader) {
   // L'API renvoie les versions de la plus recente a la plus ancienne.
   const version = versions[0];
   const fichier = version.files.find((f) => f.primary) || version.files[0];
+  const requires = await resoudreDependances(version, mcVersion, loader, dejaInstalles);
 
   return {
     id: entree.slug,
+    requires,
     name: entree.nom || projet.title,
     description: entree.description || projet.description,
     version: version.version_number,
@@ -120,13 +164,16 @@ async function main() {
   const resultats = [];
   for (const entree of cibles) {
     try {
-      const mod = await resoudre(entree, mcVersion, loader);
+      const mod = await resoudre(entree, mcVersion, loader, dejaInstalles);
       if (dejaInstalles.has(path.basename(mod.path).toLowerCase())) {
         console.log(`  ${entree.slug.padEnd(26)} deja dans le pack, ignore`);
         continue;
       }
       resultats.push(mod);
-      console.log(`  ${entree.slug.padEnd(26)} ${mod.version.padEnd(24)} ${Math.round(mod.size / 1024)} Ko`);
+      const suffixe = mod.requires.length
+        ? `  + ${mod.requires.map((d) => d.id).join(', ')}`
+        : '';
+      console.log(`  ${entree.slug.padEnd(26)} ${mod.version.padEnd(24)} ${Math.round(mod.size / 1024)} Ko${suffixe}`);
     } catch (err) {
       console.warn(`  ${entree.slug.padEnd(26)} IGNORE : ${err.message}`);
     }
@@ -144,7 +191,10 @@ async function main() {
 
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
-  const total = manifest.optionalMods.reduce((s, m) => s + m.size, 0);
+  const total = manifest.optionalMods.reduce(
+    (s, m) => s + m.size + (m.requires || []).reduce((t, d) => t + d.size, 0),
+    0,
+  );
   console.log(`\n${manifest.optionalMods.length} mods optionnels, ${(total / 1024 / 1024).toFixed(1)} Mo au total.`);
   console.log(`Manifest mis a jour : ${manifestPath}`);
   console.log('\nCommite-le pour que les joueurs voient la nouvelle liste :');

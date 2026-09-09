@@ -84,7 +84,23 @@ async function fetchManifest({ onStatus } = {}) {
  */
 function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
   const entries = manifest.files || manifest.mods || [];
-  const optionnels = (manifest.optionalMods || []).filter((m) => optionalEnabled.includes(m.id));
+  const actifs = (manifest.optionalMods || []).filter((m) => optionalEnabled.includes(m.id));
+
+  // Un mod optionnel entraine ses bibliotheques. Sans elles, Forge refuse de
+  // demarrer ("Mod justzoom requires konkrete") et le joueur subit un plantage
+  // sans rapport visible avec la case qu'il vient de cocher.
+  //
+  // Deux mods peuvent dependre de la meme bibliotheque : on dedoublonne par
+  // chemin, sinon elle serait telechargee deux fois au meme endroit.
+  const optionnels = [];
+  const vus = new Set();
+  for (const mod of actifs) {
+    for (const element of [mod, ...(mod.requires || [])]) {
+      if (vus.has(element.path)) continue;
+      vus.add(element.path);
+      optionnels.push(element);
+    }
+  }
 
   return [...entries, ...optionnels]
     .filter((entry) => !entry.optional || optionalEnabled.includes(entry.path || entry.name))
@@ -191,7 +207,9 @@ function listOptionalMods(manifest, enabled = []) {
     name: mod.name,
     description: mod.description,
     version: mod.version,
-    size: mod.size,
+    // Poids reel : le mod et les bibliotheques qu'il entraine.
+    size: mod.size + (mod.requires || []).reduce((total, dep) => total + dep.size, 0),
+    requires: (mod.requires || []).map((dep) => dep.name),
     page: mod.page || null,
     enabled: enabled.includes(mod.id),
   }));
