@@ -542,57 +542,62 @@ curl -o src/renderer/assets/trailer.jpg   https://i.ytimg.com/vi/IDENTIFIANT_VID
 
 ## Actualités depuis Discord
 
-Le dossier `bot/` contient de quoi publier tes annonces dans le launcher
-**depuis ton bot Discord existant**. Tu écris une fois, sur Discord, et
-l'annonce apparaît dans le panneau « Actualités » du launcher.
+`bot discord/actualites.py` permet de publier tes annonces dans le launcher
+**depuis ton bot existant**. Tu écris une fois sur Discord, l'annonce apparaît
+dans le panneau « Actualités » du launcher.
+
+Aucune dépendance nouvelle : le module utilise `aiohttp`, déjà présent.
 
 ### Mise en place
 
-1. **Copie `bot/actualites.js`** dans ton bot. Aucune dépendance : tout passe
-   par `fetch`, natif depuis Node 18.
+**1. Un jeton GitHub** sur
+<https://github.com/settings/personal-access-tokens> :
+- *Fine-grained token*, limité au **seul dépôt public** `aethoria`
+- permission **Contents : Read and write**, rien d'autre
 
-2. **Crée un jeton GitHub** sur
-   <https://github.com/settings/personal-access-tokens> :
-   - *Fine-grained token*, limité au **seul dépôt public** `aethoria`
-   - permission **Contents : Read and write**
-   - rien d'autre
+**2. La variable d'environnement** `GITHUB_TOKEN`, à ajouter sur Discloud à
+côté de `DISCORD_TOKEN`. Le jeton reste chez le bot, il n'est jamais livré
+dans le launcher.
 
-3. **Ajoute la variable** `GITHUB_TOKEN` à ton bot, avec ce jeton.
-   Il reste chez ton bot et n'est jamais livré dans le launcher.
+**3. Trois lignes dans `bot.py`** :
 
-4. **Branche l'une des deux façons de publier** (voir `bot/exemple-discord.js`) :
+```python
+import actualites                       # en haut, avec les autres imports
 
-   | Façon | Comment ça marche |
-   |---|---|
-   | Commande `/annonce` | Titre + texte, réservée à ceux qui gèrent le serveur |
-   | Surveillance d'un salon | Tout message posté dans `#annonces` devient une actualité |
+actualites.enregistrer_commandes(tree)  # après la création de "tree"
 
-   La seconde est la plus pratique : tu écris ton annonce comme d'habitude, le
-   bot réagit avec 📜 pour confirmer.
-
-### Ce que fait le module
-
-```js
-const actualites = require('./actualites');
-
-await actualites.publier('Siege de Valmyre', 'Rendez-vous samedi 21h.');
-await actualites.publierDepuisMessage(message);  // depuis un message Discord
-await actualites.retirerDerniere();              // en cas de fausse manoeuvre
-await actualites.lister();                       // ce que voient les joueurs
+# et, seulement si tu veux surveiller un salon :
+async def on_message(message):
+    await actualites.traiter_message(message)
 ```
 
-Le texte est nettoyé avant affichage : mentions, emojis personnalisés et liens
-Markdown deviendraient illisibles dans le launcher (`<@123456789>`,
-`<:epee:987654>`). Les six annonces les plus récentes sont conservées, les
-plus anciennes disparaissent d'elles-mêmes.
+**4. Éventuellement** la variable `SALON_ANNONCES` avec l'identifiant du salon
+à surveiller. Sans elle, seules les commandes fonctionnent.
+
+### Les deux façons de publier
+
+| Façon | Comment ça marche |
+|---|---|
+| `/annonce titre texte` | Réservée à ceux qui ont « Gérer le serveur » |
+| Salon surveillé | Tout message posté devient une actualité, le bot réagit avec 📜 |
+
+Deux commandes complètent l'ensemble : `/annonce-retirer` en cas de fausse
+manœuvre, et `/annonces` pour voir ce que les joueurs ont sous les yeux.
+
+### Ce qui se passe ensuite
 
 Le module écrit dans `manifest.json` du dépôt public, que le launcher relit à
 chaque démarrage : **les joueurs voient l'annonce à leur prochain lancement**,
 sans mise à jour du launcher.
 
-> L'écriture utilise l'empreinte de la version courante du fichier. Si deux
-> annonces partent en même temps, la seconde est refusée plutôt que d'écraser
-> la première — le bot répond alors de relancer la commande.
+Le texte est nettoyé avant affichage. Mentions, emojis personnalisés et liens
+Markdown apparaîtraient sinon sous leur forme brute (`<@123456789>`,
+`<:epee:987654>`) dans un panneau qui n'affiche que du texte. Les six annonces
+les plus récentes sont conservées.
+
+> L'écriture s'appuie sur l'empreinte de la version courante du fichier : si
+> deux annonces partent en même temps, la seconde est refusée plutôt que
+> d'écraser la première, et le bot invite à relancer.
 
 ---
 
