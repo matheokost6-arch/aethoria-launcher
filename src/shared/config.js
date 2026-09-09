@@ -29,6 +29,13 @@ module.exports = {
 
   // URL du manifest du modpack. Sert de source de verite pour la version du
   // jeu, la version de Forge et la liste des mods.
+  // Lien de secours, propose au joueur quand la mise a jour automatique
+  // echoue : sans lui, un launcher coupe de son depot reste bloque sans que
+  // personne ne puisse le savoir.
+  get downloadUrl() {
+    return `https://github.com/${this.github.owner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
+  },
+
   get manifestUrl() {
     return `https://raw.githubusercontent.com/${this.github.owner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },

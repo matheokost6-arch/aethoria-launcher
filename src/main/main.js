@@ -84,14 +84,20 @@ function setupAutoUpdater() {
   autoUpdater.on('update-available', (info) => send('updater:status', { state: 'available', version: info.version }));
   autoUpdater.on('download-progress', (p) => send('updater:status', { state: 'downloading', percent: p.percent }));
   autoUpdater.on('update-downloaded', (info) => send('updater:status', { state: 'ready', version: info.version }));
-  autoUpdater.on('error', (err) => send('updater:status', { state: 'error', message: String(err.message || err) }));
+  autoUpdater.on('error', (err) => send('updater:status', {
+    state: 'error',
+    message: String(err.message || err),
+  }));
 
   ipcMain.handle('updater:install', () => {
     autoUpdater.quitAndInstall();
   });
 
-  autoUpdater.checkForUpdates().catch(() => {
-    send('updater:status', { state: 'error', message: 'Verification des mises a jour impossible.' });
+  autoUpdater.checkForUpdates().catch((err) => {
+    send('updater:status', {
+      state: 'error',
+      message: String(err?.message || 'Verification des mises a jour impossible.'),
+    });
   });
 }
 
@@ -122,6 +128,7 @@ function registerIpc() {
     server: config.server,
     links: config.links,
     authNotice: config.authNotice,
+    downloadUrl: config.downloadUrl,
     gameRoot: paths.root,
     defaultRoot: paths.defaultRoot(),
     platform: process.platform,

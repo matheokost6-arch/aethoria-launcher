@@ -740,28 +740,51 @@ function wireUpdater() {
   const install = $('btn-update-install');
 
   const titre = $('updatebar-title');
+  const manuel = $('btn-update-manual');
+
+  manuel.addEventListener('click', async () => {
+    const url = state.info?.downloadUrl;
+    if (!url) return;
+    try {
+      await api.folders.external(url);
+    } catch (err) {
+      toast(`Impossible d'ouvrir le lien : ${err.message}`, 'error');
+    }
+  });
 
   api.updater.onStatus((status) => {
     switch (status.state) {
       case 'available':
         bar.hidden = false;
+        manuel.hidden = true;
         titre.textContent = `Mise a jour ${status.version}`;
         text.textContent = 'Telechargement en cours...';
         break;
       case 'downloading':
         bar.hidden = false;
+        manuel.hidden = true;
         titre.textContent = 'Mise a jour en telechargement';
         text.textContent = `${Math.round(status.percent)} % recus`;
         break;
       case 'ready':
         bar.hidden = false;
+        manuel.hidden = true;
         titre.textContent = `Version ${status.version} prete`;
         text.textContent = 'Redemarre le launcher pour en profiter.';
         install.hidden = false;
         break;
-      default:
-        // Une erreur de mise a jour ne doit pas empecher de jouer : on reste discret.
-        bar.hidden = true;
+      default: {
+        // Un echec silencieux laisse le joueur sur une version perimee sans
+        // qu'il puisse le deviner : c'est ainsi qu'un launcher coupe de son
+        // depot reste bloque des semaines. On le dit, et on donne le lien.
+        bar.hidden = false;
+        titre.textContent = 'Mise a jour indisponible';
+        text.textContent = 'Telecharge la derniere version a la main.';
+        install.hidden = true;
+        manuel.hidden = !state.info?.downloadUrl;
+        console.warn('Mise a jour impossible :', status.message);
+        break;
+      }
     }
   });
 
