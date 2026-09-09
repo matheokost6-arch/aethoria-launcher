@@ -5,3 +5,9 @@ dist/
 Thumbs.db
 pack/
 plus pour le launcher/
+
+# Jetons et secrets : ne doivent jamais partir sur GitHub.
+.env
+*.env
+bot discord/.env
+bot discord/__pycache__/

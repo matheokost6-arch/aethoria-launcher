@@ -12,6 +12,7 @@ import discord
 from discord import app_commands
 from discord.ext import tasks
 from dotenv import load_dotenv
+import actualites  # actualites du launcher Aethoria
 
 load_dotenv()
 
@@ -75,6 +76,10 @@ intents.message_content = True
 
 bot = discord.Client(intents=intents)
 tree = app_commands.CommandTree(bot)
+
+# Commandes /annonce, /annonce-retirer et /annonces : elles publient les
+# actualites affichees dans le launcher.
+actualites.enregistrer_commandes(tree)
 
 # ============================================================
 # GESTION DES DONNÉES ET SAUVEGARDE
@@ -1009,6 +1014,10 @@ tree.add_command(groupe_salon)
 async def on_message(message):
     if message.author.bot:
         return
+
+    # Salon d'annonces : chaque message y devient une actualite du
+    # launcher. Sans SALON_ANNONCES defini, cet appel ne fait rien.
+    await actualites.traiter_message(message)
 
     # Jeu d'Histoire Infinie
     if message.channel.id == 1541006278191747182:
