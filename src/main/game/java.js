@@ -84,7 +84,7 @@ async function downloadRuntime(component, { onProgress, onStatus } = {}) {
   const markerFile = path.join(home, '.installed');
   if (fs.existsSync(markerFile)) return home;
 
-  onStatus?.(`Telechargement de Java (${component})...`);
+  onStatus?.(`Téléchargement de Java (${component})...`);
   const all = await getJson(config.endpoints.javaRuntime);
   const entry = all[RUNTIME_PLATFORM]?.[component]?.[0];
   if (!entry) {
@@ -151,7 +151,7 @@ async function ensureJava(version, settings = {}, hooks = {}) {
       ? path.dirname(path.dirname(settings.javaPath))
       : settings.javaPath;
     if (!fs.existsSync(javaBinary(home, { console: true }))) {
-      throw new Error(`Le Java configure dans les parametres est introuvable : ${settings.javaPath}`);
+      throw new Error(`Le Java choisi dans les réglages est introuvable : ${settings.javaPath}`);
     }
     return home;
   }
@@ -162,12 +162,12 @@ async function ensureJava(version, settings = {}, hooks = {}) {
   try {
     return await downloadRuntime(component, hooks);
   } catch (err) {
-    hooks.onStatus?.('Runtime Java officiel indisponible, recherche d’un Java installe...');
+    hooks.onStatus?.('Runtime Java officiel indisponible, recherche d’un Java installé...');
     const system = await findSystemJava(requiredMajor);
     if (system) return system;
     throw new Error(
       `Impossible d'obtenir Java ${requiredMajor || ''} (${err.message}). `
-      + 'Installe Java manuellement puis indique son chemin dans les parametres du launcher.',
+      + 'Installe Java manuellement puis indique son chemin dans les paramètres du launcher.',
     );
   }
 }

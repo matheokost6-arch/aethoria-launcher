@@ -96,7 +96,7 @@ function setupAutoUpdater() {
   autoUpdater.checkForUpdates().catch((err) => {
     send('updater:status', {
       state: 'error',
-      message: String(err?.message || 'Verification des mises a jour impossible.'),
+      message: String(err?.message || 'Vérification des mises à jour impossible.'),
     });
   });
 }
@@ -134,15 +134,9 @@ function registerIpc() {
     platform: process.platform,
   }));
 
-  // --- Comptes ---
-  handle('accounts:list', () => auth.listAccounts());
-  handle('accounts:loginMicrosoft', async () => {
-    await auth.loginMicrosoft(mainWindow);
-    return auth.listAccounts();
-  });
-  handle('accounts:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
-  handle('accounts:remove', (id) => auth.removeAccount(id));
-  handle('accounts:select', (id) => auth.selectAccount(id));
+  // --- Compte ---
+  handle('account:get', () => auth.getAccount());
+  handle('account:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
 
   // --- Parametres ---
   handle('settings:get', () => ({
@@ -161,10 +155,10 @@ function registerIpc() {
   });
   handle('settings:pickJava', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
-      title: 'Choisir l’executable Java',
+      title: 'Choisir l’exécutable Java',
       properties: ['openFile'],
       filters: process.platform === 'win32'
-        ? [{ name: 'Executable Java', extensions: ['exe'] }]
+        ? [{ name: 'Exécutable Java', extensions: ['exe'] }]
         : [],
     });
     return result.canceled ? null : result.filePaths[0];
@@ -176,18 +170,13 @@ function registerIpc() {
     await shell.openPath(paths.root);
     return paths.root;
   });
-  handle('shell:openModsFolder', async () => {
-    paths.ensureAll();
-    await shell.openPath(paths.mods);
-    return paths.mods;
-  });
   handle('shell:openLogsFolder', async () => {
     paths.ensureAll();
     await shell.openPath(paths.logs);
     return paths.logs;
   });
   handle('shell:openExternal', (url) => {
-    if (!/^https?:\/\//.test(url)) throw new Error('Lien refuse.');
+    if (!/^https?:\/\//.test(url)) throw new Error('Lien refusé.');
     return shell.openExternal(url);
   });
 
@@ -208,7 +197,6 @@ function registerIpc() {
       fileCount: (manifest.files || manifest.mods || []).length,
     };
   });
-  handle('modpack:extraMods', () => modpack.listExtraMods());
 
   // --- Mods optionnels (client uniquement) ---
   handle('modpack:optionalMods', async () => {
@@ -233,8 +221,7 @@ function registerIpc() {
   });
 
   // --- Jeu ---
-  handle('game:launch', async (accountId) => launcher.launch({
-    accountId,
+  handle('game:launch', () => launcher.launch({
     onStatus: (message) => send('game:status', { message }),
     onProgress: (progress) => send('game:progress', progress),
     onLog: (line) => send('game:log', { line }),
@@ -246,13 +233,13 @@ function registerIpc() {
   handle('game:repair', async () => {
     const confirmation = await dialog.showMessageBox(mainWindow, {
       type: 'warning',
-      buttons: ['Annuler', 'Reparer'],
+      buttons: ['Annuler', 'Réparer'],
       defaultId: 0,
       cancelId: 0,
-      title: 'Reparer l’installation',
-      message: 'Retelecharger tous les fichiers du jeu ?',
-      detail: 'Les versions, bibliotheques et mods seront supprimes puis retelecharges. '
-        + 'Tes sauvegardes, options et captures d’ecran sont conserves.',
+      title: 'Réparer l’installation',
+      message: 'Retélécharger tous les fichiers du jeu ?',
+      detail: 'Les versions, bibliothèques et mods seront supprimés puis retéléchargés. '
+        + 'Tes sauvegardes, options et captures d’écran sont conservés.',
     });
     if (confirmation.response !== 1) return false;
     return launcher.repair({ onStatus: (message) => send('game:status', { message }) });

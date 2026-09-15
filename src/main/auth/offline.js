@@ -25,8 +25,8 @@ function offlineUuid(name) {
 function validateName(name) {
   const trimmed = String(name || '').trim();
   if (!trimmed) throw new Error('Entre un pseudo.');
-  if (trimmed.length < 3) throw new Error('Le pseudo doit faire au moins 3 caracteres.');
-  if (trimmed.length > 16) throw new Error('Le pseudo ne peut pas depasser 16 caracteres.');
+  if (trimmed.length < 3) throw new Error('Le pseudo doit faire au moins 3 caractères.');
+  if (trimmed.length > 16) throw new Error('Le pseudo ne peut pas dépasser 16 caractères.');
   if (!NAME_PATTERN.test(trimmed)) {
     throw new Error('Le pseudo ne peut contenir que des lettres, des chiffres et des underscores.');
   }
@@ -42,15 +42,9 @@ function login(name) {
   const validated = validateName(name);
   const uuid = offlineUuid(validated);
   return {
-    id: `offline:${uuid}`,
-    type: 'offline',
     name: validated,
     uuid,
     accessToken: '0'.repeat(32),
-    refreshToken: null,
-    expiresAt: null, // un compte hors-ligne n'expire jamais
-    skinUrl: null,
-    addedAt: Date.now(),
   };
 }
 

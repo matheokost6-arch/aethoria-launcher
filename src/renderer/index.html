@@ -3,282 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; img-src 'self' data: https://crafatar.com https://textures.minecraft.net; style-src 'self' 'unsafe-inline'; script-src 'self'">
+        content="default-src 'self'; img-src 'self' data: https://crafatar.com; style-src 'self' 'unsafe-inline'; script-src 'self'">
   <title>Aethoria</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Decor : captures du serveur qui se succedent en fondu -->
-  <div class="backdrop" id="backdrop" aria-hidden="true">
-    <div class="backdrop__layer is-visible" style="background-image: url('assets/bg-armee.jpg')"></div>
-    <div class="backdrop__layer" style="background-image: url('assets/bg-chateau.jpg')"></div>
+  <!-- Décor : captures du serveur en fondu -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop__layer is-visible" style="background-image: url('assets/bg-chateau.jpg')"></div>
+    <div class="backdrop__layer" style="background-image: url('assets/bg-armee.jpg')"></div>
     <div class="backdrop__layer" style="background-image: url('assets/bg-couchant.jpg')"></div>
     <div class="backdrop__layer" style="background-image: url('assets/bg-chevaliers.jpg')"></div>
     <div class="backdrop__layer" style="background-image: url('assets/bg-village.jpg')"></div>
-    <div class="backdrop__veil"></div>
+    <div class="backdrop__shade"></div>
   </div>
 
-  <!-- Barre de titre personnalisee (la fenetre est sans cadre) -->
   <header class="titlebar">
-    <div class="titlebar__brand">
-      <img class="titlebar__mark" src="assets/icon.png" alt="" width="22" height="22">
-      <span class="titlebar__name">Aethoria</span>
-      <span class="titlebar__version" id="launcher-version"></span>
-    </div>
-    <div class="titlebar__actions">
-      <button class="titlebar__btn" id="btn-minimize" title="Reduire" aria-label="Reduire">&#8211;</button>
-      <button class="titlebar__btn titlebar__btn--close" id="btn-close" title="Fermer" aria-label="Fermer">&#10005;</button>
-    </div>
+    <span class="titlebar__version" id="launcher-version"></span>
+    <button class="titlebar__btn" id="btn-minimize" aria-label="Réduire">
+      <svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg>
+    </button>
+    <button class="titlebar__btn titlebar__btn--close" id="btn-close" aria-label="Fermer">
+      <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+    </button>
   </header>
 
-  <!-- ------------------------------------------------------------------ -->
-  <!-- Ecran de connexion                                                  -->
-  <!-- ------------------------------------------------------------------ -->
-  <main class="view view--login" id="view-login">
-    <div class="login">
-      <img class="login__logo" src="assets/logo.png" alt="Aethoria" width="292">
-      <p class="login__subtitle" id="login-subtitle">Connecte-toi pour rejoindre l’aventure.</p>
+  <!-- Choix du pseudo -->
+  <main class="login" id="view-login" hidden>
+    <div class="login__card">
+      <img class="login__logo" src="assets/logo.png" alt="Aethoria">
 
-      <form id="form-compte" autocomplete="off">
-        <input class="input" type="text" id="input-pseudo" placeholder="Ton pseudo"
-               maxlength="16" spellcheck="false" autofocus required>
-        <button class="btn btn--primary btn--block" type="submit" id="btn-valider">
-          Entrer dans Aethoria
-        </button>
+      <form class="login__form" id="form-pseudo" autocomplete="off">
+        <label class="label" for="input-pseudo">Ton pseudo</label>
+        <input class="input input--large" id="input-pseudo" maxlength="16" spellcheck="false"
+               placeholder="Baron" required>
+        <p class="help">3 à 16 caractères : lettres, chiffres et _. Garde toujours le même.</p>
+        <p class="login__error" id="login-error" role="alert" hidden></p>
+        <button class="btn btn--primary btn--block" type="submit" id="btn-login">Entrer dans Aethoria</button>
+        <button class="btn btn--ghost btn--block" type="button" id="btn-login-back" hidden>Annuler</button>
       </form>
 
-      <p class="login__note">
-        3 a 16 caracteres : lettres, chiffres et underscores.<br>
-        Ce pseudo sera ton identite sur le serveur, garde le meme a chaque partie.
-      </p>
-
-      <div class="notice" id="auth-notice" hidden>
-        <span class="notice__seal" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2.6 4.4 6v6.1c0 4.9 3.2 9.2 7.6 10.3 4.4-1.1 7.6-5.4 7.6-10.3V6L12 2.6Z"/>
-            <path d="M12 10.6v3.2M9.4 10.6h5.2v4.8H9.4z"/>
-          </svg>
-        </span>
-        <div class="notice__body">
-          <strong class="notice__title" id="auth-notice-title"></strong>
-          <p class="notice__text" id="auth-notice-text"></p>
-        </div>
-      </div>
-
-      <p class="login__error" id="login-error" role="alert" hidden></p>
-
-      <button class="login__back" id="login-back" hidden>&#8592; Retour</button>
+      <aside class="notice" id="auth-notice" hidden>
+        <strong class="notice__title" id="auth-notice-title"></strong>
+        <p class="notice__text" id="auth-notice-text"></p>
+      </aside>
     </div>
   </main>
 
-  <!-- ------------------------------------------------------------------ -->
-  <!-- Ecran principal                                                     -->
-  <!-- ------------------------------------------------------------------ -->
-  <main class="view view--main" id="view-main" hidden>
+  <!-- Accueil -->
+  <div class="shell" id="view-main" hidden>
+    <nav class="rail">
+      <img class="rail__mark" src="assets/icon.png" alt="" width="40" height="40">
+      <button class="rail__btn" id="btn-options">
+        <svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+        <span>Mods</span>
+      </button>
+      <button class="rail__btn" id="btn-settings">
+        <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+        <span>Réglages</span>
+      </button>
+      <span class="rail__spacer"></span>
+      <button class="rail__btn" id="btn-discord" hidden>
+        <svg viewBox="0 0 24 24"><path d="M8.5 5.5c-1.8.3-3.3.9-3.3.9C3.8 8.8 3.4 11.4 3.5 14c1.4 1 2.8 1.6 4.1 2l.9-1.4m7-9.1c1.8.3 3.3.9 3.3.9 1.4 2.4 1.8 5 1.7 7.6-1.4 1-2.8 1.6-4.1 2l-.9-1.4M7.4 14.2c1.4.7 3 1.1 4.6 1.1s3.2-.4 4.6-1.1"/><circle cx="9.3" cy="11.3" r=".9"/><circle cx="14.7" cy="11.3" r=".9"/></svg>
+        <span>Discord</span>
+      </button>
+    </nav>
 
-    <section class="hero">
-      <div class="hero__content">
-        <h1 class="hero__title"><img src="assets/logo.png" alt="Aethoria" width="420"></h1>
-        <p class="hero__eyebrow" id="pack-version">Modpack Aethoria</p>
-        <p class="hero__server">
-          Serveur :
-          <button class="copy" id="btn-copy-ip" title="Copier l’adresse">
-            <span id="server-address">-</span>
-            <svg class="copy__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="9" y="9" width="11" height="11" rx="2"/>
-              <path d="M5 15V5a2 2 0 0 1 2-2h8"/>
-            </svg>
+    <main class="home">
+      <section class="hero">
+        <img class="hero__logo" src="assets/logo.png" alt="Aethoria">
+        <p class="hero__tagline" id="pack-version">Serveur médiéval</p>
+
+        <div class="chips">
+          <span class="chip" id="server-status">
+            <span class="dot" id="status-dot"></span>
+            <span id="status-text">Vérification du serveur…</span>
+          </span>
+          <button class="chip chip--button" id="btn-copy-ip" title="Copier l’adresse">
+            <span id="server-address">aethoria.omgcraft.fr</span>
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
           </button>
-        </p>
-        <p class="status" id="server-status">
-          <span class="status__dot" id="status-dot"></span>
-          <span id="status-text">Verification du serveur...</span>
-        </p>
+        </div>
 
         <button class="trailer" id="btn-trailer" hidden>
-          <img class="trailer__thumb" src="assets/trailer.jpg" alt="" width="280" height="158">
-          <span class="trailer__play" aria-hidden="true"></span>
-          <span class="trailer__label">Voir la bande-annonce</span>
-        </button>
-      </div>
-
-      <div class="news" id="news">
-        <h2 class="news__title">Actualites</h2>
-        <ul class="news__list" id="news-list">
-          <li class="news__empty">Aucune actualite pour le moment.</li>
-        </ul>
-      </div>
-    </section>
-
-    <footer class="dock">
-      <div class="dock__account">
-        <button class="account" id="btn-account" title="Changer de pseudo">
-          <img class="account__avatar" id="account-avatar" alt="" width="36" height="36">
-          <span class="account__meta">
-            <span class="account__name" id="account-name">-</span>
-            <span class="account__type">Changer de pseudo</span>
+          <img src="assets/trailer.jpg" alt="" width="200" height="112">
+          <span class="trailer__play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+          <span class="trailer__text">
+            <strong>Bande-annonce</strong>
+            <span>Regarder sur YouTube</span>
           </span>
-          <svg class="account__edit" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="m14.5 5.5 4 4M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1Z"/>
-          </svg>
         </button>
-      </div>
+      </section>
 
-      <div class="dock__center">
-        <button class="btn btn--play" id="btn-play"><span id="btn-play-label">JOUER</span></button>
-        <div class="progress" id="progress" hidden>
-          <div class="progress__bar"><div class="progress__fill" id="progress-fill"></div></div>
-          <p class="progress__label"><span id="progress-status">Preparation...</span><span id="progress-percent"></span></p>
-        </div>
-        <p class="autojoin" id="autojoin">
-          Tu rejoindras directement <strong id="autojoin-server">le serveur</strong> au lancement.
-        </p>
-        <p class="dock__hint" id="game-hint" hidden></p>
-      </div>
+      <section class="news">
+        <h2 class="section-title">Actualités</h2>
+        <ul class="news__list" id="news-list"></ul>
+      </section>
 
-      <div class="dock__tools">
-        <button class="tool" id="btn-options" title="Mods optionnels">
-          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2 4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6l-8-4Z"/>
-            <path d="m9 12 2 2 4-4" class="tool__check"/>
-          </svg>
-          <span>Options</span>
+      <footer class="playbar">
+        <button class="account" id="btn-account" title="Changer de pseudo">
+          <img class="account__avatar" id="account-avatar" alt="" width="40" height="40">
+          <span class="account__text">
+            <strong id="account-name">—</strong>
+            <span>Changer de pseudo</span>
+          </span>
         </button>
 
-        <button class="tool tool--discord" id="btn-discord" title="Rejoindre le Discord" hidden>
-          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 6c-2 .3-3.6 1-3.6 1C3 9.5 2.6 12 2.7 14.5c1.4 1 2.8 1.6 4.1 2l.9-1.4c-.5-.2-1-.4-1.4-.7 1.7.9 3.6 1.3 5.7 1.3s4-.4 5.7-1.3c-.4.3-.9.5-1.4.7l.9 1.4c1.3-.4 2.7-1 4.1-2 .1-2.5-.3-5-1.7-7.5 0 0-1.6-.7-3.6-1l-.6 1.1c-1.9-.3-3.8-.3-5.7 0L8 6Z"/>
-            <circle cx="9" cy="12" r="1.3" class="tool__dot"/>
-            <circle cx="15" cy="12" r="1.3" class="tool__dot"/>
-          </svg>
-          <span>Discord</span>
-        </button>
-
-        <button class="tool" id="btn-settings" title="Parametres">
-          <svg class="tool__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="3.2"/>
-            <path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/>
-          </svg>
-          <span>Reglages</span>
-        </button>
-      </div>
-    </footer>
-  </main>
-
-  <!-- ------------------------------------------------------------------ -->
-  <!-- Parametres                                                          -->
-  <!-- ------------------------------------------------------------------ -->
-  <div class="modal" id="modal-settings" hidden>
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <header class="modal__head">
-        <h2 id="settings-title">Parametres</h2>
-        <button class="modal__close" data-close-modal aria-label="Fermer">&#10005;</button>
-      </header>
-
-      <div class="modal__body">
-        <div class="field">
-          <label class="field__label" for="input-max-ram">Memoire allouee</label>
-          <div class="field__row">
-            <input type="range" id="input-max-ram" min="1024" max="16384" step="512" class="range">
-            <output class="field__value" id="output-max-ram">4096 Mo</output>
+        <div class="launch">
+          <p class="launch__line" id="launch-line"></p>
+          <div class="progress" id="progress" hidden>
+            <div class="progress__track"><div class="progress__fill" id="progress-fill"></div></div>
+            <p class="progress__detail" id="progress-detail"></p>
           </div>
-          <p class="field__help" id="ram-help"></p>
         </div>
 
+        <button class="play" id="btn-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span id="btn-play-label">Jouer</span>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Mods optionnels -->
+  <div class="drawer" id="drawer-options" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="options-title">
+      <header class="drawer__head">
+        <h2 id="options-title">Mods optionnels</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <p class="help">Du confort, rien que pour toi : ces mods ne changent rien pour les autres joueurs.
+          Ils sont installés au prochain lancement.</p>
+        <div class="options" id="options-list"></div>
+      </div>
+      <footer class="drawer__foot">
+        <span class="help" id="options-count"></span>
+        <button class="btn btn--primary" id="btn-options-save">Appliquer</button>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Réglages -->
+  <div class="drawer" id="drawer-settings" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <header class="drawer__head">
+        <h2 id="settings-title">Réglages</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
         <div class="field">
-          <label class="field__label" for="input-game-root">Dossier du jeu</label>
+          <div class="field__head">
+            <label class="label" for="input-ram">Mémoire allouée</label>
+            <output class="field__value" id="output-ram"></output>
+          </div>
+          <input type="range" class="range" id="input-ram" min="1024" max="16384" step="512">
+          <p class="help" id="ram-help"></p>
+        </div>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Rejoindre le serveur directement</strong>
+            <span>Sinon, le jeu s’ouvre sur le menu principal.</span>
+          </span>
+          <input type="checkbox" id="check-join-server">
+          <span class="switch__track"></span>
+        </label>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Fermer le launcher au lancement</strong>
+            <span>Le launcher se ferme quand Minecraft démarre.</span>
+          </span>
+          <input type="checkbox" id="check-close-launcher">
+          <span class="switch__track"></span>
+        </label>
+
+        <div class="field">
+          <label class="label" for="input-game-root">Dossier du jeu</label>
           <div class="field__row">
-            <input type="text" id="input-game-root" class="input input--flat" readonly>
+            <input class="input" id="input-game-root" readonly>
             <button class="btn btn--ghost" id="btn-pick-folder">Changer</button>
           </div>
         </div>
 
-        <div class="field">
-          <label class="field__label" for="input-java-path">Java</label>
-          <div class="field__row">
-            <input type="text" id="input-java-path" class="input input--flat" readonly
-                   placeholder="Automatique (telecharge par le launcher)">
-            <button class="btn btn--ghost" id="btn-pick-java">Choisir</button>
-            <button class="btn btn--ghost" id="btn-reset-java">Auto</button>
+        <details class="advanced">
+          <summary>Avancé</summary>
+          <div class="field">
+            <label class="label" for="input-java-path">Java</label>
+            <div class="field__row">
+              <input class="input" id="input-java-path" readonly placeholder="Automatique">
+              <button class="btn btn--ghost" id="btn-pick-java">Choisir</button>
+              <button class="btn btn--ghost" id="btn-reset-java">Auto</button>
+            </div>
           </div>
-        </div>
+          <div class="field">
+            <label class="label" for="input-jvm-args">Arguments JVM</label>
+            <input class="input" id="input-jvm-args" spellcheck="false">
+            <p class="help">À ne modifier que si tu sais ce que tu fais.</p>
+          </div>
+        </details>
 
-        <div class="field">
-          <label class="field__label" for="input-jvm-args">Arguments JVM</label>
-          <input type="text" id="input-jvm-args" class="input input--flat" spellcheck="false">
-          <p class="field__help">A ne modifier que si tu sais ce que tu fais.</p>
-        </div>
-
-        <label class="check">
-          <input type="checkbox" id="check-join-server">
-          <span>Rejoindre directement le serveur au lancement</span>
-        </label>
-
-        <label class="check">
-          <input type="checkbox" id="check-close-launcher">
-          <span>Fermer le launcher quand le jeu demarre</span>
-        </label>
-
-        <p class="field__locked">
-          Les mods sont gérés par le serveur. Le launcher restaure la liste
-          officielle à chaque lancement : tout fichier ajouté ou supprimé dans
-          le dossier <code>mods</code> est corrigé automatiquement.
-        </p>
+        <p class="help">Les mods du serveur sont imposés : le launcher rétablit la liste officielle à chaque lancement.</p>
       </div>
-
-      <footer class="modal__foot">
-        <button class="btn btn--ghost" id="btn-open-game-folder">Dossier du jeu</button>
+      <footer class="drawer__foot">
+        <button class="btn btn--ghost" id="btn-open-game-folder">Dossier</button>
         <button class="btn btn--ghost" id="btn-open-logs">Journaux</button>
-        <button class="btn btn--danger" id="btn-repair">Reparer l’installation</button>
+        <button class="btn btn--danger" id="btn-repair">Réparer</button>
       </footer>
-    </div>
+    </section>
   </div>
 
-  <!-- ------------------------------------------------------------------ -->
-  <!-- Mods optionnels, cote client uniquement                             -->
-  <!-- ------------------------------------------------------------------ -->
-  <div class="modal" id="modal-options" hidden>
-    <div class="modal__backdrop" data-close-options></div>
-    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="options-title">
-      <header class="modal__head">
-        <h2 id="options-title">Options de jeu</h2>
-        <button class="modal__close" data-close-options aria-label="Fermer">&#10005;</button>
-      </header>
-
-      <div class="modal__body">
-        <p class="options__intro">
-          Ces mods ne changent rien au jeu des autres : ils ameliorent seulement
-          ton confort. Rien a installer sur le serveur, et tu peux les activer
-          ou les retirer quand tu veux.
-        </p>
-        <div class="options" id="options-list">
-          <p class="options__loading">Chargement de la liste...</p>
-        </div>
-      </div>
-
-      <footer class="modal__foot">
-        <span class="options__count" id="options-count"></span>
-        <button class="btn btn--primary" id="btn-options-save">Appliquer</button>
-      </footer>
-    </div>
-  </div>
-
-  <!-- Banniere de mise a jour du launcher -->
-  <div class="update" id="updatebar" hidden>
-    <span class="update__badge" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 3v11M12 14l-4-4M12 14l4-4"/>
-        <path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/>
-      </svg>
+  <!-- Mise à jour du launcher -->
+  <div class="update" id="update" hidden>
+    <svg class="update__icon" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
+    <span class="update__text">
+      <strong id="update-title"></strong>
+      <span id="update-detail"></span>
     </span>
-    <span class="update__body">
-      <strong class="update__title" id="updatebar-title">Mise a jour</strong>
-      <span class="update__text" id="updatebar-text"></span>
-    </span>
-    <button class="btn btn--gold" id="btn-update-install" hidden>Redemarrer et installer</button>
-    <button class="btn btn--gold" id="btn-update-manual" hidden>Telecharger</button>
+    <button class="btn btn--primary btn--small" id="btn-update-install" hidden>Redémarrer</button>
+    <button class="btn btn--ghost btn--small" id="btn-update-manual" hidden>Télécharger</button>
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>

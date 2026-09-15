@@ -32,16 +32,16 @@ const UA = 'aethoria-launcher (github.com/matheokost6-arch/aethoria-launcher)';
 // demande de l'administrateur du serveur ; le retirer se fait en supprimant
 // sa ligne puis en relancant ce script.
 const PAR_DEFAUT = [
-  { slug: 'xaeros-minimap', nom: 'Minimap de Xaero', description: 'Une minimap dans le coin de l’ecran, avec les points de repere que tu poses.' },
-  { slug: 'xaeros-world-map', nom: 'Carte du monde', description: 'La carte complete des regions que tu as explorees, en plein ecran.' },
-  { slug: 'jade', nom: 'Jade', description: 'Affiche le nom du bloc ou de la creature que tu regardes, et son etat.' },
+  { slug: 'xaeros-minimap', nom: 'Minimap de Xaero', description: 'Une minimap dans le coin de l’écran, avec les points de repère que tu poses.' },
+  { slug: 'xaeros-world-map', nom: 'Carte du monde', description: 'La carte complète des régions que tu as explorées, en plein écran.' },
+  { slug: 'jade', nom: 'Jade', description: 'Affiche le nom du bloc ou de la créature que tu regardes, et son état.' },
   { slug: 'just-zoom', nom: 'Zoom', description: 'Une touche pour zoomer au loin, comme avec une longue-vue.' },
-  { slug: 'sound-physics-remastered', nom: 'Acoustique realiste', description: 'Echo dans les grottes, sons etouffes derriere les murs. Tres immersif.' },
-  { slug: 'legendary-tooltips', nom: 'Infobulles ameliorees', description: 'Des infobulles d’objets plus lisibles et plus soignees.' },
-  { slug: 'better-advancements', nom: 'Progres ameliores', description: 'Un ecran de progres plus clair et plus agreable a parcourir.' },
-  { slug: 'betterf3', nom: 'Ecran technique', description: 'Remplace l’ecran F3 par un affichage lisible et configurable.' },
-  { slug: 'toast-control', nom: 'Controle des notifications', description: 'Choisis quelles notifications apparaissent en haut de l’ecran.' },
-  { slug: 'full-brightness-toggle', nom: 'Luminosite maximale', description: 'La touche G eclaire tout : grottes, donjons et nuits deviennent parfaitement visibles.' },
+  { slug: 'sound-physics-remastered', nom: 'Acoustique réaliste', description: 'Écho dans les grottes, sons étouffés derrière les murs. Très immersif.' },
+  { slug: 'legendary-tooltips', nom: 'Infobulles améliorées', description: 'Des infobulles d’objets plus lisibles et plus soignées.' },
+  { slug: 'better-advancements', nom: 'Progrès améliorés', description: 'Un écran de progrès plus clair et plus agréable à parcourir.' },
+  { slug: 'betterf3', nom: 'Écran technique', description: 'Remplace l’écran F3 par un affichage lisible et configurable.' },
+  { slug: 'toast-control', nom: 'Contrôle des notifications', description: 'Choisis quelles notifications apparaissent en haut de l’écran.' },
+  { slug: 'full-brightness-toggle', nom: 'Luminosité maximale', description: 'La touche G éclaire tout : grottes, donjons et nuits deviennent parfaitement visibles.' },
 ];
 
 function parseArgs(argv) {
@@ -85,7 +85,7 @@ async function resoudreDependances(version, mcVersion, loader, dejaInstalles) {
       `/project/${dep.project_id}/version?loaders=["${loader}"]&game_versions=["${mcVersion}"]`,
     );
     if (!versions.length) {
-      throw new Error(`aucune version ${loader} ${mcVersion} pour la dependance "${projet.title}"`);
+      throw new Error(`aucune version ${loader} ${mcVersion} pour la dépendance "${projet.title}"`);
     }
 
     const fichier = versions[0].files.find((f) => f.primary) || versions[0].files[0];
@@ -166,7 +166,7 @@ async function main() {
     try {
       const mod = await resoudre(entree, mcVersion, loader, dejaInstalles);
       if (dejaInstalles.has(path.basename(mod.path).toLowerCase())) {
-        console.log(`  ${entree.slug.padEnd(26)} deja dans le pack, ignore`);
+        console.log(`  ${entree.slug.padEnd(26)} déjà dans le pack, ignore`);
         continue;
       }
       resultats.push(mod);

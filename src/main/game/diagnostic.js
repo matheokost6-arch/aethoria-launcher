@@ -16,65 +16,65 @@ const REGLES = [
   {
     id: 'memoire',
     motif: /OutOfMemoryError|GC overhead limit exceeded|unable to create new native thread/i,
-    titre: 'Memoire insuffisante',
-    cause: 'Le jeu a manque de memoire pendant le chargement des mods.',
-    solution: 'Ouvre les Reglages du launcher et augmente la memoire allouee, '
-      + 'sans depasser la moitie de celle de ta machine.',
+    titre: 'Mémoire insuffisante',
+    cause: 'Le jeu a manqué de mémoire pendant le chargement des mods.',
+    solution: 'Ouvre les Réglages du launcher et augmente la mémoire allouée, '
+      + 'sans dépasser la moitié de celle de ta machine.',
   },
   {
     id: 'pilote-graphique',
     motif: /Failed to create window|GLFW error|Pixel format not accelerated|OpenGL 3\.2|WGL_ARB|EXCEPTION_ACCESS_VIOLATION.*(nvoglv|atio|ig[0-9]|amdvlk)/i,
-    titre: 'Probleme de carte graphique',
-    cause: 'Ta carte graphique a refuse de demarrer le jeu, ou son pilote a plante.',
-    solution: 'Mets a jour le pilote de ta carte graphique depuis le site du '
+    titre: 'Problème de carte graphique',
+    cause: 'Ta carte graphique a refusé de démarrer le jeu, ou son pilote a planté.',
+    solution: 'Mets à jour le pilote de ta carte graphique depuis le site du '
       + 'constructeur (NVIDIA, AMD ou Intel), puis relance.',
   },
   {
     id: 'natives',
     motif: /UnsatisfiedLinkError|Failed to locate library|no lwjgl.* in java\.library\.path/i,
-    titre: 'Fichiers du jeu abimes',
-    cause: 'Des bibliotheques systeme du jeu sont manquantes ou corrompues.',
-    solution: 'Ouvre les Reglages et utilise "Reparer l’installation". '
-      + 'Tes mondes et tes captures sont conserves.',
+    titre: 'Fichiers du jeu abîmés',
+    cause: 'Des bibliothèques système du jeu sont manquantes ou corrompues.',
+    solution: 'Ouvre les Réglages et utilise "Réparer l’installation". '
+      + 'Tes mondes et tes captures sont conservés.',
   },
   {
     id: 'mod-manquant',
     motif: /Missing or unsupported mandatory dependencies|Mod ID: '[^']+', Requested by/i,
-    titre: 'Un mod attend une dependance',
-    cause: 'Un mod du pack reclame un autre mod ou une version de Forge differente.',
-    solution: 'Previens l’equipe du serveur : le modpack doit etre corrige. '
-      + 'En attendant, "Reparer l’installation" peut suffire.',
+    titre: 'Un mod attend une dépendance',
+    cause: 'Un mod du pack réclame un autre mod ou une version de Forge différente.',
+    solution: 'Préviens l’équipe du serveur : le modpack doit être corrigé. '
+      + 'En attendant, "Réparer l’installation" peut suffire.',
   },
   {
     id: 'mixin',
     motif: /Mixin apply(ing)? failed|MixinApplyError|InvalidMixinException|CrashReportExtender/i,
     titre: 'Conflit entre deux mods',
-    cause: 'Deux mods modifient la meme partie du jeu et se sont contredits.',
-    solution: 'Si tu as active des mods dans "Options", desactive-les un par un '
-      + 'pour trouver le fautif. Sinon, previens l’equipe du serveur.',
+    cause: 'Deux mods modifient la même partie du jeu et se sont contredits.',
+    solution: 'Si tu as activé des mods dans "Options", désactive-les un par un '
+      + 'pour trouver le fautif. Sinon, préviens l’équipe du serveur.',
   },
   {
     id: 'fichier-verrouille',
     motif: /being used by another process|AccessDeniedException|FileSystemException.*mods/i,
-    titre: 'Un fichier est verrouille',
+    titre: 'Un fichier est verrouillé',
     cause: 'Une autre copie du jeu tourne encore, ou ton antivirus bloque un fichier.',
-    solution: 'Ferme toutes les fenetres de Minecraft, puis relance. Si cela '
+    solution: 'Ferme toutes les fenêtres de Minecraft, puis relance. Si cela '
       + 'persiste, autorise le dossier du jeu dans ton antivirus.',
   },
   {
     id: 'java',
     motif: /UnsupportedClassVersionError|has been compiled by a more recent version of the Java|Unrecognized option/i,
     titre: 'Version de Java incompatible',
-    cause: 'Le Java utilise ne convient pas a cette version du jeu.',
-    solution: 'Dans les Reglages, remets Java sur "Auto" : le launcher '
+    cause: 'Le Java utilisé ne convient pas à cette version du jeu.',
+    solution: 'Dans les Réglages, remets Java sur "Auto" : le launcher '
       + 'telechargera la bonne version tout seul.',
   },
   {
     id: 'disque-plein',
     motif: /No space left on device|There is not enough space on the disk/i,
     titre: 'Disque plein',
-    cause: 'Il n’y a plus assez de place pour ecrire les fichiers du jeu.',
-    solution: 'Libere quelques gigaoctets, ou change le dossier du jeu dans les Reglages.',
+    cause: 'Il n’y a plus assez de place pour écrire les fichiers du jeu.',
+    solution: 'Libère quelques gigaoctets, ou change le dossier du jeu dans les Réglages.',
   },
 ];
 
@@ -104,10 +104,10 @@ function analyser(journal, codeSortie) {
   if (codeSortie === 1 && /Exception|Error/i.test(texte)) {
     return {
       id: 'inconnu',
-      titre: 'Le jeu s’est arrete pendant le chargement',
-      cause: 'Un mod a probablement provoque une erreur.',
-      solution: 'Ouvre les Reglages puis "Journaux", et transmets le dernier '
-        + 'fichier a l’equipe du serveur.',
+      titre: 'Le jeu s’est arrêté pendant le chargement',
+      cause: 'Un mod a probablement provoqué une erreur.',
+      solution: 'Ouvre les Réglages puis "Journaux", et transmets le dernier '
+        + 'fichier à l’équipe du serveur.',
       extrait: extraireLigne(texte, /(Caused by|Exception in thread|[A-Za-z.]*(Exception|Error):)/),
     };
   }

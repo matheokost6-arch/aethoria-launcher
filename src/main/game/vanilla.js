@@ -305,15 +305,15 @@ async function install(versionId, { onProgress, onStatus } = {}) {
     });
   }
 
-  onStatus?.('Verification des ressources...');
+  onStatus?.('Vérification des ressources...');
   const assets = await collectAssets(version);
   tasks.push(...assets.tasks);
 
-  onStatus?.(`Telechargement de ${tasks.length} fichiers...`);
+  onStatus?.(`Téléchargement de ${tasks.length} fichiers...`);
   await downloadAll(tasks, { onProgress });
   await materializeVirtualAssets(assets.virtual);
 
-  onStatus?.('Extraction des bibliotheques natives...');
+  onStatus?.('Extraction des bibliothèques natives...');
   const nativesDir = await extractNatives(natives, jarId);
 
   return { version, jarId, clientJar, classpath, nativesDir };

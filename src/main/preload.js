@@ -36,12 +36,9 @@ contextBridge.exposeInMainWorld('aethoria', {
     info: () => call('app:info'),
   },
 
-  accounts: {
-    list: () => call('accounts:list'),
-    loginMicrosoft: () => call('accounts:loginMicrosoft'),
-    connecter: (pseudo) => call('accounts:connecter', pseudo),
-    remove: (id) => call('accounts:remove', id),
-    select: (id) => call('accounts:select', id),
+  account: {
+    get: () => call('account:get'),
+    connecter: (pseudo) => call('account:connecter', pseudo),
   },
 
   settings: {
@@ -53,7 +50,6 @@ contextBridge.exposeInMainWorld('aethoria', {
 
   modpack: {
     info: () => call('modpack:info'),
-    extraMods: () => call('modpack:extraMods'),
     optionalMods: () => call('modpack:optionalMods'),
     setOptionalMods: (ids) => call('modpack:setOptionalMods', ids),
   },
@@ -62,9 +58,8 @@ contextBridge.exposeInMainWorld('aethoria', {
     status: (target) => call('server:status', target),
   },
 
-
   game: {
-    launch: (accountId) => call('game:launch', accountId),
+    launch: () => call('game:launch'),
     isRunning: () => call('game:isRunning'),
     stop: () => call('game:stop'),
     repair: () => call('game:repair'),
@@ -77,7 +72,6 @@ contextBridge.exposeInMainWorld('aethoria', {
 
   folders: {
     game: () => call('shell:openGameFolder'),
-    mods: () => call('shell:openModsFolder'),
     logs: () => call('shell:openLogsFolder'),
     external: (url) => call('shell:openExternal', url),
   },

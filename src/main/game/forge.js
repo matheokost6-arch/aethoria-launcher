@@ -95,7 +95,7 @@ function runInstaller(javaHome, jar, onLog) {
 
     const timer = setTimeout(() => {
       child.kill();
-      reject(new Error("L'installation de Forge a depasse 15 minutes et a ete interrompue."));
+      reject(new Error("L'installation de Forge a dépassé 15 minutes et a été interrompue."));
     }, INSTALL_TIMEOUT_MS);
 
     child.on('error', (err) => {
@@ -107,7 +107,7 @@ function runInstaller(javaHome, jar, onLog) {
       clearTimeout(timer);
       if (code === 0) return resolve(output);
       const tail = output.trim().split(/\r?\n/).slice(-8).join('\n');
-      reject(new Error(`L'installateur Forge a echoue (code ${code}).\n${tail}`));
+      reject(new Error(`L'installateur Forge a échoué (code ${code}).\n${tail}`));
     });
   });
 }
@@ -125,7 +125,7 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
   paths.ensureAll();
   const coords = installerCoords(mcVersion, forgeVersion, fullVersion);
 
-  onStatus?.(`Telechargement de Forge ${coords.full}...`);
+  onStatus?.(`Téléchargement de Forge ${coords.full}...`);
   try {
     await downloadFile(coords.url, coords.jar);
   } catch (err) {
@@ -153,7 +153,7 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
   }
 
   await fsp.rm(coords.jar, { force: true }).catch(() => {});
-  onStatus?.(`Forge ${coords.full} installe.`);
+  onStatus?.(`Forge ${coords.full} installé.`);
   return forgeId;
 }
 

@@ -84,11 +84,11 @@ function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHo
     auth_uuid: account.uuid.replace(/-/g, ''),
     auth_access_token: account.accessToken,
     auth_session: `token:${account.accessToken}:${account.uuid.replace(/-/g, '')}`,
-    auth_xuid: account.xuid || '0',
-    // Identifiant du launcher pour la telemetrie Mojang. Il ne doit pas etre
-    // vide : un argument vide decale la lecture des options par le client.
-    clientid: account.type === 'microsoft' ? config.msalClientId : '0',
-    user_type: account.type === 'microsoft' ? 'msa' : 'legacy',
+    // Ces valeurs ne doivent pas etre vides : un argument vide decale la
+    // lecture des options par le client.
+    auth_xuid: '0',
+    clientid: '0',
+    user_type: 'legacy',
     version_type: config.appName,
     user_properties: '{}',
     resolution_width: 854,
@@ -182,13 +182,13 @@ async function checkDiskSpace(onStatus) {
     throw new Error(
       `Espace disque insuffisant : ${enGo(libre)} Go disponibles sur ${path.parse(paths.root).root}, `
       + `il en faut environ ${enGo(ESPACE_REQUIS_OCTETS)} Go. `
-      + 'Libere de la place, ou choisis un autre dossier de jeu dans les parametres.',
+      + 'Libère de la place, ou choisis un autre dossier de jeu dans les paramètres.',
     );
   } catch (err) {
     // statfs n'existe pas partout : l'absence de mesure ne doit pas empecher
     // de jouer, on ne bloque que sur un manque de place avere.
     if (err.message.startsWith('Espace disque insuffisant')) throw err;
-    onStatus?.('Espace disque non verifiable, poursuite du lancement.');
+    onStatus?.('Espace disque non vérifiable, poursuite du lancement.');
   }
 }
 
@@ -197,8 +197,8 @@ async function checkDiskSpace(onStatus) {
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
  */
-async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstRun }) {
-  if (running) throw new Error('Le jeu est deja en cours de lancement ou d’execution.');
+async function launch({ onStatus, onProgress, onLog, onExit, onFirstRun }) {
+  if (running) throw new Error('Le jeu est déjà en cours de lancement ou d’exécution.');
 
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
@@ -213,20 +213,19 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
     || fs.readdirSync(paths.versions).length === 0;
   if (premiereFois) onFirstRun?.();
 
-  status('Verification du compte...');
-  const account = await auth.resolveForLaunch(accountId);
+  const account = auth.resolveForLaunch();
 
   await checkDiskSpace(status);
 
   const { manifest, offline } = await modpack.fetchManifest({ onStatus: status });
-  if (offline) status('Mode hors ligne : le modpack ne sera pas verifie.');
+  if (offline) status('Mode hors ligne : le modpack ne sera pas vérifié.');
 
   const mcVersion = manifest.minecraftVersion || config.fallback.minecraftVersion;
   const forgeVersion = manifest.forgeVersion || config.fallback.forgeVersion;
 
   // Le JSON de la version vanilla est necessaire avant Forge : l'installateur
   // s'appuie dessus, et il nous donne la version de Java a utiliser.
-  status(`Preparation de Minecraft ${mcVersion}...`);
+  status(`Préparation de Minecraft ${mcVersion}...`);
   const baseVersion = await vanilla.ensureVersionJson(mcVersion);
   const javaHome = await java.ensureJava(baseVersion, settings, { onStatus: status, onProgress });
 
@@ -235,12 +234,11 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
     fullVersion: manifest.forgeFullVersion,
   });
 
-  status('Verification des fichiers du jeu...');
+  status('Vérification des fichiers du jeu...');
   const installed = await vanilla.install(versionId, { onStatus: status, onProgress });
 
   if (!offline) {
     await modpack.sync(manifest, {
-      settings,
       optionalEnabled: settings.optionalMods || [],
       onStatus: status,
       onProgress,
@@ -259,7 +257,7 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
     server,
   });
 
-  status('Demarrage de Minecraft...');
+  status('Démarrage de Minecraft...');
   await writeLaunchLog(command, account);
 
   const child = spawn(command.binary, command.args, {
@@ -281,7 +279,7 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
 
   child.on('error', (err) => {
     running = null;
-    onExit?.({ code: -1, error: `Java n'a pas pu demarrer : ${err.message}` });
+    onExit?.({ code: -1, error: `Java n'a pas pu démarrer : ${err.message}` });
   });
 
   child.on('close', (code) => {
@@ -304,7 +302,7 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
   // Le jeu met plusieurs secondes a afficher sa fenetre : on considere le
   // lancement reussi une fois le processus vivant et stable.
   await new Promise((resolve) => setTimeout(resolve, 1500));
-  if (!running) throw new Error('Le processus Minecraft s’est arrete immediatement. Consulte les journaux.');
+  if (!running) throw new Error('Le processus Minecraft s’est arrêté immédiatement. Consulte les journaux.');
 
   return { pid: child.pid, versionId };
 }
@@ -312,19 +310,15 @@ async function launch({ accountId, onStatus, onProgress, onLog, onExit, onFirstR
 /** Journalise la commande complete : indispensable pour diagnostiquer a distance. */
 async function writeLaunchLog(command, account) {
   const file = path.join(paths.logs, `launch-${new Date().toISOString().replace(/[:.]/g, '-')}.log`);
-  const redacted = command.args.map((arg) => (
-    // Le jeton d'acces ne doit jamais finir dans un fichier que le joueur nous enverra.
-    account.accessToken && arg === account.accessToken ? '<token masque>' : arg
-  ));
   await fsp.mkdir(paths.logs, { recursive: true });
   await fsp.writeFile(file, [
     `Date      : ${new Date().toISOString()}`,
     `Launcher  : ${config.appName} ${pkg.version}`,
-    `Compte    : ${account.name} (${account.type})`,
+    `Pseudo    : ${account.name}`,
     `Java      : ${command.binary}`,
     '',
     'Commande :',
-    redacted.join(' \\\n  '),
+    command.args.join(' \\\n  '),
     '',
   ].join('\n'), 'utf8');
   await rotateLogs();
@@ -356,7 +350,7 @@ function stop() {
 
 /** Reinstallation propre : on supprime ce qui est reconstructible, pas les sauvegardes. */
 async function repair({ onStatus } = {}) {
-  if (running) throw new Error('Ferme Minecraft avant de reparer l’installation.');
+  if (running) throw new Error('Ferme Minecraft avant de réparer l’installation.');
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
 
@@ -367,7 +361,7 @@ async function repair({ onStatus } = {}) {
   await fsp.rm(path.join(paths.root, 'manifest.cache.json'), { force: true });
   await fsp.rm(path.join(paths.root, '.aethoria-managed.json'), { force: true });
   paths.ensureAll();
-  onStatus?.('Installation reinitialisee. Relance le jeu pour tout retelecharger.');
+  onStatus?.('Installation réinitialisée. Relance le jeu pour tout retélécharger.');
   return true;
 }
 

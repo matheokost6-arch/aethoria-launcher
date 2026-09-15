@@ -107,7 +107,7 @@ async function downloadFile(url, dest, expect = {}, onChunk) {
       await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1)));
     }
   }
-  throw new Error(`Telechargement impossible : ${url}`);
+  throw new Error(`Téléchargement impossible : ${url}`);
 }
 
 /**
@@ -200,7 +200,7 @@ async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgres
 
   if (errors.length) {
     const detail = errors.slice(0, 3).map((e) => `${e.task.name || e.task.url} (${e.err.message})`).join(' ; ');
-    throw new Error(`${errors.length} fichier(s) n'ont pas pu etre telecharges : ${detail}`);
+    throw new Error(`${errors.length} fichier(s) n'ont pas pu être téléchargés : ${detail}`);
   }
   return { done, total };
 }

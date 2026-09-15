@@ -7,8 +7,8 @@ const paths = require('./paths');
 const config = require('../../shared/config');
 const { downloadAll, getJson, isValid } = require('./downloader');
 
-// Journal des fichiers installes par le launcher. Il permet de distinguer un
-// mod retire du modpack (a supprimer) d'un mod ajoute par le joueur (a garder).
+// Journal des fichiers installes par le launcher, hors des dossiers nettoyes
+// integralement : un fichier retire du manifest y est retrouve et supprime.
 const LEDGER_NAME = '.aethoria-managed.json';
 
 function ledgerPath() {
@@ -37,7 +37,7 @@ function safeJoin(relative) {
   const normalized = path.normalize(relative).replace(/^([/\\])+/, '');
   const full = path.resolve(paths.root, normalized);
   if (full !== paths.root && !full.startsWith(paths.root + path.sep)) {
-    throw new Error(`Chemin de fichier refuse dans le manifest : ${relative}`);
+    throw new Error(`Chemin de fichier refusé dans le manifest : ${relative}`);
   }
   return full;
 }
@@ -50,14 +50,14 @@ function safeJoin(relative) {
 async function fetchManifest({ onStatus } = {}) {
   const cacheFile = path.join(paths.root, 'manifest.cache.json');
   try {
-    onStatus?.('Recuperation du modpack Aethoria...');
+    onStatus?.('Récupération du modpack Aethoria...');
     const manifest = await getJson(`${config.manifestUrl}?t=${Date.now()}`);
     await fsp.mkdir(paths.root, { recursive: true });
     await fsp.writeFile(cacheFile, JSON.stringify(manifest, null, 2), 'utf8');
     return { manifest, offline: false };
   } catch (err) {
     if (fs.existsSync(cacheFile)) {
-      onStatus?.('Manifest injoignable, utilisation de la derniere version connue.');
+      onStatus?.('Manifest injoignable, utilisation de la dernière version connue.');
       return { manifest: JSON.parse(await fsp.readFile(cacheFile, 'utf8')), offline: true, error: err };
     }
     onStatus?.('Manifest injoignable, utilisation de la configuration de secours.');
@@ -65,7 +65,7 @@ async function fetchManifest({ onStatus } = {}) {
       manifest: {
         minecraftVersion: config.fallback.minecraftVersion,
         forgeVersion: config.fallback.forgeVersion,
-        files: config.fallback.mods,
+        files: [],
       },
       offline: true,
       error: err,
@@ -118,11 +118,12 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
 }
 
 /**
- * Supprime les fichiers que le launcher avait installes et qui ne font plus
- * partie du modpack. Un mod retire cote serveur doit disparaitre cote client,
- * sinon le joueur est rejete a la connexion pour desynchronisation de mods.
+ * Supprime les fichiers qui ne font plus partie du modpack. Les mods sont
+ * imposes par le serveur : tout fichier du dossier mods absent du manifest est
+ * retire, qu'il vienne d'une ancienne version du pack ou d'un ajout du joueur.
+ * Tout le monde joue ainsi avec exactement la meme liste.
  */
-async function pruneRemovedFiles(currentRelatives, { keepExtra = true, cleanDirs = [], onStatus } = {}) {
+async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } = {}) {
   const previous = await readLedger();
   const current = new Set(currentRelatives);
   const removed = [];
@@ -135,35 +136,29 @@ async function pruneRemovedFiles(currentRelatives, { keepExtra = true, cleanDirs
     removed.push(relative);
   }
 
-  // Mode strict : on vide aussi ce que le launcher n'a jamais installe. A
-  // reserver aux dossiers entierement pilotes par le serveur, car cela efface
-  // les ajouts du joueur.
-  if (!keepExtra) {
-    for (const dir of cleanDirs) {
-      const full = safeJoin(dir);
-      if (!fs.existsSync(full)) continue;
-      for (const entry of await fsp.readdir(full)) {
-        const relative = path.posix.join(dir.split('\\').join('/'), entry);
-        if (current.has(relative)) continue;
-        await fsp.rm(path.join(full, entry), { force: true, recursive: true });
-        removed.push(relative);
-      }
+  for (const dir of cleanDirs) {
+    const full = safeJoin(dir);
+    if (!fs.existsSync(full)) continue;
+    for (const entry of await fsp.readdir(full)) {
+      const relative = path.posix.join(dir.split('\\').join('/'), entry);
+      if (current.has(relative)) continue;
+      await fsp.rm(path.join(full, entry), { force: true, recursive: true });
+      removed.push(relative);
     }
   }
 
   if (removed.length) {
-    onStatus?.(`${removed.length} fichier(s) obsolete(s) supprime(s).`);
+    onStatus?.(`${removed.length} fichier(s) obsolète(s) supprimé(s).`);
   }
   return removed;
 }
 
 /** Telecharge et met a jour tous les fichiers du modpack. */
-async function sync(manifest, { settings = {}, optionalEnabled = [], onProgress, onStatus } = {}) {
+async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {}) {
   paths.ensureAll();
   const files = normalizeFiles(manifest, { optionalEnabled });
 
   const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
-    keepExtra: settings.keepExtraMods !== false,
     cleanDirs: manifest.deleteExtraIn || ['mods'],
     onStatus,
   });
@@ -178,22 +173,14 @@ async function sync(manifest, { settings = {}, optionalEnabled = [], onProgress,
   }
 
   if (tasks.length) {
-    onStatus?.(`Mise a jour du modpack : ${tasks.length} fichier(s)...`);
+    onStatus?.(`Mise à jour du modpack : ${tasks.length} fichier(s)...`);
     await downloadAll(tasks, { onProgress, concurrency: 8 });
   } else {
-    onStatus?.('Modpack a jour.');
+    onStatus?.('Modpack à jour.');
   }
 
   await writeLedger(files.map((f) => f.relative));
   return { installed: tasks.length, removed: removed.length, total: files.length };
-}
-
-/** Mods presents dans le dossier mods mais absents du modpack officiel. */
-async function listExtraMods() {
-  const managed = new Set((await readLedger()).filter((f) => f.startsWith('mods/')).map((f) => path.basename(f)));
-  if (!fs.existsSync(paths.mods)) return [];
-  return (await fsp.readdir(paths.mods))
-    .filter((f) => /\.jar$/i.test(f) && !managed.has(f));
 }
 
 /**
@@ -215,6 +202,4 @@ function listOptionalMods(manifest, enabled = []) {
   }));
 }
 
-module.exports = {
-  fetchManifest, sync, listExtraMods, normalizeFiles, readLedger, listOptionalMods,
-};
+module.exports = { fetchManifest, sync, normalizeFiles, listOptionalMods };

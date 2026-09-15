@@ -3,35 +3,24 @@
 /**
  * Configuration statique du launcher Aethoria.
  *
- * Tout ce qui est susceptible de changer souvent (version de Minecraft, version
- * de Forge, liste des mods) vit dans le manifest distant hebergé sur GitHub :
- * on peut ainsi mettre a jour le modpack sans recompiler ni redistribuer l'exe.
- * Les valeurs ci-dessous ne servent que de repli si le manifest est injoignable.
+ * Tout ce qui change souvent (versions de Minecraft et de Forge, liste des
+ * mods, liens, actualites) vit dans le manifest distant : le modpack se met a
+ * jour sans redistribuer l'exe. Les valeurs ci-dessous ne servent que de repli.
  */
 module.exports = {
-  // Identite du launcher
   appName: 'Aethoria',
   launcherName: 'AethoriaLauncher',
 
-  // Depot GitHub servant a la fois le manifest du modpack et les mises a jour
-  // du launcher (via GitHub Releases / electron-updater).
   github: {
     owner: 'matheokost6-arch',
-    // Depot du code source. Il peut rester prive : le launcher n'y accede
-    // jamais a l'execution.
+    // Depot du code source, prive : le launcher n'y accede jamais.
     repo: 'aethoria-launcher',
-    // Depot de distribution, lui obligatoirement public. Il ne contient que
-    // ce que les joueurs doivent pouvoir telecharger sans compte GitHub :
-    // le manifest, les mods et l'installateur. Rien de secret n'y figure.
+    // Depot de distribution, public : manifest, mods et installateur.
     dist: 'aethoria',
     branch: 'main',
   },
 
-  // URL du manifest du modpack. Sert de source de verite pour la version du
-  // jeu, la version de Forge et la liste des mods.
-  // Lien de secours, propose au joueur quand la mise a jour automatique
-  // echoue : sans lui, un launcher coupe de son depot reste bloque sans que
-  // personne ne puisse le savoir.
+  // Propose au joueur quand la mise a jour automatique echoue.
   get downloadUrl() {
     return `https://github.com/${this.github.owner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
   },
@@ -40,55 +29,34 @@ module.exports = {
     return `https://raw.githubusercontent.com/${this.github.owner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },
 
-  // Serveur de jeu : affiche dans l'UI et utilise pour le bouton "rejoindre
-  // directement le serveur" au lancement.
   server: {
     host: 'aethoria.omgcraft.fr',
     port: 25565,
   },
 
-  // Liens communautaires. Un lien laisse vide masque simplement son bouton
-  // dans le launcher : rien a modifier ailleurs.
-  // Consigne affichee au joueur au moment de choisir son pseudo.
-  //
-  // Le launcher ne gere volontairement aucun mot de passe : c'est AuthMe, sur
-  // le serveur, qui protege les pseudos. Un mot de passe cote launcher devrait
-  // etre verifie quelque part, et le seul "quelque part" disponible ici serait
-  // le depot public ou le fichier livre au joueur — donc aucune protection
-  // reelle, avec en prime deux mots de passe differents a retenir.
-  //
-  // Le manifest peut remplacer ce texte : les commandes changent d'un plugin a
-  // l'autre, et l'ajuster ne doit pas demander une nouvelle version du launcher.
+  // Un lien vide masque son bouton.
+  links: {
+    discord: 'https://discord.gg/Z6du2srwW',
+    trailer: 'https://www.youtube.com/watch?v=WW6Dqu7jxkQ',
+  },
+
+  // Consigne affichee au choix du pseudo. Le launcher ne gere aucun mot de
+  // passe : c'est AuthMe, sur le serveur, qui protege les pseudos.
   authNotice: {
-    title: 'Protege ton pseudo',
-    body: 'A ta toute premiere connexion sur le serveur, tape dans le chat :\n'
+    title: 'Protège ton pseudo',
+    body: 'À ta toute première connexion sur le serveur, tape dans le chat :\n'
       + '/register motdepasse motdepasse\n'
-      + 'Puis a chaque fois que tu reviens :\n'
+      + 'Puis à chaque fois que tu reviens :\n'
       + '/login motdepasse\n'
       + 'Sans cela, n’importe qui peut jouer sous ton pseudo.',
   },
 
-  // Valeurs de repli seulement : le manifest distant prime, ce qui permet de
-  // corriger un lien d'invitation expire sans redistribuer le launcher.
-  links: {
-    discord: 'https://discord.gg/Z6du2srwW',
-    trailer: 'https://www.youtube.com/watch?v=WW6Dqu7jxkQ',
-    site: '',
-  },
-
-  // Client ID Azure pour l'authentification Microsoft.
-  // Voir README.md, section "Authentification Microsoft" : il faut enregistrer
-  // une application Azure AD puis demander l'acces a l'API Minecraft.
-  msalClientId: '00000000-0000-0000-0000-000000000000',
-
-  // Repli utilise seulement si le manifest distant est injoignable.
+  // Utilise seulement si le manifest distant est injoignable.
   fallback: {
     minecraftVersion: '1.20.1',
     forgeVersion: '47.4.10',
-    mods: [],
   },
 
-  // Parametres par defaut du jeu
   defaults: {
     minRamMb: 2048,
     maxRamMb: 4096,
@@ -101,20 +69,13 @@ module.exports = {
       '-XX:G1HeapRegionSize=32M',
     ],
     closeOnLaunch: false,
-    // Le launcher sert un serveur unique : on y emmene le joueur directement.
     joinServerOnLaunch: true,
   },
 
-  // Endpoints officiels Mojang / Microsoft
   endpoints: {
     versionManifest: 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json',
     assets: 'https://resources.download.minecraft.net',
     javaRuntime: 'https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json',
     forgeMaven: 'https://maven.minecraftforge.net',
-    xblAuth: 'https://user.auth.xboxlive.com/user/authenticate',
-    xstsAuth: 'https://xsts.auth.xboxlive.com/xsts/authorize',
-    mcLogin: 'https://api.minecraftservices.com/authentication/login_with_xbox',
-    mcProfile: 'https://api.minecraftservices.com/minecraft/profile',
-    mcEntitlements: 'https://api.minecraftservices.com/entitlements/mcstore',
   },
 };

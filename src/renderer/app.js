@@ -2,24 +2,47 @@
 
 /* ------------------------------------------------------------------ *
  *  Aethoria Launcher — interface
- *  Aucun acces a Node ici : tout passe par le pont window.aethoria.
+ *  Aucun accès à Node ici : tout passe par le pont window.aethoria.
  * ------------------------------------------------------------------ */
 
 const api = window.aethoria;
 const $ = (id) => document.getElementById(id);
 
 const state = {
-  accounts: [],
-  selectedId: null,
+  info: null,       // app:info, complété par modpack:info
   settings: null,
+  account: null,
   launching: false,
-  modpackLoaded: false,
   statusTimer: null,
 };
 
 /* ------------------------------------------------------------------ *
- *  Utilitaires d'affichage
+ *  Utilitaires
  * ------------------------------------------------------------------ */
+
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 o';
+  const units = ['o', 'Ko', 'Mo', 'Go'];
+  let value = bytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit += 1; }
+  return `${value.toFixed(value < 10 && unit > 0 ? 1 : 0)} ${units[unit]}`;
+}
+
+function formatDuration(seconds) {
+  if (seconds < 60) return `${seconds} s`;
+  const min = Math.floor(seconds / 60);
+  if (min < 60) return seconds % 60 ? `${min} min ${seconds % 60} s` : `${min} min`;
+  return `${Math.floor(min / 60)} h ${min % 60} min`;
+}
+
+const plural = (n, word) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
 function toast(message, kind = 'info', duration = 6000) {
   const el = document.createElement('div');
@@ -28,238 +51,20 @@ function toast(message, kind = 'info', duration = 6000) {
   $('toasts').appendChild(el);
   setTimeout(() => {
     el.classList.add('is-leaving');
-    setTimeout(() => el.remove(), 220);
+    setTimeout(() => el.remove(), 200);
   }, duration);
 }
 
-function setHint(message, kind = '') {
-  const hint = $('game-hint');
-  hint.textContent = message || '';
-  hint.className = `dock__hint${kind ? ` is-${kind}` : ''}`;
-  hint.hidden = !message;
-}
-
-function showLoginError(message) {
-  const el = $('login-error');
-  el.textContent = message || '';
-  el.hidden = !message;
-}
-
-/** Duree restante en clair : "3 min 20 s", "45 s". */
-function formatDuration(secondes) {
-  if (secondes < 60) return `${secondes} s restantes`;
-  const min = Math.floor(secondes / 60);
-  const reste = secondes % 60;
-  if (min < 60) return reste ? `${min} min ${reste} s restantes` : `${min} min restantes`;
-  return `${Math.floor(min / 60)} h ${min % 60} min restantes`;
-}
-
-function formatBytes(bytes) {
-  if (!bytes) return '';
-  const units = ['o', 'Ko', 'Mo', 'Go'];
-  let value = bytes;
-  let unit = 0;
-  while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit += 1; }
-  return `${value.toFixed(value < 10 && unit > 0 ? 1 : 0)} ${units[unit]}`;
-}
-
-/* ------------------------------------------------------------------ *
- *  Navigation entre les vues
- * ------------------------------------------------------------------ */
-
-function showView(name) {
-  $('view-login').hidden = name !== 'login';
-  $('view-main').hidden = name !== 'main';
-}
-
-/* ------------------------------------------------------------------ *
- *  Comptes
- * ------------------------------------------------------------------ */
-
-function renderAccounts() {
-  const selected = state.accounts[0] || null;
-  state.selectedId = selected?.id || null;
-
-  if (!selected) {
-    showView('login');
-    $('login-back').hidden = true;
-    return;
-  }
-
-  showView('main');
-  $('account-name').textContent = selected.name;
-  $('account-avatar').src = selected.avatarUrl;
-  $('account-avatar').alt = `Avatar de ${selected.name}`;
-
-  // Les informations du modpack ne dependent pas du compte : un seul
-  // chargement suffit, declenche des qu'un pseudo existe.
-  if (!state.modpackLoaded) {
-    state.modpackLoaded = true;
-    loadModpackInfo();
-  }
-}
-
-function escapeHtml(text) {
-  return String(text).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
-}
-
-function applyAccounts(result) {
-  state.accounts = result.accounts;
-  state.selectedId = result.selectedId;
-  renderAccounts();
-}
-
-/* ------------------------------------------------------------------ *
- *  Connexion
- * ------------------------------------------------------------------ */
-
-/* ------------------------------------------------------------------ *
- *  Connexion
- * ------------------------------------------------------------------ */
-
-async function validerFormulaire() {
-  const pseudo = $('input-pseudo').value.trim();
-  const bouton = $('btn-valider');
-  const libelle = bouton.textContent;
-
-  showLoginError('');
-  bouton.disabled = true;
-  bouton.textContent = 'Connexion...';
-
+async function openLink(url, label) {
+  if (!url) return;
   try {
-    applyAccounts(await api.accounts.connecter(pseudo));
+    await api.folders.external(url);
   } catch (err) {
-    showLoginError(err.message);
-  } finally {
-    bouton.disabled = false;
-    bouton.textContent = libelle;
+    toast(`Impossible d’ouvrir ${label} : ${err.message}`, 'error');
   }
 }
 
-/* ------------------------------------------------------------------ *
- *  Lancement du jeu
- * ------------------------------------------------------------------ */
-
-function setLaunching(active) {
-  state.launching = active;
-  $('btn-play').disabled = active;
-  $('btn-play-label').textContent = active ? 'LANCEMENT...' : 'JOUER';
-  $('progress').hidden = !active;
-  $('autojoin').hidden = active;
-  if (!active) {
-    $('progress-fill').style.width = '0%';
-    $('progress-percent').textContent = '';
-  }
-}
-
-async function play() {
-  if (state.launching || !state.selectedId) return;
-  setLaunching(true);
-  setHint('');
-  $('progress-status').textContent = 'Preparation...';
-
-  try {
-    await api.game.launch(state.selectedId);
-    const host = state.info?.server?.host;
-    setHint(
-      state.settings?.joinServerOnLaunch !== false && host
-        ? `Minecraft est lance, connexion a ${host} en cours. Bon jeu !`
-        : 'Minecraft est lance. Bon jeu !',
-      'success',
-    );
-
-    // Rappel de la consigne au moment ou elle sert : le joueur va arriver sur
-    // le serveur et devoir taper sa commande dans le chat.
-    const notice = state.info?.authNotice;
-    if (notice?.body) toast(`${notice.title}
-
-${notice.body}`, 'info', 20000);
-    $('progress').hidden = true;
-    $('btn-play-label').textContent = 'EN JEU';
-
-    if (state.settings?.closeOnLaunch) {
-      setTimeout(() => api.window.close(), 1200);
-    }
-  } catch (err) {
-    setLaunching(false);
-    setHint(err.message, 'error');
-    toast(err.message, 'error', 12000);
-  }
-}
-
-/* ------------------------------------------------------------------ *
- *  Parametres
- * ------------------------------------------------------------------ */
-
-async function openSettings() {
-  // On relit les reglages plutot que de faire confiance a la copie en memoire :
-  // c'est le processus principal qui fait autorite, et lui seul connait les
-  // valeurs imposees.
-  try {
-    state.settings = await api.settings.get();
-  } catch {
-    // Lecture impossible : on affiche la derniere copie connue.
-  }
-  const s = state.settings;
-  $('input-max-ram').value = s.maxRamMb;
-  $('output-max-ram').textContent = `${(s.maxRamMb / 1024).toFixed(1)} Go`;
-  // Le curseur ne doit pas laisser depasser la memoire physique.
-  if (s.systemRamMb) $('input-max-ram').max = Math.min(16384, s.systemRamMb);
-  $('ram-help').textContent = s.systemRamMb
-    ? `Ta machine dispose de ${(s.systemRamMb / 1024).toFixed(0)} Go. `
-      + `Valeur conseillee : ${(s.recommendedRamMb / 1024).toFixed(1)} Go. `
-      + 'Au-dela de la moitie de ta memoire, le systeme ralentit au lieu de gagner.'
-    : 'Ne depasse pas la moitie de la memoire de ta machine.';
-  $('input-game-root').value = s.gameRoot || state.info.defaultRoot;
-  $('input-java-path').value = s.javaPath || '';
-  $('input-jvm-args').value = s.jvmArgs || '';
-  $('check-join-server').checked = Boolean(s.joinServerOnLaunch);
-  $('check-close-launcher').checked = Boolean(s.closeOnLaunch);
-  $('modal-settings').hidden = false;
-}
-
-async function saveSettings(patch) {
-  try {
-    state.settings = await api.settings.save(patch);
-    return state.settings;
-  } catch (err) {
-    // Un reglage perdu en silence est pire qu'un reglage refuse bruyamment :
-    // le joueur croirait son choix pris en compte.
-    toast(`Reglage non enregistre : ${err.message}`, 'error', 8000);
-    throw err;
-  }
-}
-
-/* ------------------------------------------------------------------ *
- *  Modpack et actualites
- * ------------------------------------------------------------------ */
-
-function renderNews(items) {
-  const list = $('news-list');
-  if (!items.length) {
-    list.innerHTML = '<li class="news__empty">Aucune actualite pour le moment.</li>';
-    return;
-  }
-  list.innerHTML = '';
-  for (const item of items.slice(0, 12)) {
-    const li = document.createElement('li');
-    li.className = 'news__item';
-    li.innerHTML = `
-      <h3>${escapeHtml(item.title || 'Sans titre')}</h3>
-      <p>${escapeHtml(item.body || item.text || '')}</p>
-      ${item.date ? `<time>${escapeHtml(item.date)}</time>` : ''}`;
-    list.appendChild(li);
-  }
-}
-
-/**
- * Extrait l'identifiant d'une video YouTube, quelle que soit la forme du lien
- * (youtube.com/watch?v=..., youtu.be/..., /embed/...). Renvoie null si le lien
- * ne pointe pas vers YouTube : on refuse alors d'ouvrir la fenetre plutot que
- * d'injecter une URL arbitraire dans l'iframe.
- */
+/** Identifiant d'une vidéo YouTube, ou null si le lien n'y mène pas. */
 function youtubeId(url) {
   const match = String(url || '').match(
     /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
@@ -268,340 +73,406 @@ function youtubeId(url) {
 }
 
 /* ------------------------------------------------------------------ *
- *  Mods optionnels
+ *  Pseudo
  * ------------------------------------------------------------------ */
 
-function formatSize(octets) {
-  return octets >= 1024 * 1024
-    ? `${(octets / 1024 / 1024).toFixed(1)} Mo`
-    : `${Math.round(octets / 1024)} Ko`;
+function showView(name) {
+  $('view-login').hidden = name !== 'login';
+  $('view-main').hidden = name !== 'main';
 }
 
-/** Met a jour le total affiche en bas de la fenetre. */
-function refreshOptionsCount() {
-  const coches = [...document.querySelectorAll('.option__check:checked')];
-  const octets = coches.reduce((total, el) => total + Number(el.dataset.size || 0), 0);
-  $('options-count').textContent = coches.length
-    ? `${coches.length} mod${coches.length > 1 ? 's' : ''} selectionne${coches.length > 1 ? 's' : ''} — ${formatSize(octets)}`
-    : 'Aucun mod selectionne';
+function showLoginError(message) {
+  $('login-error').textContent = message || '';
+  $('login-error').hidden = !message;
 }
 
-function renderOptionalMods(mods) {
-  const liste = $('options-list');
-  if (!mods.length) {
-    liste.innerHTML = '<p class="options__loading">Aucun mod optionnel propose pour le moment.</p>';
-    $('options-count').textContent = '';
+function openLogin() {
+  showLoginError('');
+  $('btn-login-back').hidden = !state.account;
+  $('input-pseudo').value = state.account?.name || '';
+  showView('login');
+  $('input-pseudo').focus();
+  $('input-pseudo').select();
+}
+
+function applyAccount(account) {
+  const firstTime = !state.account;
+  state.account = account;
+  if (!account) {
+    openLogin();
     return;
   }
-
-  liste.innerHTML = '';
-  for (const mod of mods) {
-    const item = document.createElement('label');
-    item.className = 'option';
-    item.innerHTML = `
-      <input type="checkbox" class="option__check" value="${escapeHtml(mod.id)}"
-             data-size="${mod.size}" ${mod.enabled ? 'checked' : ''}>
-      <span class="option__body">
-        <span class="option__name">${escapeHtml(mod.name)}</span>
-        <span class="option__desc">${escapeHtml(mod.description || '')}</span>
-      </span>
-      <span class="option__size">${formatSize(mod.size)}</span>`;
-    item.querySelector('.option__check').addEventListener('change', refreshOptionsCount);
-    liste.appendChild(item);
-  }
-  refreshOptionsCount();
+  $('account-name').textContent = account.name;
+  $('account-avatar').src = account.avatarUrl || 'assets/icon.png';
+  showView('main');
+  if (firstTime) loadModpackInfo();
 }
 
-async function openOptions() {
-  $('modal-options').hidden = false;
-  $('options-list').innerHTML = '<p class="options__loading">Chargement de la liste...</p>';
-  $('options-count').textContent = '';
+async function submitPseudo(event) {
+  event.preventDefault();
+  const button = $('btn-login');
+  showLoginError('');
+  button.disabled = true;
   try {
-    renderOptionalMods(await api.modpack.optionalMods());
+    applyAccount(await api.account.connecter($('input-pseudo').value.trim()));
   } catch (err) {
-    $('options-list').innerHTML = `<p class="options__loading">Liste indisponible : ${escapeHtml(err.message)}</p>`;
-  }
-}
-
-async function saveOptions() {
-  const ids = [...document.querySelectorAll('.option__check:checked')].map((el) => el.value);
-  const bouton = $('btn-options-save');
-  bouton.disabled = true;
-  try {
-    await api.modpack.setOptionalMods(ids);
-    $('modal-options').hidden = true;
-    // Les mods sont installes au lancement, pas tout de suite : le joueur doit
-    // savoir pourquoi rien ne se telecharge a l'instant.
-    toast(
-      ids.length
-        ? `${ids.length} mod${ids.length > 1 ? 's' : ''} sera installe au prochain lancement.`
-        : 'Les mods optionnels seront retires au prochain lancement.',
-      'success',
-      7000,
-    );
-  } catch (err) {
-    toast(`Enregistrement impossible : ${err.message}`, 'error');
+    showLoginError(err.message);
   } finally {
-    bouton.disabled = false;
+    button.disabled = false;
   }
 }
 
-/**
- * Affiche la consigne d'authentification sur l'ecran de saisie du pseudo.
- * C'est le bon moment : le joueur y choisit son identite, autant lui dire
- * tout de suite comment la proteger. Le launcher ne gere aucun mot de passe,
- * c'est le plugin du serveur qui s'en charge.
- */
+/** Consigne AuthMe : les lignes commençant par "/" sont des commandes à recopier. */
 function renderAuthNotice(notice) {
-  const bloc = $('auth-notice');
-  if (!notice?.body) {
-    bloc.hidden = true;
-    return;
-  }
+  $('auth-notice').hidden = !notice?.body;
+  if (!notice?.body) return;
   $('auth-notice-title').textContent = notice.title || '';
-
-  // Les lignes qui commencent par "/" sont des commandes a recopier au
-  // caractere pres : on les detache du texte courant pour qu'elles ne s'y
-  // noient pas. Le texte vient du manifest, donc on l'echappe avant de le
-  // passer en HTML.
   $('auth-notice-text').innerHTML = String(notice.body)
     .split('\n')
-    .map((ligne) => {
-      const propre = escapeHtml(ligne);
-      return ligne.trim().startsWith('/')
-        ? `<code class="notice__cmd">${propre.trim()}</code>`
-        : propre;
-    })
+    .map((line) => (line.trim().startsWith('/')
+      ? `<code class="notice__cmd">${escapeHtml(line.trim())}</code>`
+      : escapeHtml(line)))
     .join('\n');
-
-  bloc.hidden = false;
 }
 
-/**
- * Ouvre la bande-annonce dans le navigateur du joueur.
- *
- * YouTube refuse d'etre integre au launcher : une iframe depuis une page
- * file:// n'a pas d'origine valide (erreur 153), et charger la page YouTube
- * dans une fenetre Electron fait apparaitre la banniere de consentement aux
- * cookies par-dessus la video. Le navigateur du joueur, lui, est deja
- * configure : la lecture y est immediate et en pleine qualite.
- */
-async function openTrailer() {
-  const url = state.info?.links?.trailer;
-  if (!youtubeId(url)) return;
-  try {
-    await api.folders.external(url);
-  } catch (err) {
-    toast(`Impossible d'ouvrir la bande-annonce : ${err.message}`, 'error');
+/* ------------------------------------------------------------------ *
+ *  Accueil
+ * ------------------------------------------------------------------ */
+
+function renderNews(items) {
+  const list = $('news-list');
+  if (!items.length) {
+    list.innerHTML = '<li class="news__empty">Aucune actualité pour le moment.</li>';
+    return;
   }
+  list.innerHTML = items.slice(0, 12).map((item) => `
+    <li class="news__item">
+      <h3>${escapeHtml(item.title || 'Sans titre')}</h3>
+      <p>${escapeHtml(item.body || '')}</p>
+      ${item.date ? `<time>${escapeHtml(item.date)}</time>` : ''}
+    </li>`).join('');
 }
 
-/**
- * Annonce au joueur qu'il sera emmene directement sur le serveur.
- * Le texte suit le reglage : s'il decoche l'option, il doit comprendre que le
- * jeu s'ouvrira sur le menu principal au lieu du serveur.
- */
-function updateAutojoinNotice(server) {
-  const notice = $('autojoin');
-  const active = state.settings?.joinServerOnLaunch !== false;
-  notice.hidden = state.launching;
-  if (active) {
-    const host = server?.host || state.info?.server?.host || 'le serveur';
-    notice.innerHTML = `Connexion directe a <strong>${escapeHtml(host)}</strong>`;
+function renderLinks(links = {}) {
+  $('btn-discord').hidden = !links.discord;
+  $('btn-trailer').hidden = !youtubeId(links.trailer);
+}
+
+/** Ligne sous le pseudo, quand rien n'est en cours. */
+function setLaunchLine(html, kind = '') {
+  const line = $('launch-line');
+  line.innerHTML = html;
+  line.className = `launch__line${kind ? ` is-${kind}` : ''}`;
+}
+
+function showIdleLine() {
+  const host = state.info?.server?.host;
+  if (state.settings?.joinServerOnLaunch !== false && host) {
+    setLaunchLine(`Connexion directe à <strong>${escapeHtml(host)}</strong>`);
   } else {
-    notice.textContent = 'Ouverture sur le menu principal';
+    setLaunchLine('Le jeu s’ouvrira sur le menu principal');
   }
 }
 
-/**
- * Interroge le serveur et met a jour la pastille d'etat.
- * Le serveur du manifest prime : il peut changer sans nouveau launcher.
- */
-async function refreshServerStatus(target) {
+async function refreshServerStatus() {
+  const { host, port } = state.info.server;
   const dot = $('status-dot');
   const text = $('status-text');
-  dot.className = 'status__dot is-checking';
-  text.textContent = 'Verification du serveur...';
+  dot.className = 'dot is-checking';
 
   try {
-    const status = await api.server.status(target);
+    const status = await api.server.status({ host, port });
     if (status.online) {
-      dot.className = 'status__dot is-online';
-      const { online, max } = status.players;
-      const joueurs = online === 0
-        ? 'aucun joueur connecte'
-        : `${online} joueur${online > 1 ? 's' : ''} en ligne`;
-      text.textContent = `En ligne — ${joueurs}${max ? ` (max ${max})` : ''}`;
-      text.title = status.motd || '';
+      dot.className = 'dot is-online';
+      const { online } = status.players;
+      text.textContent = online ? `En ligne · ${plural(online, 'joueur')}` : 'En ligne';
     } else {
-      dot.className = 'status__dot is-offline';
-      text.textContent = 'Serveur hors ligne';
-      text.title = '';
+      dot.className = 'dot is-offline';
+      text.textContent = 'Hors ligne';
     }
   } catch {
-    // L'etat du serveur est purement informatif : en cas d'echec on reste muet
-    // plutot que d'alarmer le joueur, qui peut tres bien vouloir jouer quand meme.
-    dot.className = 'status__dot';
-    text.textContent = '';
+    dot.className = 'dot';
+    text.textContent = 'État inconnu';
   }
 }
 
 async function loadModpackInfo() {
   try {
     const info = await api.modpack.info();
+    Object.assign(state.info, {
+      server: info.server,
+      links: info.links,
+      authNotice: info.authNotice,
+    });
+
     $('pack-version').textContent = info.modpackVersion
-      ? `Modpack ${info.modpackVersion} — Minecraft ${info.minecraftVersion} / Forge ${info.forgeVersion}`
-      : `Minecraft ${info.minecraftVersion} — Forge ${info.forgeVersion}`;
-    const adresse = info.server.host + (info.server.port === 25565 ? '' : `:${info.server.port}`);
-    $('server-address').textContent = adresse;
-    state.serverAddress = adresse;
-    renderNews(info.news || []);
+      ? `Modpack ${info.modpackVersion} · Minecraft ${info.minecraftVersion} · Forge ${info.forgeVersion}`
+      : `Minecraft ${info.minecraftVersion} · Forge ${info.forgeVersion}`;
+    $('server-address').textContent = serverAddress();
+    renderNews(info.news);
+    renderLinks(info.links);
+    renderAuthNotice(info.authNotice);
+    if (!state.launching) showIdleLine();
 
-    updateAutojoinNotice(info.server);
-
-    if (info.authNotice) {
-      state.info.authNotice = info.authNotice;
-      renderAuthNotice(info.authNotice);
-    }
-
-    if (info.links) {
-      state.info.links = { ...state.info.links, ...info.links };
-      $('btn-discord').hidden = !state.info.links.discord;
-      $('btn-trailer').hidden = !youtubeId(state.info.links.trailer);
-    }
-
-    refreshServerStatus(info.server);
-    // Rafraichissement periodique : le joueur laisse souvent le launcher ouvert.
-    clearInterval(state.statusTimer);
-    state.statusTimer = setInterval(() => refreshServerStatus(info.server), 60000);
     if (info.offline) {
-      toast('Manifest du modpack injoignable : le launcher utilise sa derniere copie locale.', 'error', 8000);
+      toast('Modpack injoignable : le launcher utilise sa dernière copie locale.', 'error', 8000);
     }
   } catch (err) {
-    $('pack-version').textContent = 'Modpack Aethoria';
+    renderNews([]);
     toast(`Informations du modpack indisponibles : ${err.message}`, 'error', 8000);
+  }
+
+  refreshServerStatus();
+  clearInterval(state.statusTimer);
+  state.statusTimer = setInterval(refreshServerStatus, 60000);
+}
+
+function serverAddress() {
+  const { host, port } = state.info.server;
+  return port === 25565 ? host : `${host}:${port}`;
+}
+
+async function copyServerAddress() {
+  try {
+    await navigator.clipboard.writeText(serverAddress());
+    toast(`Adresse copiée : ${serverAddress()}`, 'success', 3000);
+  } catch {
+    toast('Copie impossible.', 'error', 3000);
   }
 }
 
-/* ------------------------------------------------------------------ *
- *  Decor
- * ------------------------------------------------------------------ */
-
-/** Fait defiler les captures du serveur en arriere-plan. */
 function startBackdropRotation() {
   const layers = [...document.querySelectorAll('.backdrop__layer')];
-  if (layers.length < 2) return;
   let index = 0;
   setInterval(() => {
     layers[index].classList.remove('is-visible');
     index = (index + 1) % layers.length;
     layers[index].classList.add('is-visible');
-  }, 14000);
+  }, 12000);
 }
 
 /* ------------------------------------------------------------------ *
- *  Cablage des evenements
+ *  Lancement
  * ------------------------------------------------------------------ */
 
-function wireTitlebar() {
-  $('btn-minimize').addEventListener('click', () => api.window.minimize());
-  $('btn-close').addEventListener('click', () => api.window.close());
+function setLaunching(active) {
+  state.launching = active;
+  $('btn-play').disabled = active;
+  $('btn-play-label').textContent = active ? 'Lancement' : 'Jouer';
+  $('btn-account').disabled = active;
+  $('progress').hidden = !active;
+  $('progress-fill').style.width = '0%';
+  $('progress-detail').textContent = '';
 }
 
-function wireLogin() {
-  $('form-compte').addEventListener('submit', (e) => {
-    e.preventDefault();
-    validerFormulaire();
-  });
+async function play() {
+  if (state.launching) return;
+  setLaunching(true);
+  setLaunchLine('Préparation…');
 
-  $('login-back').addEventListener('click', () => {
-    showLoginError('');
-    showView('main');
-  });
-}
+  try {
+    await api.game.launch();
+    $('progress').hidden = true;
+    $('btn-play-label').textContent = 'En jeu';
+    setLaunchLine('Minecraft est lancé. Bon jeu !', 'success');
 
-/** Le bouton du pseudo ramene a l'ecran de saisie, sans perdre le pseudo actuel. */
-function wireAccountButton() {
-  $('btn-account').addEventListener('click', () => {
-    showView('login');
-    $('login-back').hidden = false; // il y a deja un pseudo : on doit pouvoir revenir
-    $('input-pseudo').value = state.accounts[0]?.name || '';
-    $('input-pseudo').focus();
-    $('input-pseudo').select();
-  });
-}
+    // Rappel au moment où il sert : le joueur arrive sur le serveur.
+    const notice = state.info.authNotice;
+    if (notice?.body) toast(`${notice.title}\n\n${notice.body}`, 'info', 20000);
 
-function wireDock() {
-  $('btn-play').addEventListener('click', play);
-  $('btn-settings').addEventListener('click', openSettings);
-
-  $('btn-trailer').addEventListener('click', openTrailer);
-
-  $('btn-copy-ip').addEventListener('click', async () => {
-    if (!state.serverAddress) return;
-    try {
-      await navigator.clipboard.writeText(state.serverAddress);
-      toast(`Adresse copiee : ${state.serverAddress}`, 'success', 3500);
-    } catch {
-      toast('Copie impossible depuis cette fenetre.', 'error', 4000);
-    }
-  });
-
-  $('btn-options').addEventListener('click', openOptions);
-  for (const el of $('modal-options').querySelectorAll('[data-close-options]')) {
-    el.addEventListener('click', () => { $('modal-options').hidden = true; });
+    if (state.settings.closeOnLaunch) setTimeout(() => api.window.close(), 1200);
+  } catch (err) {
+    setLaunching(false);
+    setLaunchLine(escapeHtml(err.message), 'error');
   }
-  $('btn-options-save').addEventListener('click', saveOptions);
-
-  $('btn-discord').addEventListener('click', async () => {
-    const url = state.info?.links?.discord;
-    if (!url) return;
-    try {
-      await api.folders.external(url);
-    } catch (err) {
-      toast(`Impossible d'ouvrir le Discord : ${err.message}`, 'error');
-    }
-  });
 }
 
-function wireSettings() {
-  const modal = $('modal-settings');
+function wireGameEvents() {
+  api.game.onStatus(({ message }) => {
+    if (state.launching) setLaunchLine(escapeHtml(message));
+  });
 
-  /**
-   * Ferme la fenetre en enregistrant d'abord toute saisie encore en attente.
-   * L'enregistrement ne doit jamais empecher la fermeture : si l'ecriture
-   * echoue (disque plein, droits insuffisants), le joueur se retrouverait
-   * prisonnier d'une fenetre qui refuse de se fermer.
-   */
-  const fermerSettings = async () => {
-    try {
-      if (jvmTimer) await enregistrerJvm();
-    } catch (err) {
-      toast(`Reglages non enregistres : ${err.message}`, 'error', 8000);
-    } finally {
-      modal.hidden = true;
+  api.game.onProgress((p) => {
+    const percent = Math.max(0, Math.min(100, p.percent || 0));
+    $('progress-fill').style.width = `${percent}%`;
+
+    const parts = [`${Math.round(percent)} %`];
+    if (p.totalBytes) parts.push(`${formatBytes(p.bytes)} / ${formatBytes(p.totalBytes)}`);
+    if (p.bytesPerSecond > 0) parts.push(`${formatBytes(p.bytesPerSecond)}/s`);
+    if (p.etaSeconds > 2) parts.push(`${formatDuration(p.etaSeconds)} restantes`);
+    $('progress-detail').textContent = parts.join('  ·  ');
+  });
+
+  api.game.onFirstRun(() => {
+    toast(
+      'Première installation\n\n'
+      + 'Le launcher télécharge Minecraft, Forge et les mods du serveur (environ 1,3 Go). '
+      + 'Compte 2 à 5 minutes. Les prochains lancements seront immédiats.',
+      'info',
+      30000,
+    );
+  });
+
+  api.game.onExit(({ error, log, diagnostic }) => {
+    setLaunching(false);
+    if (!error) {
+      showIdleLine();
+      return;
     }
-  };
+    if (diagnostic) {
+      setLaunchLine(escapeHtml(diagnostic.titre), 'error');
+      const extrait = diagnostic.extrait ? `\n\n(${diagnostic.extrait})` : '';
+      toast(`${diagnostic.titre}\n\n${diagnostic.cause}\n\n${diagnostic.solution}${extrait}`, 'error', 30000);
+    } else {
+      setLaunchLine(escapeHtml(error), 'error');
+      toast(`${error}\n\nRéglages → Journaux : envoie le dernier fichier au staff.`, 'error', 15000);
+    }
+    console.error('Sortie du jeu', log);
+  });
 
-  for (const el of modal.querySelectorAll('[data-close-modal]')) {
-    el.addEventListener('click', fermerSettings);
+  api.game.onLog(({ line }) => console.log('[minecraft]', line));
+}
+
+/* ------------------------------------------------------------------ *
+ *  Panneaux latéraux
+ * ------------------------------------------------------------------ */
+
+const drawerCloseHooks = {};
+
+function openDrawer(id) {
+  $(id).hidden = false;
+}
+
+async function closeDrawer(id) {
+  try {
+    await drawerCloseHooks[id]?.();
+  } finally {
+    $(id).hidden = true;
+  }
+}
+
+function wireDrawers() {
+  for (const drawer of document.querySelectorAll('.drawer')) {
+    for (const el of drawer.querySelectorAll('[data-close]')) {
+      el.addEventListener('click', () => closeDrawer(drawer.id));
+    }
   }
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (!$('modal-options').hidden) $('modal-options').hidden = true;
-    else if (!modal.hidden) fermerSettings();
+    const open = [...document.querySelectorAll('.drawer')].find((d) => !d.hidden);
+    if (open) closeDrawer(open.id);
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ *  Mods optionnels
+ * ------------------------------------------------------------------ */
+
+function refreshOptionsCount() {
+  const checked = [...document.querySelectorAll('#options-list input:checked')];
+  const bytes = checked.reduce((total, el) => total + Number(el.dataset.size), 0);
+  $('options-count').textContent = checked.length
+    ? `${plural(checked.length, 'mod')} · ${formatBytes(bytes)}`
+    : 'Aucun mod sélectionné';
+}
+
+function renderOptionalMods(mods) {
+  const list = $('options-list');
+  if (!mods.length) {
+    list.innerHTML = '<p class="help">Aucun mod optionnel proposé pour le moment.</p>';
+    return;
+  }
+  list.innerHTML = mods.map((mod) => `
+    <label class="option">
+      <span class="switch__text">
+        <strong>${escapeHtml(mod.name)}<small>${formatBytes(mod.size)}</small></strong>
+        <span>${escapeHtml(mod.description || '')}</span>
+      </span>
+      <span class="switch">
+        <input type="checkbox" value="${escapeHtml(mod.id)}" data-size="${Number(mod.size) || 0}" ${mod.enabled ? 'checked' : ''}>
+        <span class="switch__track"></span>
+      </span>
+    </label>`).join('');
+  refreshOptionsCount();
+}
+
+async function openOptions() {
+  $('options-list').innerHTML = '<p class="help">Chargement…</p>';
+  $('options-count').textContent = '';
+  openDrawer('drawer-options');
+  try {
+    renderOptionalMods(await api.modpack.optionalMods());
+  } catch (err) {
+    $('options-list').innerHTML = `<p class="help">Liste indisponible : ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+async function saveOptions() {
+  const ids = [...document.querySelectorAll('#options-list input:checked')].map((el) => el.value);
+  const button = $('btn-options-save');
+  button.disabled = true;
+  try {
+    await api.modpack.setOptionalMods(ids);
+    await closeDrawer('drawer-options');
+    toast(
+      ids.length
+        ? `${plural(ids.length, 'mod')} installé${ids.length > 1 ? 's' : ''} au prochain lancement.`
+        : 'Les mods optionnels seront retirés au prochain lancement.',
+      'success',
+    );
+  } catch (err) {
+    toast(`Enregistrement impossible : ${err.message}`, 'error');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Réglages
+ * ------------------------------------------------------------------ */
+
+async function saveSettings(patch) {
+  try {
+    state.settings = { ...state.settings, ...(await api.settings.save(patch)) };
+  } catch (err) {
+    toast(`Réglage non enregistré : ${err.message}`, 'error', 8000);
+    throw err;
+  }
+}
+
+const formatRam = (mb) => `${(mb / 1024).toFixed(1).replace('.0', '')} Go`;
+
+async function openSettings() {
+  state.settings = await api.settings.get();
+  const s = state.settings;
+
+  $('input-ram').max = Math.min(16384, s.systemRamMb);
+  $('input-ram').value = s.maxRamMb;
+  $('output-ram').textContent = formatRam(s.maxRamMb);
+  $('ram-help').textContent = `Ta machine a ${formatRam(s.systemRamMb)}. Conseillé : ${formatRam(s.recommendedRamMb)}.`;
+  $('check-join-server').checked = s.joinServerOnLaunch;
+  $('check-close-launcher').checked = s.closeOnLaunch;
+  $('input-game-root').value = s.gameRoot || state.info.defaultRoot;
+  $('input-java-path').value = s.javaPath || '';
+  $('input-jvm-args').value = s.jvmArgs || '';
+
+  openDrawer('drawer-settings');
+}
+
+function wireSettings() {
+  const ram = $('input-ram');
+  ram.addEventListener('input', () => { $('output-ram').textContent = formatRam(ram.value); });
+  ram.addEventListener('change', () => {
+    const maxRamMb = Number(ram.value);
+    saveSettings({ maxRamMb, minRamMb: Math.max(1024, Math.floor(maxRamMb / 2)) }).catch(() => {});
   });
 
-  const ram = $('input-max-ram');
-  ram.addEventListener('input', () => {
-    $('output-max-ram').textContent = `${(ram.value / 1024).toFixed(1)} Go`;
+  $('check-join-server').addEventListener('change', async (e) => {
+    await saveSettings({ joinServerOnLaunch: e.target.checked }).catch(() => {});
+    if (!state.launching) showIdleLine();
   });
-  ram.addEventListener('change', async () => {
-    const maxRamMb = Number(ram.value);
-    // On garde -Xms a la moitie de -Xmx : la JVM demarre plus vite sans
-    // reserver inutilement toute la memoire des le lancement.
-    await saveSettings({ maxRamMb, minRamMb: Math.max(1024, Math.floor(maxRamMb / 2)) });
-    $('output-max-ram').textContent = `${(state.settings.maxRamMb / 1024).toFixed(1)} Go`;
+  $('check-close-launcher').addEventListener('change', (e) => {
+    saveSettings({ closeOnLaunch: e.target.checked }).catch(() => {});
   });
 
   $('btn-pick-folder').addEventListener('click', async () => {
@@ -609,7 +480,7 @@ function wireSettings() {
     if (!folder) return;
     await saveSettings({ gameRoot: folder });
     $('input-game-root').value = folder;
-    toast('Dossier du jeu modifie. Les fichiers seront retelecharges au prochain lancement.', 'info', 8000);
+    toast('Dossier modifié : le jeu y sera téléchargé au prochain lancement.', 'info');
   });
 
   $('btn-pick-java').addEventListener('click', async () => {
@@ -622,41 +493,30 @@ function wireSettings() {
   $('btn-reset-java').addEventListener('click', async () => {
     await saveSettings({ javaPath: null });
     $('input-java-path').value = '';
-    toast('Java repasse en mode automatique.', 'success', 4000);
   });
 
-  // "change" ne se declenche qu'a la perte de focus : fermer la fenetre en
-  // pleine saisie perdait le texte tape. On enregistre donc aussi pendant la
-  // frappe, avec un delai pour ne pas ecrire a chaque touche.
+  // Enregistré pendant la frappe : fermer le panneau ne doit rien perdre.
   const jvm = $('input-jvm-args');
   let jvmTimer = null;
-  const enregistrerJvm = () => {
+  const saveJvm = () => {
     clearTimeout(jvmTimer);
     jvmTimer = null;
     return saveSettings({ jvmArgs: jvm.value });
   };
   jvm.addEventListener('input', () => {
     clearTimeout(jvmTimer);
-    jvmTimer = setTimeout(enregistrerJvm, 600);
+    jvmTimer = setTimeout(() => saveJvm().catch(() => {}), 600);
   });
-  jvm.addEventListener('change', enregistrerJvm);
-  $('check-join-server').addEventListener('change', async (e) => {
-    await saveSettings({ joinServerOnLaunch: e.target.checked });
-    updateAutojoinNotice(state.info?.server);
-  });
-  $('check-close-launcher').addEventListener('change', (e) => {
-    saveSettings({ closeOnLaunch: e.target.checked }).catch(() => {});
-  });
+  drawerCloseHooks['drawer-settings'] = () => (jvmTimer ? saveJvm().catch(() => {}) : null);
 
   $('btn-open-game-folder').addEventListener('click', () => api.folders.game());
   $('btn-open-logs').addEventListener('click', () => api.folders.logs());
 
   $('btn-repair').addEventListener('click', async () => {
     try {
-      const done = await api.game.repair();
-      if (done) {
-        modal.hidden = true;
-        toast('Installation reinitialisee.', 'success', 6000);
+      if (await api.game.repair()) {
+        await closeDrawer('drawer-settings');
+        toast('Installation réinitialisée. Tout sera retéléchargé au prochain lancement.', 'success');
       }
     } catch (err) {
       toast(err.message, 'error', 9000);
@@ -664,142 +524,64 @@ function wireSettings() {
   });
 }
 
-function wireGameEvents() {
-  api.game.onStatus(({ message }) => {
-    $('progress-status').textContent = message;
-  });
-
-  api.game.onProgress((p) => {
-    const percent = Math.max(0, Math.min(100, p.percent || 0));
-    $('progress-fill').style.width = `${percent}%`;
-
-    if (!p.totalBytes) {
-      $('progress-percent').textContent = `${Math.round(percent)} %`;
-      return;
-    }
-
-    // Volume, puis debit et temps restant quand ils sont fiables : sur plus
-    // d'un gigaoctet, "284 Mo / 1,3 Go" seul ne dit pas s'il faut attendre une
-    // minute ou un quart d'heure.
-    const morceaux = [`${formatBytes(p.bytes)} / ${formatBytes(p.totalBytes)}`];
-    if (p.bytesPerSecond > 0) morceaux.push(`${formatBytes(p.bytesPerSecond)}/s`);
-    if (p.etaSeconds !== null && p.etaSeconds !== undefined && p.etaSeconds > 2) {
-      morceaux.push(formatDuration(p.etaSeconds));
-    }
-    $('progress-percent').textContent = morceaux.join('  ·  ');
-  });
-
-  api.game.onExit(({ code, error, log, diagnostic }) => {
-    setLaunching(false);
-    if (!error) {
-      setHint('Minecraft a ete ferme.');
-      return;
-    }
-
-    // Quand la cause est reconnue, on la dit en clair : un code de sortie
-    // n'apprend rien au joueur et l'envoie ecrire sur le Discord.
-    if (diagnostic) {
-      setHint(diagnostic.titre, 'error');
-      const extrait = diagnostic.extrait ? `\n\n(${diagnostic.extrait})` : '';
-      toast(
-        `${diagnostic.titre}\n\n${diagnostic.cause}\n\n${diagnostic.solution}${extrait}`,
-        'error',
-        30000,
-      );
-    } else {
-      setHint(error, 'error');
-      toast(
-        `${error}\n\nOuvre les Reglages puis \"Journaux\" et transmets le dernier fichier.`,
-        'error',
-        15000,
-      );
-    }
-    console.error('Sortie du jeu', { code, log });
-  });
-
-  api.game.onLog(({ line }) => console.log('[minecraft]', line));
-
-  // Premiere installation : le telechargement dure plusieurs minutes et rien
-  // ne bouge a l'ecran au debut. Sans un mot, le joueur croit a un plantage.
-  api.game.onFirstRun(() => {
-    toast(
-      'Premiere installation\n\n'
-      + 'Le launcher telecharge Minecraft, Forge et les 71 mods du modpack, '
-      + 'soit environ 1,3 Go. Compte 2 a 5 minutes selon ta connexion.\n\n'
-      + 'Tu ne le feras qu\u2019une fois : les prochains lancements seront '
-      + 'immediats. Laisse la fenetre ouverte.',
-      'info',
-      30000,
-    );
-  });
-}
+/* ------------------------------------------------------------------ *
+ *  Mise à jour du launcher
+ * ------------------------------------------------------------------ */
 
 function wireUpdater() {
-  const bar = $('updatebar');
-  const text = $('updatebar-text');
-  const install = $('btn-update-install');
-
-  const titre = $('updatebar-title');
-  const manuel = $('btn-update-manual');
-
-  manuel.addEventListener('click', async () => {
-    const url = state.info?.downloadUrl;
-    if (!url) return;
-    try {
-      await api.folders.external(url);
-    } catch (err) {
-      toast(`Impossible d'ouvrir le lien : ${err.message}`, 'error');
-    }
-  });
+  const show = (title, detail, { install = false, manual = false } = {}) => {
+    $('update').hidden = false;
+    $('update-title').textContent = title;
+    $('update-detail').textContent = detail;
+    $('btn-update-install').hidden = !install;
+    $('btn-update-manual').hidden = !manual;
+  };
 
   api.updater.onStatus((status) => {
     switch (status.state) {
       case 'available':
-        bar.hidden = false;
-        manuel.hidden = true;
-        titre.textContent = `Mise a jour ${status.version}`;
-        text.textContent = 'Telechargement en cours...';
+        show(`Mise à jour ${status.version}`, 'Téléchargement…');
         break;
       case 'downloading':
-        bar.hidden = false;
-        manuel.hidden = true;
-        titre.textContent = 'Mise a jour en telechargement';
-        text.textContent = `${Math.round(status.percent)} % recus`;
+        show('Mise à jour', `Téléchargement : ${Math.round(status.percent)} %`);
         break;
       case 'ready':
-        bar.hidden = false;
-        manuel.hidden = true;
-        titre.textContent = `Version ${status.version} prete`;
-        text.textContent = 'Redemarre le launcher pour en profiter.';
-        install.hidden = false;
+        show(`Version ${status.version} prête`, 'Redémarre pour l’installer.', { install: true });
         break;
-      default: {
-        // Un echec silencieux laisse le joueur sur une version perimee sans
-        // qu'il puisse le deviner : c'est ainsi qu'un launcher coupe de son
-        // depot reste bloque des semaines. On le dit, et on donne le lien.
-        bar.hidden = false;
-        titre.textContent = 'Mise a jour indisponible';
-        text.textContent = 'Telecharge la derniere version a la main.';
-        install.hidden = true;
-        manuel.hidden = !state.info?.downloadUrl;
-        console.warn('Mise a jour impossible :', status.message);
-        break;
-      }
+      default:
+        // Passé sous silence, un échec laisserait le joueur sur une version
+        // périmée sans qu'il le sache.
+        show('Mise à jour impossible', 'Télécharge la dernière version.', { manual: true });
+        console.warn('Mise à jour impossible :', status.message);
     }
   });
 
-  install.addEventListener('click', () => api.updater.install());
+  $('btn-update-install').addEventListener('click', () => api.updater.install());
+  $('btn-update-manual').addEventListener('click', () => openLink(state.info.downloadUrl, 'le lien'));
 }
 
 /* ------------------------------------------------------------------ *
- *  Demarrage
+ *  Démarrage
  * ------------------------------------------------------------------ */
 
 async function init() {
-  wireTitlebar();
-  wireLogin();
-  wireAccountButton();
-  wireDock();
+  $('btn-minimize').addEventListener('click', () => api.window.minimize());
+  $('btn-close').addEventListener('click', () => api.window.close());
+  $('form-pseudo').addEventListener('submit', submitPseudo);
+  $('btn-login-back').addEventListener('click', () => showView('main'));
+  $('btn-account').addEventListener('click', openLogin);
+  $('btn-play').addEventListener('click', play);
+  // Hors ligne, Crafatar ne répond pas : l'icône du serveur remplace l'avatar.
+  $('account-avatar').addEventListener('error', (e) => { e.target.src = 'assets/icon.png'; }, { once: true });
+  $('btn-copy-ip').addEventListener('click', copyServerAddress);
+  $('btn-trailer').addEventListener('click', () => openLink(state.info.links.trailer, 'la bande-annonce'));
+  $('btn-discord').addEventListener('click', () => openLink(state.info.links.discord, 'le Discord'));
+  $('btn-options').addEventListener('click', openOptions);
+  $('btn-options-save').addEventListener('click', saveOptions);
+  $('btn-settings').addEventListener('click', () => openSettings().catch((err) => toast(err.message, 'error')));
+  $('options-list').addEventListener('change', refreshOptionsCount);
+
+  wireDrawers();
   wireSettings();
   wireGameEvents();
   wireUpdater();
@@ -807,17 +589,17 @@ async function init() {
 
   try {
     state.info = await api.app.info();
-    $('launcher-version').textContent = `v${state.info.version}`;
-    $('btn-discord').hidden = !state.info.links?.discord;
-    $('btn-trailer').hidden = !youtubeId(state.info.links?.trailer);
-    renderAuthNotice(state.info.authNotice);
     state.settings = await api.settings.get();
-    applyAccounts(await api.accounts.list());
+    $('launcher-version').textContent = `v${state.info.version}`;
+    $('server-address').textContent = serverAddress();
+    renderLinks(state.info.links);
+    renderAuthNotice(state.info.authNotice);
+    showIdleLine();
+    applyAccount(await api.account.get());
   } catch (err) {
-    toast(`Le launcher n'a pas pu demarrer correctement : ${err.message}`, 'error', 15000);
-    return;
+    showView('login');
+    showLoginError(`Le launcher n’a pas pu démarrer : ${err.message}`);
   }
-
 }
 
 document.addEventListener('DOMContentLoaded', init);
