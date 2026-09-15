@@ -3,10 +3,42 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { execFileSync } = require('child_process');
 const paths = require('./game/paths');
 const config = require('../shared/config');
 
 /** Persistance en JSON des preferences du launcher et du pseudo du joueur. */
+
+// Copie du pseudo dans le registre de Windows. Elle survit a la
+// desinstallation du launcher comme a la suppression de son dossier de
+// donnees : c'est elle qui rend le pseudo definitif sur la machine.
+const REGISTRE = 'HKCU\\Software\\Aethoria';
+
+function lireRegistre() {
+  if (process.platform !== 'win32') return null;
+  try {
+    const sortie = execFileSync('reg', ['query', REGISTRE, '/v', 'Pseudo'], {
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return sortie.match(/Pseudo\s+REG_SZ\s+(\S+)/)?.[1] || null;
+  } catch {
+    return null; // cle absente
+  }
+}
+
+function ecrireRegistre(pseudo) {
+  if (process.platform !== 'win32') return;
+  try {
+    execFileSync('reg', ['add', REGISTRE, '/v', 'Pseudo', '/t', 'REG_SZ', '/d', pseudo, '/f'], {
+      windowsHide: true,
+      stdio: 'ignore',
+    });
+  } catch {
+    // Filet de securite seulement : le fichier du compte reste la reference.
+  }
+}
 
 function readJson(file, fallback) {
   try {
@@ -86,10 +118,14 @@ const store = {
     return anciens.find((a) => a.id === data.selectedId) || anciens[0] || null;
   },
 
-  /** Il n'y a qu'un compte : changer de pseudo remplace le precedent. */
   saveAccount(account) {
     writeJson(paths.accountsFile, { account });
+    ecrireRegistre(account.name);
   },
+
+  /** Pseudo conserve dans le registre, ou null. */
+  getRegistryPseudo: lireRegistre,
+  saveRegistryPseudo: ecrireRegistre,
 };
 
 module.exports = store;

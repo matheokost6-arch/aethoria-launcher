@@ -46,7 +46,6 @@ const DOSSIER_PACK = path.resolve('pack');
 
 const ARTEFACTS = [
   'Aethoria-Setup.exe',
-  'Aethoria-Portable.exe',
   'Aethoria-Setup.exe.blockmap',
   'latest.yml',
 ];

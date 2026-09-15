@@ -86,26 +86,25 @@ function showLoginError(message) {
   $('login-error').hidden = !message;
 }
 
-function openLogin() {
-  showLoginError('');
-  $('btn-login-back').hidden = !state.account;
-  $('input-pseudo').value = state.account?.name || '';
-  showView('login');
-  $('input-pseudo').focus();
-  $('input-pseudo').select();
-}
-
 function applyAccount(account) {
-  const firstTime = !state.account;
   state.account = account;
   if (!account) {
-    openLogin();
+    showView('login');
+    $('input-pseudo').focus();
     return;
   }
   $('account-name').textContent = account.name;
   $('account-avatar').src = account.avatarUrl || 'assets/icon.png';
   showView('main');
-  if (firstTime) loadModpackInfo();
+  loadModpackInfo();
+}
+
+/** Le pseudo est définitif : on le fait confirmer avant de l'enregistrer. */
+function showConfirm(pseudo) {
+  $('form-pseudo').hidden = Boolean(pseudo);
+  $('login-confirm').hidden = !pseudo;
+  $('confirm-pseudo').textContent = pseudo || '';
+  if (!pseudo) $('input-pseudo').focus();
 }
 
 async function submitPseudo(event) {
@@ -114,8 +113,21 @@ async function submitPseudo(event) {
   showLoginError('');
   button.disabled = true;
   try {
-    applyAccount(await api.account.connecter($('input-pseudo').value.trim()));
+    showConfirm(await api.account.valider($('input-pseudo').value));
   } catch (err) {
+    showLoginError(err.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function confirmPseudo() {
+  const button = $('btn-confirm');
+  button.disabled = true;
+  try {
+    applyAccount(await api.account.connecter($('confirm-pseudo').textContent));
+  } catch (err) {
+    showConfirm(null);
     showLoginError(err.message);
   } finally {
     button.disabled = false;
@@ -259,7 +271,6 @@ function setLaunching(active) {
   state.launching = active;
   $('btn-play').disabled = active;
   $('btn-play-label').textContent = active ? 'Lancement' : 'Jouer';
-  $('btn-account').disabled = active;
   $('progress').hidden = !active;
   $('progress-fill').style.width = '0%';
   $('progress-detail').textContent = '';
@@ -568,8 +579,8 @@ async function init() {
   $('btn-minimize').addEventListener('click', () => api.window.minimize());
   $('btn-close').addEventListener('click', () => api.window.close());
   $('form-pseudo').addEventListener('submit', submitPseudo);
-  $('btn-login-back').addEventListener('click', () => showView('main'));
-  $('btn-account').addEventListener('click', openLogin);
+  $('btn-confirm').addEventListener('click', confirmPseudo);
+  $('btn-confirm-back').addEventListener('click', () => showConfirm(null));
   $('btn-play').addEventListener('click', play);
   // Hors ligne, Crafatar ne répond pas : l'icône du serveur remplace l'avatar.
   $('account-avatar').addEventListener('error', (e) => { e.target.src = 'assets/icon.png'; }, { once: true });

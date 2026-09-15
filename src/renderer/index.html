@@ -38,11 +38,18 @@
         <label class="label" for="input-pseudo">Ton pseudo</label>
         <input class="input input--large" id="input-pseudo" maxlength="16" spellcheck="false"
                placeholder="Baron" required>
-        <p class="help">3 à 16 caractères : lettres, chiffres et _. Garde toujours le même.</p>
+        <p class="help">3 à 16 caractères : lettres, chiffres et _. Choisis-le bien, il sera définitif.</p>
         <p class="login__error" id="login-error" role="alert" hidden></p>
-        <button class="btn btn--primary btn--block" type="submit" id="btn-login">Entrer dans Aethoria</button>
-        <button class="btn btn--ghost btn--block" type="button" id="btn-login-back" hidden>Annuler</button>
+        <button class="btn btn--primary btn--block" type="submit" id="btn-login">Continuer</button>
       </form>
+
+      <div class="confirm" id="login-confirm" hidden>
+        <p class="confirm__label">Tu vas jouer sous le pseudo</p>
+        <p class="confirm__name" id="confirm-pseudo"></p>
+        <p class="confirm__warning">Ce choix est définitif. Il ne pourra plus être changé, même en réinstallant le launcher.</p>
+        <button class="btn btn--primary btn--block" id="btn-confirm">Confirmer ce pseudo</button>
+        <button class="btn btn--ghost btn--block" id="btn-confirm-back">Modifier</button>
+      </div>
 
       <aside class="notice" id="auth-notice" hidden>
         <strong class="notice__title" id="auth-notice-title"></strong>
@@ -102,13 +109,13 @@
       </section>
 
       <footer class="playbar">
-        <button class="account" id="btn-account" title="Changer de pseudo">
+        <div class="account">
           <img class="account__avatar" id="account-avatar" alt="" width="40" height="40">
           <span class="account__text">
             <strong id="account-name">—</strong>
-            <span>Changer de pseudo</span>
+            <span>Ton pseudo</span>
           </span>
-        </button>
+        </div>
 
         <div class="launch">
           <p class="launch__line" id="launch-line"></p>

@@ -105,7 +105,15 @@ Les valeurs de repli, utilisées si le manifest est injoignable, sont dans
 
 ## Pseudo et sécurité
 
-Le launcher gère un seul pseudo, sans mot de passe. L'UUID est calculé comme
+Le pseudo est **définitif** : le joueur le confirme une fois, puis il ne peut
+plus le changer. Il est enregistré dans les données du launcher (conservées à
+la désinstallation) et copié dans le registre (`HKCU\Software\Aethoria`, valeur
+`Pseudo`), qui fait foi. Réinstaller le launcher ou supprimer son dossier ne
+suffit donc pas. Pour débloquer un joueur, supprime cette valeur sur son PC :
+`reg delete HKCU\Software\Aethoria /v Pseudo /f`. Ce verrou est local : un
+joueur averti peut toujours l'effacer, et c'est AuthMe qui protège les comptes.
+
+Pas de mot de passe dans le launcher. L'UUID est calculé comme
 le fait un serveur en `online-mode=false`, donc l'inventaire suit le joueur
 tant qu'il garde le même pseudo. C'est **AuthMe**, sur le serveur, qui protège
 les pseudos (`/register`, `/login`).

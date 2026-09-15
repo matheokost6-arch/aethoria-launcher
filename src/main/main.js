@@ -136,6 +136,7 @@ function registerIpc() {
 
   // --- Compte ---
   handle('account:get', () => auth.getAccount());
+  handle('account:valider', (pseudo) => auth.validerPseudo(pseudo));
   handle('account:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
 
   // --- Parametres ---
