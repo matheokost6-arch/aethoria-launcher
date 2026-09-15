@@ -16,6 +16,7 @@ const store = require('../store');
 const pkg = require('../../../package.json');
 
 let running = null; // un seul processus de jeu a la fois
+let stopRequested = false;
 
 /* ------------------------------------------------------------------ *
  *  Construction des arguments
@@ -58,7 +59,7 @@ function versionAtLeast(version, target) {
   return true;
 }
 
-function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHome, account, settings, server }) {
+function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHome, account, settings, server, menuServer }) {
   const separator = process.platform === 'win32' ? ';' : ':';
   // Le jar du client vient en dernier : les patches Forge presents dans les
   // bibliotheques doivent primer sur les classes vanilla.
@@ -67,6 +68,10 @@ function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHo
   const assetsDir = version.assets === 'pre-1.6' || version.assets === 'legacy'
     ? path.join(paths.assets, 'virtual', 'legacy')
     : paths.assets;
+
+  // Taille de la fenetre du jeu choisie dans les reglages ("1600x900").
+  const size = /^(\d+)x(\d+)$/.exec(settings.gameResolution || '');
+  const features = { has_custom_resolution: Boolean(size) };
 
   const vars = {
     natives_directory: nativesDir,
@@ -91,8 +96,8 @@ function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHo
     user_type: 'legacy',
     version_type: config.appName,
     user_properties: '{}',
-    resolution_width: 854,
-    resolution_height: 480,
+    resolution_width: size ? size[1] : 854,
+    resolution_height: size ? size[2] : 480,
   };
 
   const jvmArgs = [];
@@ -133,12 +138,18 @@ function buildCommand({ version, jarId, clientJar, classpath, nativesDir, javaHo
     }
   }
 
+  // Adresse lue par le menu Aethoria du jeu : un serveur change dans le
+  // manifest est pris en compte sans nouvelle version du mod.
+  if (menuServer) jvmArgs.push(`-Daethoria.server=${menuServer.host}:${menuServer.port}`);
+
   const extra = String(settings.jvmArgs || '').trim();
   if (extra) jvmArgs.push(...extra.split(/\s+/));
 
   const gameArgs = version.arguments?.game
-    ? flattenArguments(version.arguments.game, vars, {})
+    ? flattenArguments(version.arguments.game, vars, features)
     : substitute(version.minecraftArguments || '', vars).split(/\s+/).filter(Boolean);
+
+  if (settings.gameResolution === 'fullscreen') gameArgs.push('--fullscreen');
 
   // Connexion directe au serveur. Le drapeau a change en 1.20 : --server/--port
   // a laisse place a --quickPlayMultiplayer.
@@ -192,12 +203,55 @@ async function checkDiskSpace(onStatus) {
   }
 }
 
+/** Chaine NBT : longueur sur deux octets, puis le texte. */
+function nbtString(text) {
+  const body = Buffer.from(text, 'utf8');
+  const length = Buffer.alloc(2);
+  length.writeUInt16BE(body.length);
+  return Buffer.concat([length, body]);
+}
+
+const nbtTag = (type, name, payload) => Buffer.concat([Buffer.from([type]), nbtString(name), payload]);
+
+/**
+ * Ajoute Aethoria a la liste multijoueur de Minecraft (servers.dat, NBT non
+ * compresse). Seulement si le fichier n'existe pas encore : une liste que le
+ * joueur a deja remplie n'est jamais reecrite.
+ */
+async function ensureServerListed(server) {
+  const file = path.join(paths.root, 'servers.dat');
+  if (fs.existsSync(file)) return;
+
+  const address = server.port === 25565 ? server.host : `${server.host}:${server.port}`;
+  const entry = Buffer.concat([
+    nbtTag(8, 'name', nbtString(config.appName)),
+    nbtTag(8, 'ip', nbtString(address)),
+    Buffer.from([0]),
+  ]);
+  const count = Buffer.alloc(4);
+  count.writeInt32BE(1);
+  const servers = nbtTag(9, 'servers', Buffer.concat([Buffer.from([10]), count, entry]));
+  await fsp.writeFile(file, nbtTag(10, '', Buffer.concat([servers, Buffer.from([0])])));
+}
+
+/**
+ * Minecraft s'ouvre en francais des la premiere partie. Une langue deja
+ * choisie par le joueur dans options.txt est respectee.
+ */
+async function ensureFrenchByDefault() {
+  const file = path.join(paths.root, 'options.txt');
+  const content = await fsp.readFile(file, 'utf8').catch(() => '');
+  if (/^lang:/m.test(content)) return;
+  const separator = content && !content.endsWith('\n') ? '\n' : '';
+  await fsp.writeFile(file, `${content}${separator}lang:fr_fr\n`, 'utf8');
+}
+
 /**
  * Prepare tout ce qui est necessaire puis demarre le jeu.
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
  */
-async function launch({ onStatus, onProgress, onLog, onExit, onFirstRun }) {
+async function launch({ prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady }) {
   if (running) throw new Error('Le jeu est déjà en cours de lancement ou d’exécution.');
 
   const settings = store.getSettings();
@@ -245,34 +299,51 @@ async function launch({ onStatus, onProgress, onLog, onExit, onFirstRun }) {
     });
   }
 
-  const server = settings.joinServerOnLaunch
-    ? { ...config.server, ...(manifest.server || {}) }
-    : null;
+  // "Vérifier les fichiers" : tout est controle et retelecharge si besoin,
+  // sans demarrer le jeu.
+  if (prepareOnly) {
+    status('Tous les fichiers du jeu sont à jour.');
+    return { prepared: true, versionId };
+  }
 
+  const serveur = { ...config.server, ...(manifest.server || {}) };
   const command = buildCommand({
     ...installed,
     javaHome,
     account,
     settings,
-    server,
+    server: settings.autoJoinServer ? serveur : null,
+    menuServer: serveur,
   });
 
   status('Démarrage de Minecraft...');
+  await ensureFrenchByDefault();
+  await ensureServerListed(serveur);
   await writeLaunchLog(command, account);
 
+  // Detache : sous Windows, un processus enfant non detache est tue avec le
+  // launcher. Fermer le launcher (ou le voir planter) fermerait alors le jeu.
   const child = spawn(command.binary, command.args, {
     cwd: paths.root,
-    detached: false,
+    detached: true,
     windowsHide: true,
   });
   running = child;
+  stopRequested = false;
+  const startedAt = Date.now();
 
   const tail = [];
+  let ready = false;
   const pushLine = (line) => {
     if (!line.trim()) return;
     tail.push(line);
     if (tail.length > 60) tail.shift(); // on ne garde que la fin, seule utile au diagnostic
     onLog?.(line);
+    // Le moteur audio demarre juste avant l'affichage du menu : le jeu est pret.
+    if (!ready && /Sound engine started/i.test(line)) {
+      ready = true;
+      onReady?.();
+    }
   };
   child.stdout.on('data', (b) => b.toString().split(/\r?\n/).forEach(pushLine));
   child.stderr.on('data', (b) => b.toString().split(/\r?\n/).forEach(pushLine));
@@ -284,14 +355,18 @@ async function launch({ onStatus, onProgress, onLog, onExit, onFirstRun }) {
 
   child.on('close', (code) => {
     running = null;
-    if (code === 0) {
-      onExit?.({ code });
+    const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
+    store.addPlaySession(durationSeconds);
+
+    if (code === 0 || stopRequested) {
+      onExit?.({ code, durationSeconds, stopped: stopRequested });
       return;
     }
     const journal = tail.join('\n');
     onExit?.({
       code,
-      error: `Minecraft s'est ferme avec le code ${code}.`,
+      durationSeconds,
+      error: `Minecraft s'est fermé avec le code ${code}.`,
       log: journal,
       // Le journal contient presque toujours la cause : on la traduit ici
       // plutot que de laisser le joueur devant un code de sortie.
@@ -344,6 +419,7 @@ function isRunning() {
 
 function stop() {
   if (!running) return false;
+  stopRequested = true;
   running.kill();
   return true;
 }

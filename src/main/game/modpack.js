@@ -184,6 +184,25 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
 }
 
 /**
+ * Ce que le prochain lancement devra telecharger, estime sur la taille des
+ * fichiers : immediat, contrairement au controle SHA1 fait au lancement.
+ */
+async function pendingDownload(manifest, optionalEnabled = []) {
+  const files = normalizeFiles(manifest, { optionalEnabled });
+  let count = 0;
+  let bytes = 0;
+  await Promise.all(files.map(async (file) => {
+    const size = await fsp.stat(file.dest).then((s) => s.size, () => -1);
+    if (size === -1 || (file.size && size !== file.size)) {
+      count += 1;
+      bytes += file.size || 0;
+    }
+  }));
+  const firstInstall = !fs.existsSync(paths.versions) || fs.readdirSync(paths.versions).length === 0;
+  return { count, bytes, total: files.length, firstInstall };
+}
+
+/**
  * Catalogue des mods optionnels, enrichi de l'etat choisi par le joueur.
  * Ces mods sont purement clients : le serveur n'a rien a installer, et un
  * joueur qui n'en prend aucun joue exactement la meme partie.
@@ -202,4 +221,4 @@ function listOptionalMods(manifest, enabled = []) {
   }));
 }
 
-module.exports = { fetchManifest, sync, normalizeFiles, listOptionalMods };
+module.exports = { fetchManifest, sync, normalizeFiles, pendingDownload, listOptionalMods };

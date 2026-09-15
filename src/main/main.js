@@ -2,7 +2,8 @@
 
 const path = require('path');
 const fs = require('fs');
-const { app, BrowserWindow, ipcMain, shell, dialog, Menu } = require('electron');
+const os = require('os');
+const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray } = require('electron');
 const config = require('../shared/config');
 const paths = require('./game/paths');
 const store = require('./store');
@@ -10,9 +11,14 @@ const auth = require('./auth');
 const launcher = require('./game/launcher');
 const modpack = require('./game/modpack');
 const serverStatus = require('./game/serverStatus');
+const screenshots = require('./game/screenshots');
+const storage = require('./game/storage');
+const checkup = require('./game/checkup');
 const pkg = require('../../package.json');
 
 const isDev = process.argv.includes('--dev');
+// Lance avec Windows : le launcher demarre discretement pres de l'horloge.
+const startHidden = process.argv.includes('--hidden');
 
 // Une seule instance : deux launchers ouverts sur le meme dossier de jeu se
 // marcheraient dessus pendant les telechargements.
@@ -21,11 +27,53 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let mainWindow = null;
+let tray = null;
+
+const ICON = path.join(__dirname, '..', '..', 'build', 'icon.ico');
 
 function send(channel, payload) {
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send(channel, payload);
   }
+}
+
+/** Notification Windows, seulement si le joueur regarde ailleurs. */
+function notify(title, body) {
+  if (!Notification.isSupported() || mainWindow?.isFocused()) return;
+  const notification = new Notification({ title, body, icon: ICON });
+  notification.on('click', () => showWindow());
+  notification.show();
+}
+
+function showWindow() {
+  if (!mainWindow) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+}
+
+/** Icone pres de l'horloge : le launcher cache pendant la partie y reste accessible. */
+function createTray() {
+  tray = new Tray(ICON);
+  tray.setToolTip(config.appName);
+  tray.setContextMenu(Menu.buildFromTemplate([
+    { label: 'Afficher Aethoria', click: showWindow },
+    { label: 'Jouer', click: () => { showWindow(); send('tray:play', {}); } },
+    { type: 'separator' },
+    { label: 'Quitter', click: () => app.quit() },
+  ]));
+  tray.on('click', showWindow);
+}
+
+function applyOpenAtLogin(enabled) {
+  // En developpement, l'executable est Electron lui-meme : rien a enregistrer.
+  if (!app.isPackaged) return;
+  app.setLoginItemSettings({ openAtLogin: enabled, args: ['--hidden'] });
+}
+
+/** Progression dans la barre des taches : 0 a 1, 2 = indeterminee, -1 = aucune. */
+function setTaskbarProgress(value) {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.setProgressBar(value);
 }
 
 function createWindow() {
@@ -37,7 +85,7 @@ function createWindow() {
     frame: false,             // barre de titre dessinee par le renderer
     backgroundColor: '#0b0d13',
     show: false,
-    icon: path.join(__dirname, '..', '..', 'build', 'icon.ico'),
+    icon: ICON,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -48,7 +96,9 @@ function createWindow() {
 
   Menu.setApplicationMenu(null);
   mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
-  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.once('ready-to-show', () => {
+    if (!startHidden) mainWindow.show();
+  });
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 
   // Toute navigation externe part dans le navigateur du systeme : la fenetre du
@@ -120,6 +170,8 @@ function registerIpc() {
   // --- Fenetre ---
   ipcMain.on('window:minimize', () => mainWindow?.minimize());
   ipcMain.on('window:close', () => mainWindow?.close());
+  ipcMain.on('window:restore', () => showWindow());
+  ipcMain.on('window:hide', () => mainWindow?.hide());
 
   // --- Informations generales ---
   handle('app:info', () => ({
@@ -134,6 +186,26 @@ function registerIpc() {
     platform: process.platform,
   }));
 
+  handle('app:notify', ({ title, body }) => notify(String(title), String(body)));
+
+  // Joint au rapport de plantage : la plupart des plantages dependent de la machine.
+  handle('app:system', async () => {
+    let gpu = null;
+    try {
+      gpu = (await app.getGPUInfo('complete')).auxAttributes?.glRenderer || null;
+    } catch {
+      // information facultative
+    }
+    return {
+      os: `${os.type()} ${os.release()}`,
+      cpu: os.cpus()[0]?.model?.trim() || null,
+      ramMb: store.getSystemRamMb(),
+      gpu,
+    };
+  });
+
+  handle('stats:get', () => store.getStats());
+
   // --- Compte ---
   handle('account:get', () => auth.getAccount());
   handle('account:valider', (pseudo) => auth.validerPseudo(pseudo));
@@ -145,7 +217,11 @@ function registerIpc() {
     systemRamMb: store.getSystemRamMb(),
     recommendedRamMb: store.getRecommendedRamMb(),
   }));
-  handle('settings:save', (patch) => store.saveSettings(patch));
+  handle('settings:save', (patch) => {
+    const next = store.saveSettings(patch);
+    if (patch && 'openAtLogin' in patch) applyOpenAtLogin(next.openAtLogin);
+    return next;
+  });
   handle('settings:pickFolder', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
       title: 'Choisir le dossier du jeu',
@@ -176,6 +252,18 @@ function registerIpc() {
     await shell.openPath(paths.logs);
     return paths.logs;
   });
+  handle('screenshots:list', () => screenshots.list());
+  handle('screenshots:open', (name) => screenshots.open(name));
+  handle('screenshots:folder', () => screenshots.openFolder());
+
+  handle('checkup:run', () => checkup.run(store.getSettings(), store.getSystemRamMb()));
+
+  handle('storage:info', () => storage.info());
+  handle('storage:clean', () => {
+    if (launcher.isRunning()) throw new Error('Ferme Minecraft avant de nettoyer.');
+    return storage.clean();
+  });
+
   handle('shell:openExternal', (url) => {
     if (!/^https?:\/\//.test(url)) throw new Error('Lien refusé.');
     return shell.openExternal(url);
@@ -197,6 +285,12 @@ function registerIpc() {
       authNotice: manifest.authNotice || config.authNotice,
       fileCount: (manifest.files || manifest.mods || []).length,
     };
+  });
+
+  handle('modpack:pending', async () => {
+    const { manifest, offline } = await modpack.fetchManifest();
+    if (offline) return null;
+    return modpack.pendingDownload(manifest, store.getSettings().optionalMods);
   });
 
   // --- Mods optionnels (client uniquement) ---
@@ -222,13 +316,48 @@ function registerIpc() {
   });
 
   // --- Jeu ---
-  handle('game:launch', () => launcher.launch({
-    onStatus: (message) => send('game:status', { message }),
-    onProgress: (progress) => send('game:progress', progress),
+  const gameHooks = {
+    onStatus: (message) => {
+      setTaskbarProgress(2);
+      send('game:status', { message });
+    },
+    onProgress: (progress) => {
+      setTaskbarProgress(Math.max(0, Math.min(1, (progress.percent || 0) / 100)));
+      send('game:progress', progress);
+    },
     onLog: (line) => send('game:log', { line }),
     onFirstRun: () => send('game:firstRun', {}),
-    onExit: (result) => send('game:exit', result),
-  }));
+    onReady: () => {
+      setTaskbarProgress(-1);
+      notify('Aethoria est prêt', 'Minecraft est lancé. Bon jeu !');
+      send('game:ready', {});
+    },
+    onExit: (result) => {
+      setTaskbarProgress(-1);
+      if (result.error) {
+        mainWindow?.flashFrame(true);
+        notify('Minecraft s’est fermé', result.diagnostic?.titre || 'Ouvre le launcher pour voir la cause.');
+      }
+      send('game:exit', result);
+    },
+  };
+
+  /** Lance le jeu, ou verifie seulement les fichiers (prepareOnly). */
+  const runGame = async (prepareOnly) => {
+    setTaskbarProgress(2);
+    try {
+      const result = await launcher.launch({ prepareOnly, ...gameHooks });
+      // Apres un lancement, la barre reste en attente jusqu'a l'ouverture du jeu.
+      if (prepareOnly) setTaskbarProgress(-1);
+      return result;
+    } catch (err) {
+      setTaskbarProgress(-1);
+      throw err;
+    }
+  };
+
+  handle('game:launch', () => runGame(false));
+  handle('game:prepare', () => runGame(true));
   handle('game:isRunning', () => launcher.isRunning());
   handle('game:stop', () => launcher.stop());
   handle('game:repair', async () => {
@@ -251,14 +380,14 @@ function registerIpc() {
  *  Cycle de vie
  * ------------------------------------------------------------------ */
 
-app.on('second-instance', () => {
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
-    mainWindow.focus();
-  }
-});
+// Double-clic sur le raccourci alors que le launcher tourne deja, parfois cache
+// pres de l'horloge : on remontre la fenetre existante.
+app.on('second-instance', () => showWindow());
 
 app.whenReady().then(() => {
+  // Sans identifiant d'application, Windows n'affiche pas les notifications.
+  app.setAppUserModelId('fr.aethoria.launcher');
+
   // Le dossier de jeu personnalise doit etre applique avant tout acces disque.
   const settings = store.getSettings();
   if (settings.gameRoot && fs.existsSync(path.dirname(settings.gameRoot))) {
@@ -267,6 +396,7 @@ app.whenReady().then(() => {
 
   registerIpc();
   createWindow();
+  createTray();
   setupAutoUpdater();
 
   app.on('activate', () => {

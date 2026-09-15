@@ -7,7 +7,7 @@ const { execFileSync } = require('child_process');
 const paths = require('./game/paths');
 const config = require('../shared/config');
 
-/** Persistance en JSON des preferences du launcher et du pseudo du joueur. */
+/** Persistance en JSON des preferences, du pseudo et du temps de jeu. */
 
 // Copie du pseudo dans le registre de Windows. Elle survit a la
 // desinstallation du launcher comme a la suppression de son dossier de
@@ -69,20 +69,35 @@ function recommendedRamMb() {
   return Math.min(8192, Math.max(2048, moitie));
 }
 
+const BEHAVIORS = ['keep', 'minimize', 'close'];
+const RESOLUTIONS = ['default', '1280x720', '1600x900', '1920x1080', 'fullscreen'];
+const BACKGROUNDS = ['rotation', 'bg-chateau', 'bg-armee', 'bg-couchant', 'bg-chevaliers', 'bg-village'];
+
 const DEFAULT_SETTINGS = {
   gameRoot: null,          // null = emplacement par defaut
   minRamMb: config.defaults.minRamMb,
   maxRamMb: config.defaults.maxRamMb,
   jvmArgs: config.defaults.jvmArgs.join(' '),
   javaPath: null,          // null = runtime telecharge automatiquement
-  closeOnLaunch: config.defaults.closeOnLaunch,
-  joinServerOnLaunch: config.defaults.joinServerOnLaunch,
+  autoJoinServer: config.defaults.autoJoinServer,
+  launcherBehavior: config.defaults.launcherBehavior,
+  gameResolution: config.defaults.gameResolution,
   optionalMods: [],        // identifiants des mods optionnels coches
+  lastSeenVersion: null,   // derniere version dont le joueur a vu les nouveautes
+  seenNews: [],            // actualites deja affichees, pour le badge "Nouveau"
+  background: 'rotation',  // fond d'ecran : defilement ou une image fixe
+  lightMode: false,        // sans animations ni flou, pour les PC modestes
+  openAtLogin: false,      // demarrer avec Windows
 };
 
 const store = {
   getSettings() {
-    const saved = readJson(paths.settingsFile, {});
+    // joinServerOnLaunch est volontairement abandonne : avec le menu Aethoria,
+    // tous les joueurs arrivent sur ce menu, meme ceux qui avaient l'ancien reglage.
+    const { closeOnLaunch, joinServerOnLaunch, ...saved } = readJson(paths.settingsFile, {});
+
+    // Reglage des versions precedentes, remplace par launcherBehavior.
+    if (saved.launcherBehavior === undefined && closeOnLaunch) saved.launcherBehavior = 'close';
 
     // Au premier lancement, la memoire est calee sur la machine. Des que le
     // joueur y touche, son choix est enregistre et prime.
@@ -104,6 +119,12 @@ const store = {
     // physique le systeme se met a swapper.
     next.maxRamMb = Math.min(Math.max(1024, Number(next.maxRamMb) || 4096), systemRamMb());
     next.minRamMb = Math.min(Math.max(512, Number(next.minRamMb) || 2048), next.maxRamMb);
+    if (!BEHAVIORS.includes(next.launcherBehavior)) next.launcherBehavior = DEFAULT_SETTINGS.launcherBehavior;
+    if (!RESOLUTIONS.includes(next.gameResolution)) next.gameResolution = DEFAULT_SETTINGS.gameResolution;
+    if (!BACKGROUNDS.includes(next.background)) next.background = DEFAULT_SETTINGS.background;
+    next.seenNews = (Array.isArray(next.seenNews) ? next.seenNews : []).map(String).slice(-50);
+    next.lightMode = Boolean(next.lightMode);
+    next.openAtLogin = Boolean(next.openAtLogin);
     writeJson(paths.settingsFile, next);
     if (next.gameRoot) paths.setRoot(next.gameRoot);
     return next;
@@ -126,6 +147,20 @@ const store = {
   /** Pseudo conserve dans le registre, ou null. */
   getRegistryPseudo: lireRegistre,
   saveRegistryPseudo: ecrireRegistre,
+
+  /** Temps de jeu cumule, compte par le launcher. */
+  getStats() {
+    return { totalSeconds: 0, sessions: 0, lastSession: null, ...readJson(paths.statsFile, {}) };
+  },
+
+  addPlaySession(seconds) {
+    const stats = this.getStats();
+    writeJson(paths.statsFile, {
+      totalSeconds: stats.totalSeconds + seconds,
+      sessions: stats.sessions + 1,
+      lastSession: { endedAt: Date.now(), seconds },
+    });
+  },
 };
 
 module.exports = store;

@@ -55,6 +55,17 @@ function extractMotd(description) {
 }
 
 /**
+ * Echantillon des joueurs connectes (le serveur en envoie une douzaine au
+ * plus). Certains plugins y glissent des lignes de texte decoratives : seuls
+ * les vrais pseudos et UUID sont conserves.
+ */
+function playerSample(sample) {
+  return (Array.isArray(sample) ? sample : [])
+    .filter((p) => /^[A-Za-z0-9_]{1,16}$/.test(p?.name) && /^[0-9a-f-]{32,36}$/i.test(p?.id))
+    .map((p) => ({ name: p.name, id: p.id }));
+}
+
+/**
  * Renvoie l'etat du serveur, ou { online: false } s'il ne repond pas.
  * Cette fonction ne rejette jamais : l'appelant affiche simplement "hors ligne".
  */
@@ -81,10 +92,16 @@ function ping(host, port = 25565) {
         varInt(1),
       ])));
       socket.write(packet(0x00, Buffer.alloc(0))); // demande de status
+      sentAt = Date.now();
     });
+    let sentAt = Date.now();
 
     let buffer = Buffer.alloc(0);
+    let latency = null;
     socket.on('data', (chunk) => {
+      // Temps entre la demande et le premier octet de reponse : c'est ce que
+      // le joueur ressentira comme latence en jeu.
+      if (latency === null) latency = Date.now() - sentAt;
       buffer = Buffer.concat([buffer, chunk]);
       const start = buffer.indexOf(0x7b); // '{' : debut du JSON
       if (start < 0) return;
@@ -99,7 +116,9 @@ function ping(host, port = 25565) {
           players: {
             online: data.players?.online ?? 0,
             max: data.players?.max ?? 0,
+            sample: playerSample(data.players?.sample),
           },
+          latency,
           motd: extractMotd(data.description),
         });
       } catch {

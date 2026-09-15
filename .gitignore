@@ -6,3 +6,8 @@ Thumbs.db
 pack/
 plus pour le launcher/
 .env
+
+# Mod du menu Aethoria : sorties de construction Gradle.
+mod/build/
+mod/.gradle/
+mod/run/

@@ -68,8 +68,11 @@ module.exports = {
       '-XX:MaxGCPauseMillis=50',
       '-XX:G1HeapRegionSize=32M',
     ],
-    closeOnLaunch: false,
-    joinServerOnLaunch: true,
+    // Le jeu s'ouvre sur le menu Aethoria (mod aethoriamenu) ; la connexion
+    // directe reste proposee en option.
+    autoJoinServer: false,
+    launcherBehavior: 'keep',     // pendant la partie : keep, minimize ou close
+    gameResolution: 'default',    // default, 1280x720, 1600x900, 1920x1080, fullscreen
   },
 
   endpoints: {

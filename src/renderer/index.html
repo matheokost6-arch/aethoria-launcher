@@ -9,18 +9,18 @@
 </head>
 <body>
 
-  <!-- Décor : captures du serveur en fondu -->
+  <!-- Décor : captures du serveur, en fondu ou fixe -->
   <div class="backdrop" aria-hidden="true">
-    <div class="backdrop__layer is-visible" style="background-image: url('assets/bg-chateau.jpg')"></div>
-    <div class="backdrop__layer" style="background-image: url('assets/bg-armee.jpg')"></div>
-    <div class="backdrop__layer" style="background-image: url('assets/bg-couchant.jpg')"></div>
-    <div class="backdrop__layer" style="background-image: url('assets/bg-chevaliers.jpg')"></div>
-    <div class="backdrop__layer" style="background-image: url('assets/bg-village.jpg')"></div>
+    <div class="backdrop__layer is-visible" data-bg="bg-chateau" style="background-image: url('assets/bg-chateau.jpg')"></div>
+    <div class="backdrop__layer" data-bg="bg-armee" style="background-image: url('assets/bg-armee.jpg')"></div>
+    <div class="backdrop__layer" data-bg="bg-couchant" style="background-image: url('assets/bg-couchant.jpg')"></div>
+    <div class="backdrop__layer" data-bg="bg-chevaliers" style="background-image: url('assets/bg-chevaliers.jpg')"></div>
+    <div class="backdrop__layer" data-bg="bg-village" style="background-image: url('assets/bg-village.jpg')"></div>
     <div class="backdrop__shade"></div>
   </div>
 
   <header class="titlebar">
-    <span class="titlebar__version" id="launcher-version"></span>
+    <button class="titlebar__version" id="btn-version" title="Voir les nouveautés"></button>
     <button class="titlebar__btn" id="btn-minimize" aria-label="Réduire">
       <svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg>
     </button>
@@ -66,6 +66,10 @@
         <svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
         <span>Mods</span>
       </button>
+      <button class="rail__btn" id="btn-shots">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 15-5-5-8 9"/></svg>
+        <span>Captures</span>
+      </button>
       <button class="rail__btn" id="btn-settings">
         <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
         <span>Réglages</span>
@@ -83,14 +87,24 @@
         <p class="hero__tagline" id="pack-version">Serveur médiéval</p>
 
         <div class="chips">
-          <span class="chip" id="server-status">
-            <span class="dot" id="status-dot"></span>
+          <button class="chip chip--button" id="btn-players" aria-expanded="false" title="Voir les joueurs connectés">
+            <span class="dot is-checking" id="status-dot"></span>
             <span id="status-text">Vérification du serveur…</span>
-          </span>
+            <span class="latency" id="status-latency" hidden></span>
+          </button>
+          <button class="chip chip--button chip--accent" id="btn-watch-server" hidden>
+            <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg>
+            <span id="watch-label">Me prévenir</span>
+          </button>
           <button class="chip chip--button" id="btn-copy-ip" title="Copier l’adresse">
             <span id="server-address">aethoria.omgcraft.fr</span>
             <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
           </button>
+
+          <div class="players" id="players-panel" hidden>
+            <p class="players__title" id="players-title"></p>
+            <ul class="players__list" id="players-list"></ul>
+          </div>
         </div>
 
         <button class="trailer" id="btn-trailer" hidden>
@@ -113,22 +127,33 @@
           <img class="account__avatar" id="account-avatar" alt="" width="40" height="40">
           <span class="account__text">
             <strong id="account-name">—</strong>
-            <span>Ton pseudo</span>
+            <span id="account-playtime">Ton pseudo</span>
           </span>
         </div>
 
         <div class="launch">
           <p class="launch__line" id="launch-line"></p>
+          <p class="launch__sub" id="launch-sub" hidden></p>
           <div class="progress" id="progress" hidden>
             <div class="progress__track"><div class="progress__fill" id="progress-fill"></div></div>
             <p class="progress__detail" id="progress-detail"></p>
           </div>
+          <div class="launch__actions" id="crash-actions" hidden>
+            <button class="link" id="btn-copy-report">Copier le rapport pour le staff</button>
+            <button class="link" id="btn-crash-discord">Ouvrir le Discord</button>
+          </div>
         </div>
 
-        <button class="play" id="btn-play">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          <span id="btn-play-label">Jouer</span>
-        </button>
+        <div class="playbar__buttons">
+          <button class="btn btn--ghost btn--stop" id="btn-stop" hidden>
+            <svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>
+            <span id="btn-stop-label">Forcer l’arrêt</span>
+          </button>
+          <button class="play" id="btn-play" title="Jouer (Entrée)">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span id="btn-play-label">Jouer</span>
+          </button>
+        </div>
       </footer>
     </main>
   </div>
@@ -155,6 +180,26 @@
     </section>
   </div>
 
+  <!-- Captures d'écran -->
+  <div class="drawer drawer--wide" id="drawer-shots" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="shots-title">
+      <header class="drawer__head">
+        <h2 id="shots-title">Captures d’écran</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <div class="shots" id="shots-grid"></div>
+      </div>
+      <footer class="drawer__foot">
+        <span class="help" id="shots-count"></span>
+        <button class="btn btn--ghost" id="btn-shots-folder">Ouvrir le dossier</button>
+      </footer>
+    </section>
+  </div>
+
   <!-- Réglages -->
   <div class="drawer" id="drawer-settings" hidden>
     <div class="drawer__overlay" data-close></div>
@@ -166,6 +211,8 @@
         </button>
       </header>
       <div class="drawer__body">
+        <h3 class="group-title">Jeu</h3>
+
         <div class="field">
           <div class="field__head">
             <label class="label" for="input-ram">Mémoire allouée</label>
@@ -175,21 +222,23 @@
           <p class="help" id="ram-help"></p>
         </div>
 
-        <label class="switch">
-          <span class="switch__text">
-            <strong>Rejoindre le serveur directement</strong>
-            <span>Sinon, le jeu s’ouvre sur le menu principal.</span>
-          </span>
-          <input type="checkbox" id="check-join-server">
-          <span class="switch__track"></span>
-        </label>
+        <div class="field">
+          <label class="label" for="select-resolution">Fenêtre du jeu</label>
+          <select class="input" id="select-resolution">
+            <option value="default">Taille par défaut</option>
+            <option value="1280x720">1280 × 720</option>
+            <option value="1600x900">1600 × 900</option>
+            <option value="1920x1080">1920 × 1080</option>
+            <option value="fullscreen">Plein écran</option>
+          </select>
+        </div>
 
         <label class="switch">
           <span class="switch__text">
-            <strong>Fermer le launcher au lancement</strong>
-            <span>Le launcher se ferme quand Minecraft démarre.</span>
+            <strong>Rejoindre le serveur directement</strong>
+            <span>Sinon, le jeu s’ouvre sur le menu Aethoria.</span>
           </span>
-          <input type="checkbox" id="check-close-launcher">
+          <input type="checkbox" id="check-join-server">
           <span class="switch__track"></span>
         </label>
 
@@ -199,6 +248,77 @@
             <input class="input" id="input-game-root" readonly>
             <button class="btn btn--ghost" id="btn-pick-folder">Changer</button>
           </div>
+        </div>
+
+        <h3 class="group-title">Launcher</h3>
+
+        <div class="field">
+          <span class="label">Pendant la partie, le launcher…</span>
+          <div class="segmented" id="behavior">
+            <label><input type="radio" name="behavior" value="keep"><span>Reste ouvert</span></label>
+            <label><input type="radio" name="behavior" value="minimize"><span>Se range</span></label>
+            <label><input type="radio" name="behavior" value="close"><span>Se ferme</span></label>
+          </div>
+          <p class="help" id="behavior-help"></p>
+        </div>
+
+        <div class="field">
+          <span class="label">Fond d’écran</span>
+          <div class="backgrounds" id="backgrounds">
+            <label title="Défilement"><input type="radio" name="background" value="rotation"><span class="bg-choice bg-choice--rotation">Défilement</span></label>
+            <label title="Château"><input type="radio" name="background" value="bg-chateau"><span class="bg-choice" style="background-image: url('assets/bg-chateau.jpg')"></span></label>
+            <label title="Armée"><input type="radio" name="background" value="bg-armee"><span class="bg-choice" style="background-image: url('assets/bg-armee.jpg')"></span></label>
+            <label title="Couchant"><input type="radio" name="background" value="bg-couchant"><span class="bg-choice" style="background-image: url('assets/bg-couchant.jpg')"></span></label>
+            <label title="Chevaliers"><input type="radio" name="background" value="bg-chevaliers"><span class="bg-choice" style="background-image: url('assets/bg-chevaliers.jpg')"></span></label>
+            <label title="Village"><input type="radio" name="background" value="bg-village"><span class="bg-choice" style="background-image: url('assets/bg-village.jpg')"></span></label>
+          </div>
+        </div>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Mode léger</strong>
+            <span>Sans animations ni flou, pour les PC modestes.</span>
+          </span>
+          <input type="checkbox" id="check-light-mode">
+          <span class="switch__track"></span>
+        </label>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Démarrer avec Windows</strong>
+            <span>Le launcher s’ouvre discrètement près de l’horloge.</span>
+          </span>
+          <input type="checkbox" id="check-open-at-login">
+          <span class="switch__track"></span>
+        </label>
+
+        <h3 class="group-title">Dépannage</h3>
+
+        <div class="field">
+          <div class="field__row field__row--center">
+            <span class="switch__text">
+              <strong>Tester ma connexion</strong>
+              <span>Internet, serveur, disque, mémoire et Java.</span>
+            </span>
+            <button class="btn btn--ghost" id="btn-checkup">Tester</button>
+          </div>
+          <ul class="checkup" id="checkup-list" hidden></ul>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Vérifier les fichiers</strong>
+            <span>Contrôle le jeu et retélécharge seulement ce qui manque.</span>
+          </span>
+          <button class="btn btn--ghost" id="btn-verify">Vérifier</button>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Stockage</strong>
+            <span id="storage-text">Calcul en cours…</span>
+          </span>
+          <button class="btn btn--ghost" id="btn-clean" disabled>Nettoyer</button>
         </div>
 
         <details class="advanced">
@@ -223,8 +343,19 @@
       <footer class="drawer__foot">
         <button class="btn btn--ghost" id="btn-open-game-folder">Dossier</button>
         <button class="btn btn--ghost" id="btn-open-logs">Journaux</button>
-        <button class="btn btn--danger" id="btn-repair">Réparer</button>
+        <button class="btn btn--danger" id="btn-repair">Tout réinstaller</button>
       </footer>
+    </section>
+  </div>
+
+  <!-- Nouveautés -->
+  <div class="modal" id="modal-whatsnew" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="whatsnew-title">
+      <p class="modal__eyebrow" id="whatsnew-version"></p>
+      <h2 class="modal__title" id="whatsnew-title"></h2>
+      <ol class="whatsnew" id="whatsnew-list"></ol>
+      <button class="btn btn--primary btn--block" data-close>C’est parti</button>
     </section>
   </div>
 
@@ -241,6 +372,7 @@
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
+  <script src="changelog.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

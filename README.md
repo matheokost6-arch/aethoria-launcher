@@ -20,6 +20,31 @@ Lien de téléchargement pour les joueurs :
 
 Le jeu s'installe dans `%APPDATA%\.aethoria`, séparé du `.minecraft` du joueur.
 
+## Fonctions pour le joueur
+
+- **Serveur** : état, latence, liste des joueurs connectés (clic sur l'état),
+  alerte Windows quand le serveur revient en ligne.
+- **Partie** : temps de jeu cumulé, notification quand le jeu est prêt,
+  progression dans la barre des tâches, arrêt forcé en deux clics.
+- **Plantage** : cause probable en clair, rapport complet (machine, versions,
+  dernières lignes du jeu) copié en un clic pour le staff.
+- **Réglages** : mémoire, taille de la fenêtre ou plein écran, comportement du
+  launcher pendant la partie (rester ouvert, se ranger près de l'horloge, se
+  fermer), démarrage avec Windows, fond d'écran, mode léger.
+- **Dépannage** : test de connexion (GitHub, Mojang, serveur, disque, mémoire,
+  Java), vérification des fichiers sans tout retélécharger, nettoyage des
+  anciens journaux, réinstallation complète.
+- **Divers** : taille de la prochaine mise à jour du modpack sur l'accueil,
+  badge « Nouveau » sur les actualités, galerie des captures d'écran, mods
+  optionnels, Aethoria ajouté à la liste multijoueur, Minecraft en français à
+  la première partie, raccourcis (Entrée pour jouer, F5, Échap).
+
+Le jeu est lancé détaché du launcher : fermer le launcher, ou le voir planter,
+ne ferme jamais Minecraft.
+
+Les nouveautés affichées après une mise à jour se rédigent dans
+`src/renderer/changelog.js`, une entrée par version.
+
 ---
 
 ## Développement
@@ -67,6 +92,26 @@ Les mods vivent dans `pack/mods/` (exclu de Git). Ajoute ou retire des fichiers,
 puis `npm run deploy`. Le launcher supprime chez les joueurs tout mod absent du
 manifest et retélécharge ceux qui manquent.
 
+### Menu Aethoria (mod maison)
+
+`mod/` contient le code d'un petit mod client, `aethoriamenu`, qui remplace
+l'écran titre de Minecraft par le menu Aethoria : **Rejoindre Aethoria**,
+**Options**, **Quitter le jeu**. Pas de solo ni de Realms, et le joueur y
+revient après chaque déconnexion. L'adresse du serveur est transmise par le
+launcher (`-Daethoria.server`), donc un changement dans le manifest suffit.
+
+Le mod est distribué comme les autres, depuis `pack/mods`. Pour le modifier :
+
+```bash
+cd mod
+JAVA_HOME="C:/Program Files/Java/jdk-17" ./gradlew build
+cp build/libs/aethoriamenu-*.jar ../pack/mods/
+cd .. && npm run deploy
+```
+
+Ce verrou est côté client : un joueur qui lance Minecraft sans le launcher
+retrouve le menu normal. Le serveur reste la vraie protection.
+
 ### Mods optionnels
 
 Liste de mods clients proposés dans le panneau **Mods** du launcher, récupérés
@@ -109,8 +154,9 @@ Le pseudo est **définitif** : le joueur le confirme une fois, puis il ne peut
 plus le changer. Il est enregistré dans les données du launcher (conservées à
 la désinstallation) et copié dans le registre (`HKCU\Software\Aethoria`, valeur
 `Pseudo`), qui fait foi. Réinstaller le launcher ou supprimer son dossier ne
-suffit donc pas. Pour débloquer un joueur, supprime cette valeur sur son PC :
-`reg delete HKCU\Software\Aethoria /v Pseudo /f`. Ce verrou est local : un
+suffit donc pas. Pour débloquer un joueur, supprime les deux copies sur son PC :
+`reg delete HKCU\Software\Aethoria /v Pseudo /f`, puis le fichier
+`%APPDATA%\aethoria-launcher\accounts.json`. Ce verrou est local : un
 joueur averti peut toujours l'effacer, et c'est AuthMe qui protège les comptes.
 
 Pas de mot de passe dans le launcher. L'UUID est calculé comme

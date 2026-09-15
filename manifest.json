@@ -117,6 +117,12 @@
       "size": 517225
     },
     {
+      "path": "mods/aethoriamenu-1.0.0.jar",
+      "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_aethoriamenu-1.0.0.jar",
+      "sha1": "9f858a3feb06ee2c2256bd2b944b0aa44b09cf6b",
+      "size": 10240358
+    },
+    {
       "path": "mods/animal_armor_trims-forge-1.20.1-2.3.1.jar",
       "url": "https://github.com/matheokost6-arch/aethoria/releases/download/pack-1.1.0/mods_animal_armor_trims-forge-1.20.1-2.3.1.jar",
       "sha1": "5a1b386d7a90c80e268061acc0121bbc05cdbaf7",

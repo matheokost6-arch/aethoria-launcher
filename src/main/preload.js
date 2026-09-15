@@ -29,17 +29,27 @@ function subscribe(channel, callback) {
 contextBridge.exposeInMainWorld('aethoria', {
   window: {
     minimize: () => ipcRenderer.send('window:minimize'),
+    restore: () => ipcRenderer.send('window:restore'),
+    hide: () => ipcRenderer.send('window:hide'),
     close: () => ipcRenderer.send('window:close'),
   },
 
   app: {
     info: () => call('app:info'),
+    system: () => call('app:system'),
+    notify: (title, body) => call('app:notify', { title, body }),
+    checkup: () => call('checkup:run'),
+    onTrayPlay: (cb) => subscribe('tray:play', cb),
   },
 
   account: {
     get: () => call('account:get'),
     valider: (pseudo) => call('account:valider', pseudo),
     connecter: (pseudo) => call('account:connecter', pseudo),
+  },
+
+  stats: {
+    get: () => call('stats:get'),
   },
 
   settings: {
@@ -51,6 +61,7 @@ contextBridge.exposeInMainWorld('aethoria', {
 
   modpack: {
     info: () => call('modpack:info'),
+    pending: () => call('modpack:pending'),
     optionalMods: () => call('modpack:optionalMods'),
     setOptionalMods: (ids) => call('modpack:setOptionalMods', ids),
   },
@@ -59,8 +70,20 @@ contextBridge.exposeInMainWorld('aethoria', {
     status: (target) => call('server:status', target),
   },
 
+  screenshots: {
+    list: () => call('screenshots:list'),
+    open: (name) => call('screenshots:open', name),
+    folder: () => call('screenshots:folder'),
+  },
+
+  storage: {
+    info: () => call('storage:info'),
+    clean: () => call('storage:clean'),
+  },
+
   game: {
     launch: () => call('game:launch'),
+    prepare: () => call('game:prepare'),
     isRunning: () => call('game:isRunning'),
     stop: () => call('game:stop'),
     repair: () => call('game:repair'),
@@ -68,6 +91,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     onProgress: (cb) => subscribe('game:progress', cb),
     onLog: (cb) => subscribe('game:log', cb),
     onFirstRun: (cb) => subscribe('game:firstRun', cb),
+    onReady: (cb) => subscribe('game:ready', cb),
     onExit: (cb) => subscribe('game:exit', cb),
   },
 
