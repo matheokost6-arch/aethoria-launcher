@@ -417,6 +417,16 @@ function isRunning() {
   return Boolean(running);
 }
 
+/** Ramene la fenetre du jeu au premier plan. */
+function focusGame() {
+  if (!running) return false;
+  spawn('powershell', [
+    '-NoProfile', '-WindowStyle', 'Hidden', '-Command',
+    `(New-Object -ComObject WScript.Shell).AppActivate(${Number(running.pid)}) | Out-Null`,
+  ], { windowsHide: true, stdio: 'ignore' });
+  return true;
+}
+
 function stop() {
   if (!running) return false;
   stopRequested = true;
@@ -441,4 +451,4 @@ async function repair({ onStatus } = {}) {
   return true;
 }
 
-module.exports = { launch, isRunning, stop, repair, buildCommand, versionAtLeast, flattenArguments };
+module.exports = { launch, isRunning, focusGame, stop, repair, buildCommand, versionAtLeast, flattenArguments };

@@ -62,6 +62,10 @@
   <div class="shell" id="view-main" hidden>
     <nav class="rail">
       <img class="rail__mark" src="assets/icon.png" alt="" width="40" height="40">
+      <button class="rail__btn" id="btn-profile">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/></svg>
+        <span>Profil</span>
+      </button>
       <button class="rail__btn" id="btn-options">
         <svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
         <span>Mods</span>
@@ -96,10 +100,6 @@
             <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></svg>
             <span id="watch-label">Me prévenir</span>
           </button>
-          <button class="chip chip--button" id="btn-copy-ip" title="Copier l’adresse">
-            <span id="server-address">aethoria.omgcraft.fr</span>
-            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
-          </button>
 
           <div class="players" id="players-panel" hidden>
             <p class="players__title" id="players-title"></p>
@@ -123,13 +123,13 @@
       </section>
 
       <footer class="playbar">
-        <div class="account">
+        <button class="account" id="btn-account" title="Voir mon profil">
           <img class="account__avatar" id="account-avatar" alt="" width="40" height="40">
           <span class="account__text">
             <strong id="account-name">—</strong>
             <span id="account-playtime">Ton pseudo</span>
           </span>
-        </div>
+        </button>
 
         <div class="launch">
           <p class="launch__line" id="launch-line"></p>
@@ -158,6 +158,61 @@
     </main>
   </div>
 
+  <!-- Profil du joueur -->
+  <div class="drawer drawer--wide" id="drawer-profile" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="profile-title">
+      <header class="drawer__head">
+        <h2 id="profile-title">Profil</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <div class="profile">
+          <img class="profile__avatar" id="profile-avatar" alt="" width="56" height="56">
+          <div>
+            <p class="profile__name" id="profile-name"></p>
+            <p class="help" id="profile-since"></p>
+          </div>
+        </div>
+
+        <div class="stats" id="profile-stats"></div>
+
+        <section class="chart" aria-labelledby="week-title">
+          <h3 class="chart__title" id="week-title">Temps de jeu des 7 derniers jours</h3>
+          <div class="chart__plot" id="week-chart"></div>
+          <table class="sr-only" id="week-table"></table>
+          <div class="chart__tooltip" id="week-tooltip" hidden></div>
+        </section>
+
+        <section class="profile__section">
+          <div class="section-head">
+            <h3 class="group-title">Succès</h3>
+            <span class="help" id="achievements-count"></span>
+          </div>
+          <div class="achievements" id="achievements"></div>
+        </section>
+
+        <section class="profile__section">
+          <h3 class="group-title">Dernières parties</h3>
+          <ul class="sessions" id="profile-sessions"></ul>
+        </section>
+
+        <section class="profile__section">
+          <h3 class="group-title">Amis</h3>
+          <p class="help">Ils passent en premier dans les joueurs connectés, et tu es prévenu quand ils se connectent.</p>
+          <form class="field__row" id="form-friend" autocomplete="off">
+            <input class="input" id="input-friend" maxlength="16" placeholder="Pseudo d’un ami" spellcheck="false">
+            <button class="btn btn--ghost" type="submit">Ajouter</button>
+          </form>
+          <ul class="friends" id="friends-list"></ul>
+          <button class="btn btn--ghost btn--block" id="btn-invite">Inviter un ami sur Aethoria</button>
+        </section>
+      </div>
+    </section>
+  </div>
+
   <!-- Mods optionnels -->
   <div class="drawer" id="drawer-options" hidden>
     <div class="drawer__overlay" data-close></div>
@@ -171,6 +226,11 @@
       <div class="drawer__body">
         <p class="help">Du confort, rien que pour toi : ces mods ne changent rien pour les autres joueurs.
           Ils sont installés au prochain lancement.</p>
+        <div class="field__row">
+          <input class="input" id="options-search" placeholder="Rechercher un mod" spellcheck="false" autocomplete="off">
+          <button class="btn btn--ghost" id="btn-options-all">Tout activer</button>
+          <button class="btn btn--ghost" id="btn-options-none">Tout retirer</button>
+        </div>
         <div class="options" id="options-list"></div>
       </div>
       <footer class="drawer__foot">
@@ -233,6 +293,16 @@
           </select>
         </div>
 
+        <div class="field">
+          <span class="label">Graphismes du jeu</span>
+          <div class="segmented" id="graphics-preset">
+            <label><input type="radio" name="graphics" value="performance"><span>Performance</span></label>
+            <label><input type="radio" name="graphics" value="balanced"><span>Équilibré</span></label>
+            <label><input type="radio" name="graphics" value="quality"><span>Qualité</span></label>
+          </div>
+          <p class="help">Distance de vue, ombres, particules et nuages. Tu peux ensuite affiner dans les options de Minecraft.</p>
+        </div>
+
         <label class="switch">
           <span class="switch__text">
             <strong>Rejoindre le serveur directement</strong>
@@ -274,6 +344,68 @@
           </div>
         </div>
 
+        <div class="field">
+          <span class="label">Taille de l’interface</span>
+          <div class="segmented segmented--4" id="ui-scale">
+            <label><input type="radio" name="uiscale" value="0.9"><span>90 %</span></label>
+            <label><input type="radio" name="uiscale" value="1"><span>100 %</span></label>
+            <label><input type="radio" name="uiscale" value="1.1"><span>110 %</span></label>
+            <label><input type="radio" name="uiscale" value="1.25"><span>125 %</span></label>
+          </div>
+        </div>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Sons</strong>
+            <span>Petits sons au lancement, quand le jeu est prêt et quand un ami se connecte.</span>
+          </span>
+          <input type="checkbox" id="check-sounds">
+          <span class="switch__track"></span>
+        </label>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Ne pas déranger pendant la partie</strong>
+            <span>Pas de notification d’amis ni d’actualités tant que tu joues.</span>
+          </span>
+          <input type="checkbox" id="check-quiet">
+          <span class="switch__track"></span>
+        </label>
+
+        <div class="field">
+          <label class="label" for="select-break">Rappel de pause</label>
+          <select class="input" id="select-break">
+            <option value="0">Jamais</option>
+            <option value="60">Toutes les heures de jeu</option>
+            <option value="120">Toutes les 2 heures</option>
+            <option value="180">Toutes les 3 heures</option>
+          </select>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Raccourci « Jouer à Aethoria »</strong>
+            <span>Sur le bureau : un double-clic lance directement le jeu.</span>
+          </span>
+          <button class="btn btn--ghost" id="btn-shortcut">Créer</button>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Visite guidée</strong>
+            <span>Revoir la présentation du launcher.</span>
+          </span>
+          <button class="btn btn--ghost" id="btn-tour">Revoir</button>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Mise à jour du launcher</strong>
+            <span id="update-check-text"></span>
+          </span>
+          <button class="btn btn--ghost" id="btn-check-update">Rechercher</button>
+        </div>
+
         <label class="switch">
           <span class="switch__text">
             <strong>Mode léger</strong>
@@ -311,6 +443,28 @@
             <span>Contrôle le jeu et retélécharge seulement ce qui manque.</span>
           </span>
           <button class="btn btn--ghost" id="btn-verify">Vérifier</button>
+        </div>
+
+        <div class="field">
+          <div class="field__row field__row--center">
+            <span class="switch__text">
+              <strong>Sauvegarde des réglages Minecraft</strong>
+              <span>Graphismes, son et touches. Une copie est aussi faite avant chaque préréglage ou réinitialisation.</span>
+            </span>
+            <button class="btn btn--ghost" id="btn-options-backup">Sauvegarder</button>
+          </div>
+          <div class="field__row" id="restore-row" hidden>
+            <select class="input" id="select-backup" aria-label="Sauvegarde à restaurer"></select>
+            <button class="btn btn--ghost" id="btn-options-restore">Restaurer</button>
+          </div>
+        </div>
+
+        <div class="field__row field__row--center">
+          <span class="switch__text">
+            <strong>Réinitialiser les options de Minecraft</strong>
+            <span>Si un réglage empêche le jeu de s’afficher correctement.</span>
+          </span>
+          <button class="btn btn--ghost" id="btn-reset-options">Réinitialiser</button>
         </div>
 
         <div class="field__row field__row--center">
@@ -368,6 +522,20 @@
     </span>
     <button class="btn btn--primary btn--small" id="btn-update-install" hidden>Redémarrer</button>
     <button class="btn btn--ghost btn--small" id="btn-update-manual" hidden>Télécharger</button>
+  </div>
+
+  <!-- Visite guidée des nouveaux joueurs -->
+  <div class="tour" id="tour" hidden>
+    <div class="tour__highlight" id="tour-highlight"></div>
+    <div class="tour__card" role="dialog" aria-modal="true" aria-labelledby="tour-title" id="tour-card">
+      <p class="modal__eyebrow" id="tour-step"></p>
+      <h3 class="tour__title" id="tour-title"></h3>
+      <p class="help" id="tour-text"></p>
+      <div class="tour__actions">
+        <button class="btn btn--ghost btn--small" id="btn-tour-skip">Passer</button>
+        <button class="btn btn--primary btn--small" id="btn-tour-next">Suivant</button>
+      </div>
+    </div>
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>

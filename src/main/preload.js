@@ -31,6 +31,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     minimize: () => ipcRenderer.send('window:minimize'),
     restore: () => ipcRenderer.send('window:restore'),
     hide: () => ipcRenderer.send('window:hide'),
+    setZoom: (factor) => ipcRenderer.send('window:setZoom', factor),
     close: () => ipcRenderer.send('window:close'),
   },
 
@@ -38,8 +39,11 @@ contextBridge.exposeInMainWorld('aethoria', {
     info: () => call('app:info'),
     system: () => call('app:system'),
     notify: (title, body) => call('app:notify', { title, body }),
+    copyText: (text) => call('app:copyText', text),
     checkup: () => call('checkup:run'),
     onTrayPlay: (cb) => subscribe('tray:play', cb),
+    onShortcutPlay: (cb) => subscribe('shortcut:play', cb),
+    createPlayShortcut: () => call('shortcut:create'),
   },
 
   account: {
@@ -74,6 +78,8 @@ contextBridge.exposeInMainWorld('aethoria', {
     list: () => call('screenshots:list'),
     open: (name) => call('screenshots:open', name),
     folder: () => call('screenshots:folder'),
+    copy: (name) => call('screenshots:copy', name),
+    trash: (name) => call('screenshots:trash', name),
   },
 
   storage: {
@@ -84,6 +90,7 @@ contextBridge.exposeInMainWorld('aethoria', {
   game: {
     launch: () => call('game:launch'),
     prepare: () => call('game:prepare'),
+    focus: () => call('game:focus'),
     isRunning: () => call('game:isRunning'),
     stop: () => call('game:stop'),
     repair: () => call('game:repair'),
@@ -95,6 +102,14 @@ contextBridge.exposeInMainWorld('aethoria', {
     onExit: (cb) => subscribe('game:exit', cb),
   },
 
+  options: {
+    preset: (name) => call('options:preset', name),
+    reset: () => call('options:reset'),
+    backup: () => call('options:backup'),
+    backups: () => call('options:backups'),
+    restore: (name) => call('options:restore', name),
+  },
+
   folders: {
     game: () => call('shell:openGameFolder'),
     logs: () => call('shell:openLogsFolder'),
@@ -104,5 +119,6 @@ contextBridge.exposeInMainWorld('aethoria', {
   updater: {
     onStatus: (cb) => subscribe('updater:status', cb),
     install: () => ipcRenderer.invoke('updater:install'),
+    check: () => call('updater:check'),
   },
 });

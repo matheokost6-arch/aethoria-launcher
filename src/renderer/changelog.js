@@ -5,6 +5,36 @@
  * Une version absente de cette liste ne déclenche aucune fenêtre.
  */
 const CHANGELOG = {
+  '1.5.0': {
+    title: 'Succès, pauses et partage',
+    items: [
+      ['Succès', 'Débloque des succès en jouant : Habitué, Nuit blanche, Fidèle…'],
+      ['Série de jours', 'Ton profil compte les jours de jeu d’affilée, et ton record.'],
+      ['Rappel de pause', 'Une notification toutes les 1, 2 ou 3 heures de jeu, si tu le souhaites.'],
+      ['Ne pas déranger', 'Plus de notification d’amis ni d’actualités pendant la partie.'],
+      ['Sauvegarde des réglages', 'Sauvegarde et restaure tes graphismes, ton son et tes touches.'],
+      ['Recherche de mods', 'Cherche un mod optionnel, active-les ou retire-les tous d’un clic.'],
+      ['Partager une capture', 'Copie une capture pour la coller sur Discord, ou mets-la à la corbeille.'],
+      ['Visite guidée', 'Une présentation du launcher pour bien démarrer.'],
+      ['Inviter un ami', 'Un message prêt à envoyer, avec le lien du launcher et le Discord.'],
+      ['Raccourci « Jouer »', 'Un raccourci sur le bureau qui lance directement le jeu.'],
+    ],
+  },
+  '1.4.0': {
+    title: 'Ton profil et tes amis',
+    items: [
+      ['Profil', 'Clique sur ton pseudo : temps de jeu, parties, plus longue partie et moyenne.'],
+      ['Activité de la semaine', 'Un graphique de ton temps de jeu sur les 7 derniers jours.'],
+      ['Amis', 'Ajoute tes amis : ils passent en premier et tu es prévenu quand ils se connectent.'],
+      ['Graphismes en un clic', 'Performance, Équilibré ou Qualité, dans les réglages.'],
+      ['Réinitialiser les options', 'Un réglage casse l’affichage du jeu ? Remets tout par défaut.'],
+      ['Afficher le jeu', 'Pendant la partie, le bouton ramène Minecraft au premier plan.'],
+      ['Actualités en direct', 'Une notification dès qu’une actualité est publiée.'],
+      ['Mise à jour à la demande', 'Recherche une nouvelle version du launcher quand tu veux.'],
+      ['Taille de l’interface', 'Agrandis ou réduis le launcher, de 90 à 125 %.'],
+      ['Sons', 'De petits sons au lancement, quand le jeu est prêt et quand un ami arrive.'],
+    ],
+  },
   '1.3.0': {
     title: 'La grande mise à jour',
     items: [

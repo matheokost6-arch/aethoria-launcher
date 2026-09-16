@@ -138,9 +138,8 @@ public final class AethoriaTitleScreen extends Screen {
 
         int statusY = this.height / 2 + 10 + 34 + 22 + 10;
         graphics.drawCenteredString(this.font, statusText, this.width / 2, statusY, statusColor);
+        // L'adresse du serveur n'est volontairement jamais affichee.
         graphics.drawString(this.font, "Aethoria", 4, this.height - 12, 0x80FFFFFF);
-        String address = serverAddress().replace(":25565", "");
-        graphics.drawString(this.font, address, this.width - this.font.width(address) - 4, this.height - 12, 0x80FFFFFF);
 
         super.render(graphics, mouseX, mouseY, partialTick);
     }

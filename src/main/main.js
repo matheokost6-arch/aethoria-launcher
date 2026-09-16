@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray, clipboard } = require('electron');
 const config = require('../shared/config');
 const paths = require('./game/paths');
 const store = require('./store');
@@ -14,11 +14,14 @@ const serverStatus = require('./game/serverStatus');
 const screenshots = require('./game/screenshots');
 const storage = require('./game/storage');
 const checkup = require('./game/checkup');
+const gameOptions = require('./game/options');
 const pkg = require('../../package.json');
 
 const isDev = process.argv.includes('--dev');
 // Lance avec Windows : le launcher demarre discretement pres de l'horloge.
 const startHidden = process.argv.includes('--hidden');
+// Raccourci "Jouer a Aethoria" : le jeu demarre des l'ouverture.
+const startPlaying = process.argv.includes('--play');
 
 // Une seule instance : deux launchers ouverts sur le meme dossier de jeu se
 // marcheraient dessus pendant les telechargements.
@@ -28,6 +31,7 @@ if (!app.requestSingleInstanceLock()) {
 
 let mainWindow = null;
 let tray = null;
+let updater = null;
 
 const ICON = path.join(__dirname, '..', '..', 'build', 'icon.ico');
 
@@ -130,6 +134,7 @@ function setupAutoUpdater() {
     return; // module absent : le launcher fonctionne, sans mise a jour auto
   }
 
+  updater = autoUpdater;
   autoUpdater.autoDownload = true;
   autoUpdater.on('update-available', (info) => send('updater:status', { state: 'available', version: info.version }));
   autoUpdater.on('download-progress', (p) => send('updater:status', { state: 'downloading', percent: p.percent }));
@@ -172,6 +177,19 @@ function registerIpc() {
   ipcMain.on('window:close', () => mainWindow?.close());
   ipcMain.on('window:restore', () => showWindow());
   ipcMain.on('window:hide', () => mainWindow?.hide());
+  ipcMain.on('window:setZoom', (_event, factor) => {
+    if (!mainWindow) return;
+    const zoom = [0.9, 1, 1.1, 1.25].includes(factor) ? factor : 1;
+    mainWindow.webContents.setZoomFactor(zoom);
+    // La taille minimale grandit avec l'interface, sinon la mise en page deborde.
+    const minWidth = Math.round(940 * zoom);
+    const minHeight = Math.round(600 * zoom);
+    mainWindow.setMinimumSize(minWidth, minHeight);
+    const [width, height] = mainWindow.getSize();
+    if (width < minWidth || height < minHeight) {
+      mainWindow.setSize(Math.max(width, minWidth), Math.max(height, minHeight));
+    }
+  });
 
   // --- Informations generales ---
   handle('app:info', () => ({
@@ -184,9 +202,29 @@ function registerIpc() {
     gameRoot: paths.root,
     defaultRoot: paths.defaultRoot(),
     platform: process.platform,
+    autoPlay: startPlaying,
   }));
 
+  handle('shortcut:create', () => {
+    const file = path.join(app.getPath('desktop'), 'Jouer à Aethoria.lnk');
+    // "create" cree ou ecrase ; "replace" echouerait si le raccourci n'existe pas encore.
+    const created = shell.writeShortcutLink(file, 'create', {
+      target: process.execPath,
+      // En developpement, l'executable est Electron : il faut lui donner l'application.
+      args: app.isPackaged ? '--play' : `"${app.getAppPath()}" --play`,
+      description: 'Ouvre Aethoria et lance directement le jeu',
+      icon: app.isPackaged ? process.execPath : ICON,
+      iconIndex: 0,
+    });
+    if (!created) throw new Error('Impossible de créer le raccourci sur le bureau.');
+    return file;
+  });
+
   handle('app:notify', ({ title, body }) => notify(String(title), String(body)));
+
+  // Copie cote processus principal : navigator.clipboard echoue quand la
+  // fenetre n'a pas le focus, ce qui arrive juste apres un plantage du jeu.
+  handle('app:copyText', (text) => clipboard.writeText(String(text)));
 
   // Joint au rapport de plantage : la plupart des plantages dependent de la machine.
   handle('app:system', async () => {
@@ -255,6 +293,8 @@ function registerIpc() {
   handle('screenshots:list', () => screenshots.list());
   handle('screenshots:open', (name) => screenshots.open(name));
   handle('screenshots:folder', () => screenshots.openFolder());
+  handle('screenshots:copy', (name) => screenshots.copy(name));
+  handle('screenshots:trash', (name) => screenshots.trash(name));
 
   handle('checkup:run', () => checkup.run(store.getSettings(), store.getSystemRamMb()));
 
@@ -358,6 +398,53 @@ function registerIpc() {
 
   handle('game:launch', () => runGame(false));
   handle('game:prepare', () => runGame(true));
+  handle('game:focus', () => launcher.focusGame());
+
+  // --- Options de Minecraft ---
+  // Minecraft reecrit options.txt en quittant : modifie pendant la partie, le
+  // changement serait perdu.
+  const refuseIfRunning = () => {
+    if (launcher.isRunning()) throw new Error('Ferme Minecraft d’abord : le jeu réécrit ses options en quittant.');
+  };
+  handle('options:preset', (name) => {
+    refuseIfRunning();
+    return gameOptions.applyPreset(name);
+  });
+  handle('options:backup', async () => {
+    const name = await gameOptions.backup();
+    if (!name) throw new Error('Aucun réglage à sauvegarder : lance d’abord une partie.');
+    return name;
+  });
+  handle('options:backups', () => gameOptions.listBackups());
+  handle('options:restore', (name) => {
+    refuseIfRunning();
+    return gameOptions.restore(name);
+  });
+  handle('options:reset', async () => {
+    refuseIfRunning();
+    const confirmation = await dialog.showMessageBox(mainWindow, {
+      type: 'warning',
+      buttons: ['Annuler', 'Réinitialiser'],
+      defaultId: 0,
+      cancelId: 0,
+      title: 'Réinitialiser les options de Minecraft',
+      message: 'Remettre toutes les options du jeu par défaut ?',
+      detail: 'Graphismes, son et touches reviennent aux réglages d’origine. Tes mondes et captures ne sont pas touchés.',
+    });
+    if (confirmation.response !== 1) return false;
+    await gameOptions.reset();
+    return true;
+  });
+
+  // --- Mise a jour du launcher, a la demande ---
+  handle('updater:check', async () => {
+    if (!app.isPackaged || !updater) {
+      throw new Error('La recherche de mise à jour ne fonctionne que dans la version installée.');
+    }
+    const result = await updater.checkForUpdates();
+    const latest = result?.updateInfo?.version || pkg.version;
+    return { current: pkg.version, latest, available: latest !== pkg.version };
+  });
   handle('game:isRunning', () => launcher.isRunning());
   handle('game:stop', () => launcher.stop());
   handle('game:repair', async () => {
@@ -382,7 +469,10 @@ function registerIpc() {
 
 // Double-clic sur le raccourci alors que le launcher tourne deja, parfois cache
 // pres de l'horloge : on remontre la fenetre existante.
-app.on('second-instance', () => showWindow());
+app.on('second-instance', (_event, argv) => {
+  showWindow();
+  if (argv.includes('--play')) send('shortcut:play', {});
+});
 
 app.whenReady().then(() => {
   // Sans identifiant d'application, Windows n'affiche pas les notifications.

@@ -72,6 +72,9 @@ function recommendedRamMb() {
 const BEHAVIORS = ['keep', 'minimize', 'close'];
 const RESOLUTIONS = ['default', '1280x720', '1600x900', '1920x1080', 'fullscreen'];
 const BACKGROUNDS = ['rotation', 'bg-chateau', 'bg-armee', 'bg-couchant', 'bg-chevaliers', 'bg-village'];
+const GRAPHICS_PRESETS = ['performance', 'balanced', 'quality'];
+const UI_SCALES = [0.9, 1, 1.1, 1.25];
+const PSEUDO = /^[A-Za-z0-9_]{3,16}$/;
 
 const DEFAULT_SETTINGS = {
   gameRoot: null,          // null = emplacement par defaut
@@ -88,6 +91,14 @@ const DEFAULT_SETTINGS = {
   background: 'rotation',  // fond d'ecran : defilement ou une image fixe
   lightMode: false,        // sans animations ni flou, pour les PC modestes
   openAtLogin: false,      // demarrer avec Windows
+  friends: [],             // pseudos suivis : mis en avant et notifies a leur connexion
+  graphicsPreset: null,    // dernier prereglage graphique applique
+  uiScale: 1,              // taille de l'interface du launcher
+  sounds: true,            // sons discrets de l'interface
+  breakReminder: 0,        // rappel de pause, en minutes de jeu (0 = jamais)
+  quietWhilePlaying: true, // pas de notification d'amis ni d'actualites en partie
+  tourDone: false,         // visite guidee deja vue
+  unlockedAchievements: null, // succes deja annonces (null = jamais calcule)
 };
 
 const store = {
@@ -125,6 +136,17 @@ const store = {
     next.seenNews = (Array.isArray(next.seenNews) ? next.seenNews : []).map(String).slice(-50);
     next.lightMode = Boolean(next.lightMode);
     next.openAtLogin = Boolean(next.openAtLogin);
+    next.friends = [...new Set((Array.isArray(next.friends) ? next.friends : []).filter((f) => PSEUDO.test(f)))].slice(0, 50);
+    if (!GRAPHICS_PRESETS.includes(next.graphicsPreset)) next.graphicsPreset = null;
+    if (!UI_SCALES.includes(Number(next.uiScale))) next.uiScale = 1;
+    next.uiScale = Number(next.uiScale);
+    next.sounds = Boolean(next.sounds);
+    next.breakReminder = [0, 60, 120, 180].includes(Number(next.breakReminder)) ? Number(next.breakReminder) : 0;
+    next.quietWhilePlaying = Boolean(next.quietWhilePlaying);
+    next.tourDone = Boolean(next.tourDone);
+    next.unlockedAchievements = Array.isArray(next.unlockedAchievements)
+      ? next.unlockedAchievements.map(String).slice(0, 50)
+      : null;
     writeJson(paths.settingsFile, next);
     if (next.gameRoot) paths.setRoot(next.gameRoot);
     return next;
@@ -150,15 +172,28 @@ const store = {
 
   /** Temps de jeu cumule, compte par le launcher. */
   getStats() {
-    return { totalSeconds: 0, sessions: 0, lastSession: null, ...readJson(paths.statsFile, {}) };
+    return {
+      totalSeconds: 0,
+      sessions: 0,
+      longestSeconds: 0,
+      firstPlayedAt: null,
+      lastSession: null,
+      history: [],
+      ...readJson(paths.statsFile, {}),
+    };
   },
 
   addPlaySession(seconds) {
     const stats = this.getStats();
+    const now = Date.now();
     writeJson(paths.statsFile, {
       totalSeconds: stats.totalSeconds + seconds,
       sessions: stats.sessions + 1,
-      lastSession: { endedAt: Date.now(), seconds },
+      longestSeconds: Math.max(stats.longestSeconds, seconds),
+      firstPlayedAt: stats.firstPlayedAt || now - seconds * 1000,
+      lastSession: { endedAt: now, seconds },
+      // Historique borne : graphique de la semaine et dernieres parties du profil.
+      history: [...stats.history, { endedAt: now, seconds }].slice(-100),
     });
   },
 };
