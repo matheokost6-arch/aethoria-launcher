@@ -157,4 +157,4 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
   return forgeId;
 }
 
-module.exports = { install, findInstalledForge, installerCoords };
+module.exports = { install };

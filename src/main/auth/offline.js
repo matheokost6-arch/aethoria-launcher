@@ -48,4 +48,4 @@ function login(name) {
   };
 }
 
-module.exports = { login, offlineUuid, validateName };
+module.exports = { login, validateName };

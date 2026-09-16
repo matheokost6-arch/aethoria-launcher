@@ -26,8 +26,8 @@ async function thumbnail(file) {
   }
 }
 
-/** Les captures les plus recentes, avec leur miniature. */
-async function list(limit = 48) {
+/** Noms et dates des captures, de la plus recente a la plus ancienne. */
+async function recent() {
   let names;
   try {
     names = await fsp.readdir(folder());
@@ -37,8 +37,21 @@ async function list(limit = 48) {
   const images = await Promise.all(names
     .filter((name) => /\.(png|jpe?g)$/i.test(name))
     .map(async (name) => ({ name, date: (await fsp.stat(path.join(folder(), name))).mtimeMs })));
+  return images.sort((a, b) => b.date - a.date);
+}
 
-  images.sort((a, b) => b.date - a.date);
+/** Captures recentes, reduites en JPEG, pour servir de fond d'ecran au launcher. */
+async function backgrounds(limit = 6) {
+  return (await recent()).slice(0, limit).map(({ name }) => {
+    const image = nativeImage.createFromPath(path.join(folder(), name));
+    if (image.isEmpty()) return null;
+    return `data:image/jpeg;base64,${image.resize({ width: 1600 }).toJPEG(82).toString('base64')}`;
+  }).filter(Boolean);
+}
+
+/** Les captures les plus recentes, avec leur miniature. */
+async function list(limit = 48) {
+  const images = await recent();
   return Promise.all(images.slice(0, limit).map(async (image) => ({
     ...image,
     thumb: await thumbnail(path.join(folder(), image.name)),
@@ -72,4 +85,4 @@ function openFolder() {
   return shell.openPath(folder());
 }
 
-module.exports = { list, open, copy, trash, openFolder };
+module.exports = { list, backgrounds, open, copy, trash, openFolder };

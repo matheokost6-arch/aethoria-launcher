@@ -10,6 +10,15 @@ const { Readable } = require('stream');
 const MAX_RETRIES = 3;
 const DEFAULT_CONCURRENCY = 12;
 
+// Vitesse choisie par le joueur : fraction du parallelisme prevu par chaque
+// appel. "Econome" laisse de la bande passante au reste de la maison.
+const SPEED_FACTORS = { fast: 1, normal: 0.5, eco: 0.2 };
+let speedFactor = 1;
+
+function setSpeed(level) {
+  speedFactor = SPEED_FACTORS[level] ?? 1;
+}
+
 /** SHA1 d'un fichier, ou null s'il n'existe pas. */
 async function sha1(file) {
   try {
@@ -62,16 +71,6 @@ async function getJson(url, init) {
   return res.json();
 }
 
-async function getText(url, init) {
-  const res = await fetchWithRetry(url, init);
-  return res.text();
-}
-
-async function getBuffer(url, init) {
-  const res = await fetchWithRetry(url, init);
-  return Buffer.from(await res.arrayBuffer());
-}
-
 /**
  * Telecharge un fichier unique. Ecrit d'abord dans un .part puis renomme :
  * un telechargement interrompu ne laisse jamais un fichier valide en apparence
@@ -115,7 +114,8 @@ async function downloadFile(url, dest, expect = {}, onChunk) {
  * l'avancement en octets (pour une barre de progression fluide meme quand un
  * seul gros fichier est en cours).
  */
-async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgress } = {}) {
+async function downloadAll(tasks, { concurrency: requested = DEFAULT_CONCURRENCY, onProgress } = {}) {
+  const concurrency = Math.max(1, Math.round(requested * speedFactor));
   const pending = tasks.slice();
   const total = tasks.length;
   const totalBytes = tasks.reduce((sum, t) => sum + (t.size || 0), 0);
@@ -205,4 +205,4 @@ async function downloadAll(tasks, { concurrency = DEFAULT_CONCURRENCY, onProgres
   return { done, total };
 }
 
-module.exports = { sha1, isValid, downloadFile, downloadAll, getJson, getText, getBuffer, fetchWithRetry };
+module.exports = { sha1, isValid, downloadFile, downloadAll, getJson, setSpeed };

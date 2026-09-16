@@ -28,6 +28,14 @@ contextBridge.exposeInMainWorld('admin', {
     act: (action) => call('players:act', action),
     inventory: (pseudo, container) => call('players:inventory', pseudo, container),
     info: (pseudo) => call('players:info', pseudo),
+    message: (pseudo, message) => call('players:message', pseudo, message),
+  },
+  server: {
+    broadcast: (message) => call('server:broadcast', message),
+    world: (action) => call('server:world', action),
+    bans: () => call('server:bans'),
+    whitelist: () => call('server:whitelist'),
+    whitelistEdit: (pseudo, add) => call('server:whitelistEdit', { pseudo, add }),
   },
   console: {
     run: (command) => call('console:run', command),

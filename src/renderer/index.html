@@ -74,9 +74,17 @@
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 15-5-5-8 9"/></svg>
         <span>Captures</span>
       </button>
+      <button class="rail__btn" id="btn-shaders">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <span>Shaders</span>
+      </button>
       <button class="rail__btn" id="btn-settings">
         <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
         <span>Réglages</span>
+      </button>
+      <button class="rail__btn" id="btn-help">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.8 1c0 1.7-2.3 2-2.3 3.5M12 17h.01"/></svg>
+        <span>Aide</span>
       </button>
       <span class="rail__spacer"></span>
       <button class="rail__btn" id="btn-discord" hidden>
@@ -104,6 +112,8 @@
           <div class="players" id="players-panel" hidden>
             <p class="players__title" id="players-title"></p>
             <ul class="players__list" id="players-list"></ul>
+            <p class="players__title players__title--recent" id="recent-title" hidden>Vus récemment</p>
+            <ul class="players__list" id="recent-list"></ul>
           </div>
         </div>
 
@@ -135,6 +145,7 @@
           <p class="launch__line" id="launch-line"></p>
           <p class="launch__sub" id="launch-sub" hidden></p>
           <div class="progress" id="progress" hidden>
+            <ol class="steps" id="launch-steps"></ol>
             <div class="progress__track"><div class="progress__fill" id="progress-fill"></div></div>
             <p class="progress__detail" id="progress-detail"></p>
           </div>
@@ -175,6 +186,7 @@
             <p class="profile__name" id="profile-name"></p>
             <p class="help" id="profile-since"></p>
           </div>
+          <button class="btn btn--ghost btn--small profile__share" id="btn-share-stats">Partager mes stats</button>
         </div>
 
         <div class="stats" id="profile-stats"></div>
@@ -213,27 +225,125 @@
     </section>
   </div>
 
-  <!-- Mods optionnels -->
-  <div class="drawer" id="drawer-options" hidden>
+  <!-- Shaders (Oculus) -->
+  <div class="drawer drawer--wide" id="drawer-shaders" hidden>
     <div class="drawer__overlay" data-close></div>
-    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="options-title">
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="shaders-title">
       <header class="drawer__head">
-        <h2 id="options-title">Mods optionnels</h2>
+        <h2 id="shaders-title">Shaders</h2>
         <button class="icon-btn" data-close aria-label="Fermer">
           <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
         </button>
       </header>
       <div class="drawer__body">
-        <p class="help">Du confort, rien que pour toi : ces mods ne changent rien pour les autres joueurs.
-          Ils sont installés au prochain lancement.</p>
-        <div class="field__row">
-          <input class="input" id="options-search" placeholder="Rechercher un mod" spellcheck="false" autocomplete="off">
-          <button class="btn btn--ghost" id="btn-options-all">Tout activer</button>
-          <button class="btn btn--ghost" id="btn-options-none">Tout retirer</button>
-        </div>
-        <div class="options" id="options-list"></div>
+        <p class="help">Lumières, ombres et reflets pour sublimer Aethoria, grâce au mod Oculus. Les shaders sont
+          téléchargés depuis Modrinth. En jeu, la touche <strong>O</strong> ouvre leurs réglages.</p>
+        <div class="shader-list" id="shader-list"></div>
       </div>
       <footer class="drawer__foot">
+        <span class="help">Un shader gourmand fait chuter les FPS : commence par « Léger ».</span>
+        <button class="btn btn--ghost" id="btn-shaders-off">Désactiver les shaders</button>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Aide -->
+  <div class="drawer drawer--wide" id="drawer-help" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <header class="drawer__head">
+        <h2 id="help-title">Aide</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <div class="help-actions">
+          <button class="btn btn--primary" id="btn-help-report">Copier mes infos pour le staff</button>
+          <button class="btn btn--ghost" id="btn-help-discord">Demander de l’aide sur Discord</button>
+        </div>
+
+        <h3 class="group-title">Questions fréquentes</h3>
+        <div class="faq">
+          <details>
+            <summary>Comment protéger mon pseudo ?</summary>
+            <p>À ta première connexion au serveur, tape <code>/register motdepasse motdepasse</code>, puis
+              <code>/login motdepasse</code> à chaque retour. Sans cela, quelqu’un pourrait jouer sous ton pseudo.</p>
+          </details>
+          <details>
+            <summary>Le jeu ne se lance pas, ou se ferme tout de suite</summary>
+            <p>Dans Réglages → Dépannage, lance « Tester ma connexion » puis « Vérifier les fichiers ». Si le
+              problème continue, clique sur « Copier mes infos pour le staff » et envoie le texte sur Discord.</p>
+          </details>
+          <details>
+            <summary>Le jeu rame</summary>
+            <p>Choisis « Performance » dans Réglages → Graphismes du jeu, désactive les shaders et vérifie la
+              mémoire allouée : la valeur conseillée pour ton PC y est indiquée.</p>
+          </details>
+          <details>
+            <summary>Puis-je ajouter mes propres mods ?</summary>
+            <p>Non : le serveur impose sa liste, et le launcher retire tout mod ajouté à la main. Des mods de
+              confort sont proposés dans l’onglet Mods.</p>
+          </details>
+          <details>
+            <summary>Je n’entends personne au chat vocal</summary>
+            <p>En jeu, appuie sur <strong>V</strong> pour ouvrir les réglages du chat vocal et choisis ton micro et
+              tes haut-parleurs. Windows doit aussi autoriser Java à utiliser le micro.</p>
+          </details>
+          <details>
+            <summary>Où sont mes captures d’écran ?</summary>
+            <p>Appuie sur <strong>F2</strong> en jeu, puis retrouve-les dans l’onglet Captures du launcher.</p>
+          </details>
+          <details>
+            <summary>Je me suis trompé de pseudo</summary>
+            <p>Le pseudo est définitif. Contacte le staff sur Discord : il pourra t’aider.</p>
+          </details>
+        </div>
+
+        <h3 class="group-title">Derniers plantages</h3>
+        <ul class="crashes" id="crash-list"></ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- Mods optionnels -->
+  <div class="drawer" id="drawer-options" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="options-title">
+      <header class="drawer__head">
+        <h2 id="options-title">Mods</h2>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+      <div class="drawer__body">
+        <div class="tabs-inline" role="tablist">
+          <button class="tab-inline is-active" data-mods-tab="optional" role="tab">Optionnels</button>
+          <button class="tab-inline" data-mods-tab="server" role="tab">Mods du serveur</button>
+        </div>
+
+        <div class="mods-panel" id="mods-optional">
+          <p class="help">Du confort, rien que pour toi : ces mods ne changent rien pour les autres joueurs.
+            Ils sont installés au prochain lancement.</p>
+          <input class="input" id="options-search" placeholder="Rechercher un mod" spellcheck="false" autocomplete="off">
+          <div class="quick-picks">
+            <button class="pick" data-pick="essentials">Essentiels</button>
+            <button class="pick" data-pick="exploration">Exploration</button>
+            <button class="pick" data-pick="immersion">Immersion</button>
+            <span class="quick-picks__spacer"></span>
+            <button class="pick" id="btn-options-all">Tout activer</button>
+            <button class="pick" id="btn-options-none">Tout retirer</button>
+          </div>
+          <div class="options" id="options-list"></div>
+        </div>
+
+        <div class="mods-panel" id="mods-server" hidden>
+          <input class="input" id="server-mods-search" placeholder="Rechercher parmi les mods du serveur" spellcheck="false" autocomplete="off">
+          <p class="help" id="server-mods-count"></p>
+          <ul class="server-mods" id="server-mods-list"></ul>
+        </div>
+      </div>
+      <footer class="drawer__foot" id="options-foot">
         <span class="help" id="options-count"></span>
         <button class="btn btn--primary" id="btn-options-save">Appliquer</button>
       </footer>
@@ -336,6 +446,7 @@
           <span class="label">Fond d’écran</span>
           <div class="backgrounds" id="backgrounds">
             <label title="Défilement"><input type="radio" name="background" value="rotation"><span class="bg-choice bg-choice--rotation">Défilement</span></label>
+            <label title="Mes captures d’écran"><input type="radio" name="background" value="screenshots"><span class="bg-choice bg-choice--shots">Mes captures</span></label>
             <label title="Château"><input type="radio" name="background" value="bg-chateau"><span class="bg-choice" style="background-image: url('assets/bg-chateau.jpg')"></span></label>
             <label title="Armée"><input type="radio" name="background" value="bg-armee"><span class="bg-choice" style="background-image: url('assets/bg-armee.jpg')"></span></label>
             <label title="Couchant"><input type="radio" name="background" value="bg-couchant"><span class="bg-choice" style="background-image: url('assets/bg-couchant.jpg')"></span></label>
@@ -398,6 +509,43 @@
           <button class="btn btn--ghost" id="btn-tour">Revoir</button>
         </div>
 
+        <div class="field">
+          <span class="label">Couleur d’accent</span>
+          <div class="accents" id="accents">
+            <label title="Rouge"><input type="radio" name="accent" value="red"><span style="--swatch: #e8434a"></span></label>
+            <label title="Or"><input type="radio" name="accent" value="gold"><span style="--swatch: #d19a2a"></span></label>
+            <label title="Bleu"><input type="radio" name="accent" value="blue"><span style="--swatch: #3f7fe8"></span></label>
+            <label title="Vert"><input type="radio" name="accent" value="green"><span style="--swatch: #2fa968"></span></label>
+          </div>
+        </div>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Contraste élevé</strong>
+            <span>Textes et bordures plus marqués, fond plus sombre.</span>
+          </span>
+          <input type="checkbox" id="check-contrast">
+          <span class="switch__track"></span>
+        </label>
+
+        <div class="field">
+          <label class="label" for="select-speed">Vitesse de téléchargement</label>
+          <select class="input" id="select-speed">
+            <option value="fast">Rapide</option>
+            <option value="normal">Normale</option>
+            <option value="eco">Économe : laisse de la bande passante au reste de la maison</option>
+          </select>
+        </div>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Préparer les mises à jour en avance</strong>
+            <span>Le launcher télécharge les nouveautés du modpack dès son ouverture : JOUER est immédiat.</span>
+          </span>
+          <input type="checkbox" id="check-auto-prepare">
+          <span class="switch__track"></span>
+        </label>
+
         <div class="field__row field__row--center">
           <span class="switch__text">
             <strong>Mise à jour du launcher</strong>
@@ -425,6 +573,15 @@
         </label>
 
         <h3 class="group-title">Dépannage</h3>
+
+        <label class="switch">
+          <span class="switch__text">
+            <strong>Nettoyage automatique</strong>
+            <span>Chaque semaine, supprime les anciens journaux et les plantages de plus de 7 jours.</span>
+          </span>
+          <input type="checkbox" id="check-auto-clean">
+          <span class="switch__track"></span>
+        </label>
 
         <div class="field">
           <div class="field__row field__row--center">

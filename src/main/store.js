@@ -71,7 +71,9 @@ function recommendedRamMb() {
 
 const BEHAVIORS = ['keep', 'minimize', 'close'];
 const RESOLUTIONS = ['default', '1280x720', '1600x900', '1920x1080', 'fullscreen'];
-const BACKGROUNDS = ['rotation', 'bg-chateau', 'bg-armee', 'bg-couchant', 'bg-chevaliers', 'bg-village'];
+const BACKGROUNDS = ['rotation', 'screenshots', 'bg-chateau', 'bg-armee', 'bg-couchant', 'bg-chevaliers', 'bg-village'];
+const DOWNLOAD_SPEEDS = ['fast', 'normal', 'eco'];
+const ACCENTS = ['red', 'gold', 'blue', 'green'];
 const GRAPHICS_PRESETS = ['performance', 'balanced', 'quality'];
 const UI_SCALES = [0.9, 1, 1.1, 1.25];
 const PSEUDO = /^[A-Za-z0-9_]{3,16}$/;
@@ -99,6 +101,14 @@ const DEFAULT_SETTINGS = {
   quietWhilePlaying: true, // pas de notification d'amis ni d'actualites en partie
   tourDone: false,         // visite guidee deja vue
   unlockedAchievements: null, // succes deja annonces (null = jamais calcule)
+  downloadSpeed: 'fast',   // parallelisme des telechargements : fast, normal ou eco
+  autoPrepare: true,       // telecharger les mises a jour du modpack en avance
+  autoPresetDone: false,   // graphismes deja regles automatiquement sur ce PC
+  highContrast: false,     // accessibilite : textes et bordures plus marques
+  accent: 'red',           // couleur d'accent de l'interface
+  autoClean: true,         // nettoyage des anciens journaux chaque semaine
+  lastAutoClean: 0,
+  shaderActivated: false,  // pour le succes "Esthete"
 };
 
 const store = {
@@ -147,6 +157,12 @@ const store = {
     next.unlockedAchievements = Array.isArray(next.unlockedAchievements)
       ? next.unlockedAchievements.map(String).slice(0, 50)
       : null;
+    if (!DOWNLOAD_SPEEDS.includes(next.downloadSpeed)) next.downloadSpeed = DEFAULT_SETTINGS.downloadSpeed;
+    if (!ACCENTS.includes(next.accent)) next.accent = DEFAULT_SETTINGS.accent;
+    for (const key of ['autoPrepare', 'autoPresetDone', 'highContrast', 'autoClean', 'shaderActivated']) {
+      next[key] = Boolean(next[key]);
+    }
+    next.lastAutoClean = Number(next.lastAutoClean) || 0;
     writeJson(paths.settingsFile, next);
     if (next.gameRoot) paths.setRoot(next.gameRoot);
     return next;

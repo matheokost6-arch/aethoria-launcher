@@ -15,6 +15,10 @@ const screenshots = require('./game/screenshots');
 const storage = require('./game/storage');
 const checkup = require('./game/checkup');
 const gameOptions = require('./game/options');
+const shaders = require('./game/shaders');
+const crashes = require('./game/crashes');
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 const pkg = require('../../package.json');
 
 const isDev = process.argv.includes('--dev');
@@ -73,6 +77,43 @@ function applyOpenAtLogin(enabled) {
   // En developpement, l'executable est Electron lui-meme : rien a enregistrer.
   if (!app.isPackaged) return;
   app.setLoginItemSettings({ openAtLogin: enabled, args: ['--hidden'] });
+}
+
+/**
+ * Premiere partie sur ce PC : graphismes regles selon la machine, pour que le
+ * modpack tourne correctement sans que le joueur ait a chercher. Un joueur qui
+ * a deja des options (ancienne installation) n'est pas touche.
+ */
+async function autoGraphicsPreset() {
+  const settings = store.getSettings();
+  if (settings.autoPresetDone) return;
+  store.saveSettings({ autoPresetDone: true });
+  if (settings.graphicsPreset || fs.existsSync(path.join(paths.root, 'options.txt'))) return;
+
+  let gpu = '';
+  try {
+    gpu = (await app.getGPUInfo('complete')).auxAttributes?.glRenderer || '';
+  } catch {
+    // carte graphique inconnue : on se fie a la memoire
+  }
+  const dedicated = /NVIDIA|GeForce|RTX|GTX|Radeon RX|Arc A/i.test(gpu);
+  const ramMb = store.getSystemRamMb();
+  let preset = 'balanced';
+  if (ramMb < 7000 || !dedicated) preset = 'performance';
+  else if (ramMb >= 15000 && /RTX|RX [6-9]\d{3}|Arc A7/i.test(gpu)) preset = 'quality';
+
+  await gameOptions.applyPreset(preset);
+  store.saveSettings({ graphicsPreset: preset });
+  send('game:autoPreset', { preset });
+}
+
+/** Nettoyage des anciens journaux, une fois par semaine, si le joueur l'accepte. */
+async function weeklyClean() {
+  const settings = store.getSettings();
+  if (!settings.autoClean || launcher.isRunning() || Date.now() - settings.lastAutoClean < 7 * DAY_MS) return;
+  store.saveSettings({ lastAutoClean: Date.now() });
+  const { freed } = await storage.clean();
+  if (freed > 1024 * 1024) send('storage:autoCleaned', { freed });
 }
 
 /** Progression dans la barre des taches : 0 a 1, 2 = indeterminee, -1 = aucune. */
@@ -357,6 +398,8 @@ function registerIpc() {
 
   // --- Jeu ---
   const gameHooks = {
+    onStep: (step) => send('game:step', { step }),
+    onModpackChanges: (changes) => send('game:modpackChanges', changes),
     onStatus: (message) => {
       setTaskbarProgress(2);
       send('game:status', { message });
@@ -386,6 +429,7 @@ function registerIpc() {
   const runGame = async (prepareOnly) => {
     setTaskbarProgress(2);
     try {
+      if (!prepareOnly) await autoGraphicsPreset();
       const result = await launcher.launch({ prepareOnly, ...gameHooks });
       // Apres un lancement, la barre reste en attente jusqu'a l'ouverture du jeu.
       if (prepareOnly) setTaskbarProgress(-1);
@@ -410,6 +454,32 @@ function registerIpc() {
     refuseIfRunning();
     return gameOptions.applyPreset(name);
   });
+  // --- Shaders (Oculus) : Oculus reecrit sa configuration en quittant ---
+  handle('shaders:list', () => shaders.list());
+  handle('shaders:install', async (slug) => {
+    refuseIfRunning();
+    await shaders.install(slug);
+    return shaders.list();
+  });
+  handle('shaders:activate', async (slug) => {
+    refuseIfRunning();
+    await shaders.activate(slug);
+    if (slug) store.saveSettings({ shaderActivated: true });
+    return shaders.list();
+  });
+  handle('shaders:remove', async (slug) => {
+    refuseIfRunning();
+    await shaders.remove(slug);
+    return shaders.list();
+  });
+
+  // --- Plantages et mods du serveur ---
+  handle('crashes:list', () => crashes.list());
+  handle('crashes:open', (name) => crashes.open(name));
+  handle('crashes:copy', async (name) => clipboard.writeText(await crashes.read(name)));
+  handle('modpack:serverMods', async () => modpack.listServerMods((await modpack.fetchManifest()).manifest));
+  handle('screenshots:backgrounds', () => screenshots.backgrounds());
+
   handle('options:backup', async () => {
     const name = await gameOptions.backup();
     if (!name) throw new Error('Aucun réglage à sauvegarder : lance d’abord une partie.');
@@ -445,7 +515,6 @@ function registerIpc() {
     const latest = result?.updateInfo?.version || pkg.version;
     return { current: pkg.version, latest, available: latest !== pkg.version };
   });
-  handle('game:isRunning', () => launcher.isRunning());
   handle('game:stop', () => launcher.stop());
   handle('game:repair', async () => {
     const confirmation = await dialog.showMessageBox(mainWindow, {
@@ -487,6 +556,8 @@ app.whenReady().then(() => {
   registerIpc();
   createWindow();
   createTray();
+  // Apres le chargement de l'interface, pour qu'elle puisse annoncer le resultat.
+  mainWindow.webContents.once('did-finish-load', () => weeklyClean().catch(() => {}));
   setupAutoUpdater();
 
   app.on('activate', () => {

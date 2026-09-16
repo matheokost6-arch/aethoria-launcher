@@ -91,4 +91,4 @@ async function reset() {
   await fsp.rm(optionsFile(), { force: true });
 }
 
-module.exports = { applyPreset, reset, backup, listBackups, restore, PRESET_NAMES: Object.keys(PRESETS) };
+module.exports = { applyPreset, reset, backup, listBackups, restore };

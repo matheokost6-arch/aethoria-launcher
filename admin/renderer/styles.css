@@ -27,7 +27,7 @@
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--text); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
 [hidden] { display: none !important; }
-button, input { font: inherit; color: inherit; }
+button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; }
 svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 :focus-visible { outline: 2px solid var(--red-bright); outline-offset: 2px; }
@@ -193,3 +193,18 @@ code { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.0
 .toast { padding: 10px 14px; border: 1px solid var(--line-strong); border-left: 3px solid var(--gold); border-radius: 10px; background: #15161b; box-shadow: var(--shadow); font-size: 13px; white-space: pre-line; }
 .toast--success { border-left-color: var(--green); }
 .toast--error { border-left-color: var(--red-bright); }
+
+/* Serveur */
+.server-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.stack { display: grid; align-content: start; gap: 12px; }
+.stack h3 { font-size: 15px; }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.names { max-height: 220px; margin: 0; padding: 0; overflow-y: auto; list-style: none; display: grid; gap: 4px; }
+.names li { display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.03); }
+.names li > span { flex: 1; min-width: 0; }
+.names .help { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.input--select { flex: 0 0 210px !important; appearance: auto; }
+.input--select option { background: var(--surface); }
+.tag--message, .tag--broadcast { background: rgba(76, 141, 246, 0.18); color: #9cc1ff; }
+.tag--server, .tag--whitelist-add, .tag--whitelist-remove { background: rgba(230, 184, 92, 0.14); color: var(--gold); }

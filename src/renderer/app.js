@@ -28,6 +28,9 @@ const state = {
   newsTimer: null,
   stats: null,              // dernières statistiques lues, pour les succès
   breakTimer: null,
+  backdropShots: null,      // captures du joueur réduites, pour le fond d'écran
+  autoPrepared: false,      // mise à jour en avance déjà tentée pendant cette session
+  serverMods: [],
 };
 
 /* ------------------------------------------------------------------ *
@@ -148,23 +151,42 @@ async function saveSettings(patch) {
  *  Apparence : fond d'écran et mode léger
  * ------------------------------------------------------------------ */
 
-function applyAppearance() {
-  const { background, lightMode } = state.settings;
+async function applyAppearance() {
+  const { background, lightMode, highContrast, accent } = state.settings;
   document.body.classList.toggle('light-mode', lightMode);
+  document.body.classList.toggle('high-contrast', highContrast);
+  document.body.dataset.accent = accent;
   api.window.setZoom(state.settings.uiScale);
 
-  const layers = [...document.querySelectorAll('.backdrop__layer')];
-  clearInterval(state.backdropTimer);
+  // "Mes captures" : les captures du joueur remplacent les paysages du serveur.
+  const backdrop = document.querySelector('.backdrop');
+  backdrop.querySelectorAll('[data-bg="shot"]').forEach((layer) => layer.remove());
+  if (background === 'screenshots') {
+    state.backdropShots ??= await api.screenshots.backgrounds().catch(() => []);
+    for (const url of state.backdropShots) {
+      const layer = document.createElement('div');
+      layer.className = 'backdrop__layer';
+      layer.dataset.bg = 'shot';
+      layer.style.backgroundImage = `url("${url}")`;
+      backdrop.insertBefore(layer, backdrop.querySelector('.backdrop__shade'));
+    }
+  }
+
+  const layers = [...backdrop.querySelectorAll('.backdrop__layer')];
+  const shots = layers.filter((layer) => layer.dataset.bg === 'shot');
+  // Sans capture, on retombe sur le défilement des paysages.
+  const pool = shots.length ? shots : layers.filter((layer) => layer.dataset.bg !== 'shot');
   const fixed = layers.find((layer) => layer.dataset.bg === background);
-  layers.forEach((layer, i) => layer.classList.toggle('is-visible', fixed ? layer === fixed : i === 0));
+  clearInterval(state.backdropTimer);
+  layers.forEach((layer) => layer.classList.toggle('is-visible', fixed ? layer === fixed : layer === pool[0]));
 
   // Le défilement est coupé en mode léger : sans fondu, il deviendrait saccadé.
-  if (fixed || lightMode) return;
+  if (fixed || lightMode || pool.length < 2) return;
   let index = 0;
   state.backdropTimer = setInterval(() => {
-    layers[index].classList.remove('is-visible');
-    index = (index + 1) % layers.length;
-    layers[index].classList.add('is-visible');
+    pool[index].classList.remove('is-visible');
+    index = (index + 1) % pool.length;
+    pool[index].classList.add('is-visible');
   }, 12000);
 }
 
@@ -298,6 +320,7 @@ function renderNews(items) {
 
 function renderLinks(links = {}) {
   $('btn-discord').hidden = !links.discord;
+  $('btn-help-discord').hidden = !links.discord;
   $('btn-crash-discord').hidden = !links.discord;
   $('btn-trailer').hidden = !youtubeId(links.trailer);
 }
@@ -339,6 +362,28 @@ async function refreshPending() {
   } else {
     sub.textContent = 'Tout est à jour, prêt à jouer.';
   }
+
+  // Une fois par session : le modpack se met à jour pendant que le joueur
+  // regarde les actualités, et JOUER démarre ensuite sans attente.
+  if (pending.count && !pending.firstInstall && state.settings.autoPrepare && !state.autoPrepared) {
+    state.autoPrepared = true;
+    prepareInBackground();
+  }
+}
+
+async function prepareInBackground() {
+  setGameState('launching', 'Mise à jour');
+  setLaunchLine('Mise à jour du modpack en avance…');
+  try {
+    await api.game.prepare();
+    setGameState('idle');
+    setLaunchLine('Modpack à jour : tu peux jouer.', 'success');
+  } catch {
+    // Sans gravité : JOUER refera la mise à jour.
+    setGameState('idle');
+    showIdleLine();
+  }
+  refreshPending();
 }
 
 async function loadModpackInfo({ silent = false } = {}) {
@@ -461,6 +506,56 @@ function renderPlayers() {
     if (online > sample.length) html += `<li class="help">et ${plural(online - sample.length, 'autre')}</li>`;
   }
   $('players-list').innerHTML = html;
+  rememberPlayers(sample);
+  renderRecentPlayers(new Set(sample.map((p) => p.name.toLowerCase())));
+}
+
+/* Joueurs vus récemment : gardés sur ce PC, pour savoir qui passe sur le serveur. */
+const RECENT_KEY = 'aethoria.recentPlayers';
+
+function readRecentPlayers() {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function rememberPlayers(sample) {
+  if (!sample.length) return;
+  const recent = readRecentPlayers();
+  const now = Date.now();
+  for (const player of sample) recent[player.name] = now;
+  const kept = Object.entries(recent)
+    .filter(([name, at]) => /^[A-Za-z0-9_]{1,16}$/.test(name) && Number.isFinite(at))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30);
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(Object.fromEntries(kept)));
+  } catch {
+    // stockage indisponible : la liste ne sera simplement pas retenue
+  }
+}
+
+function timeAgo(timestamp) {
+  const minutes = Math.round((Date.now() - timestamp) / 60000);
+  if (minutes < 1) return 'à l’instant';
+  if (minutes < 60) return `il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  return hours < 24 ? `il y a ${hours} h` : `il y a ${plural(Math.round(hours / 24), 'jour')}`;
+}
+
+function renderRecentPlayers(onlineNames) {
+  const entries = Object.entries(readRecentPlayers())
+    .filter(([name]) => !onlineNames.has(name.toLowerCase()) && name.toLowerCase() !== state.account?.name.toLowerCase())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  $('recent-title').hidden = !entries.length;
+  $('recent-list').innerHTML = entries.map(([name, at]) => `
+    <li class="player player--recent">
+      <span class="player__name">${escapeHtml(name)}</span>
+      <span class="help">${escapeHtml(timeAgo(at))}</span>
+    </li>`).join('');
 }
 
 function togglePlayers(event) {
@@ -594,7 +689,19 @@ function setGameState(game, label) {
     $('progress-fill').style.width = '0%';
     $('progress-detail').textContent = '';
     $('crash-actions').hidden = true;
+    renderSteps(0);
   }
+}
+
+const LAUNCH_STEPS = ['Modpack', 'Java', 'Forge', 'Fichiers', 'Mods', 'Démarrage'];
+
+/** Étapes du lancement : faites, en cours, à venir. */
+function renderSteps(current) {
+  $('launch-steps').innerHTML = LAUNCH_STEPS.map((label, i) => {
+    const number = i + 1;
+    const status = number < current ? 'is-done' : number === current ? 'is-current' : '';
+    return `<li class="${status}"${number === current ? ' aria-current="step"' : ''}>${label}</li>`;
+  }).join('');
 }
 
 async function play() {
@@ -737,6 +844,10 @@ function wireGameEvents() {
     if (p.totalBytes) parts.push(`${formatBytes(p.bytes)} / ${formatBytes(p.totalBytes)}`);
     if (p.bytesPerSecond > 0) parts.push(`${formatBytes(p.bytesPerSecond)}/s`);
     if (p.etaSeconds > 2) parts.push(`${formatDuration(p.etaSeconds)} restantes`);
+    // Pour un long téléchargement, l'heure de fin parle mieux qu'une durée.
+    if (p.etaSeconds > 90) {
+      parts.push(`fin vers ${new Date(Date.now() + p.etaSeconds * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`);
+    }
     $('progress-detail').textContent = parts.join('  ·  ');
   });
 
@@ -756,6 +867,21 @@ function wireGameEvents() {
   });
   api.game.onReady(onGameReady);
   api.game.onExit(onGameExit);
+  api.game.onStep(({ step }) => renderSteps(step));
+
+  api.game.onModpackChanges(({ modsAdded, modsRemoved }) => {
+    const names = (list) => `${list.slice(0, 5).join(', ')}${list.length > 5 ? '…' : ''}`;
+    const lines = ['Le modpack a changé depuis ta dernière partie'];
+    if (modsAdded.length) lines.push(`Ajouté${modsAdded.length > 1 ? 's' : ''} : ${names(modsAdded)}`);
+    if (modsRemoved.length) lines.push(`Retiré${modsRemoved.length > 1 ? 's' : ''} : ${names(modsRemoved)}`);
+    toast(lines.join('\n'), 'info', 12000);
+  });
+
+  api.game.onAutoPreset(({ preset }) => {
+    state.settings.graphicsPreset = preset;
+    const label = { performance: 'Performance', balanced: 'Équilibré', quality: 'Qualité' }[preset];
+    toast(`Graphismes réglés sur « ${label} » pour ton PC.\nTu peux les changer dans Réglages.`, 'info', 9000);
+  });
 }
 
 async function copyReport() {
@@ -886,7 +1012,50 @@ function renderOptionalMods(mods) {
   refreshOptionsCount();
 }
 
+const QUICK_PICKS = {
+  essentials: ['xaeros-minimap', 'jade', 'just-zoom'],
+  exploration: ['xaeros-minimap', 'xaeros-world-map', 'just-zoom', 'full-brightness-toggle'],
+  immersion: ['sound-physics-remastered', 'legendary-tooltips', 'better-advancements'],
+};
+
+/** Sélection rapide : coche exactement les mods du thème. */
+function applyQuickPick(name) {
+  const ids = QUICK_PICKS[name] || [];
+  $('options-search').value = '';
+  filterOptions();
+  for (const input of document.querySelectorAll('#options-list input')) input.checked = ids.includes(input.value);
+  refreshOptionsCount();
+}
+
+function showModsTab(tab) {
+  for (const button of document.querySelectorAll('[data-mods-tab]')) button.classList.toggle('is-active', button.dataset.modsTab === tab);
+  $('mods-optional').hidden = tab !== 'optional';
+  $('mods-server').hidden = tab !== 'server';
+  $('options-foot').hidden = tab !== 'optional';
+  if (tab === 'server' && !state.serverMods.length) loadServerMods();
+}
+
+async function loadServerMods() {
+  $('server-mods-list').innerHTML = '<li class="help">Chargement…</li>';
+  try {
+    state.serverMods = await api.modpack.serverMods();
+    renderServerMods();
+  } catch (err) {
+    $('server-mods-list').innerHTML = `<li class="help">Liste indisponible : ${escapeHtml(err.message)}</li>`;
+  }
+}
+
+function renderServerMods() {
+  const query = $('server-mods-search').value.trim().toLowerCase();
+  const shown = state.serverMods.filter((mod) => !query || mod.name.toLowerCase().includes(query));
+  $('server-mods-count').textContent = `${plural(state.serverMods.length, 'mod')} imposés par le serveur`
+    + (query ? ` · ${shown.length} affiché${shown.length > 1 ? 's' : ''}` : '');
+  $('server-mods-list').innerHTML = shown.map((mod) => `
+    <li><span>${escapeHtml(mod.name)}</span><span class="help">${formatBytes(mod.size)}</span></li>`).join('');
+}
+
 async function openOptions() {
+  showModsTab('optional');
   $('options-search').value = '';
   $('options-list').innerHTML = '<p class="help">Chargement…</p>';
   $('options-count').textContent = '';
@@ -973,7 +1142,40 @@ const ACHIEVEMENTS = [
   { id: 'marathon', title: 'Nuit blanche', text: 'Jouer 3 heures d’affilée', progress: (s) => [Math.floor(s.longestSeconds / 3600), 3] },
   { id: 'loyal', title: 'Fidèle', text: 'Jouer 7 jours de suite', progress: (s) => [dayStreaks(s.history).best, 7] },
   { id: 'social', title: 'Sociable', text: 'Ajouter 3 amis', progress: () => [(state.settings.friends || []).length, 3] },
+  {
+    id: 'nightowl',
+    title: 'Oiseau de nuit',
+    text: 'Terminer une partie entre minuit et 5 h',
+    progress: (s) => [s.history.some((session) => new Date(session.endedAt).getHours() < 5) ? 1 : 0, 1],
+  },
+  {
+    id: 'regular30',
+    title: 'Pilier du royaume',
+    text: 'Jouer 30 jours différents',
+    progress: (s) => [new Set(s.history.map((session) => new Date(session.endedAt).toDateString())).size, 30],
+  },
+  { id: 'collector', title: 'Collectionneur', text: 'Activer 5 mods optionnels', progress: () => [(state.settings.optionalMods || []).length, 5] },
+  { id: 'aesthete', title: 'Esthète', text: 'Activer un shader', progress: () => [state.settings.shaderActivated ? 1 : 0, 1] },
 ];
+
+/** Stats prêtes à coller : de quoi donner envie aux amis, sans l'adresse du serveur. */
+async function shareStats() {
+  const stats = state.stats || await api.stats.get();
+  const unlocked = ACHIEVEMENTS.filter((a) => isUnlocked(a, stats)).length;
+  const message = [
+    'Mes stats sur Aethoria, serveur Minecraft médiéval :',
+    `⏱ ${formatPlaytime(stats.totalSeconds)} de jeu en ${plural(stats.sessions, 'partie')}`,
+    `🏆 ${unlocked} succès sur ${ACHIEVEMENTS.length}`,
+    `🔥 Record : ${plural(dayStreaks(stats.history).best, 'jour')} de jeu d’affilée`,
+    `Rejoins-moi : ${state.info.downloadUrl}`,
+  ].join('\n');
+  try {
+    await api.app.copyText(message);
+    toast('Stats copiées : colle-les sur Discord.', 'success', 4000);
+  } catch {
+    toast('Copie impossible.', 'error');
+  }
+}
 
 const isUnlocked = (achievement, stats) => {
   const [value, goal] = achievement.progress(stats);
@@ -1129,6 +1331,106 @@ async function openProfile() {
 }
 
 /* ------------------------------------------------------------------ *
+ *  Shaders (Oculus)
+ * ------------------------------------------------------------------ */
+
+const SHADER_WEIGHT = { Léger: 'is-light', Équilibré: 'is-balanced', Gourmand: 'is-heavy' };
+
+function renderShaders(shaders) {
+  const list = $('shader-list');
+  $('btn-shaders-off').disabled = !shaders.some((shader) => shader.active);
+  if (!shaders.length) {
+    list.innerHTML = '<p class="help">Liste indisponible : vérifie ta connexion internet.</p>';
+    return;
+  }
+  list.innerHTML = shaders.map((shader) => `
+    <div class="shader${shader.active ? ' is-active' : ''}">
+      <span class="shader__text">
+        <strong>${escapeHtml(shader.name)} <span class="shader__weight ${SHADER_WEIGHT[shader.weight] || ''}">${escapeHtml(shader.weight)}</span></strong>
+        <span>${escapeHtml(shader.description)}</span>
+        <span class="help">Version ${escapeHtml(shader.version)} · ${formatBytes(shader.size)}</span>
+      </span>
+      <span class="shader__actions">
+        ${shader.active
+    ? '<span class="shader__badge">Actif</span>'
+    : `<button class="btn btn--primary btn--small" data-shader-activate="${escapeHtml(shader.slug)}">${shader.installed ? 'Activer' : 'Installer et activer'}</button>`}
+        ${shader.installed ? `<button class="btn btn--ghost btn--small" data-shader-remove="${escapeHtml(shader.slug)}">Supprimer</button>` : ''}
+      </span>
+    </div>`).join('');
+}
+
+async function openShaders() {
+  $('shader-list').innerHTML = '<p class="help">Chargement de la liste…</p>';
+  openDrawer('drawer-shaders');
+  try {
+    renderShaders(await api.shaders.list());
+  } catch (err) {
+    $('shader-list').innerHTML = `<p class="help">Liste indisponible : ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+async function shaderAction(event) {
+  const button = event.target.closest('[data-shader-activate], [data-shader-remove]');
+  if (!button) return;
+  const { shaderActivate, shaderRemove } = button.dataset;
+  document.querySelectorAll('#shader-list button').forEach((b) => { b.disabled = true; });
+  try {
+    if (shaderActivate) {
+      button.textContent = 'Installation…';
+      renderShaders(await api.shaders.activate(shaderActivate));
+      state.settings.shaderActivated = true;
+      checkAchievements();
+      toast('Shader activé pour ta prochaine partie.\nEn jeu, la touche O ouvre ses réglages.', 'success', 6000);
+    } else {
+      renderShaders(await api.shaders.remove(shaderRemove));
+      toast('Shader supprimé.', 'info', 3000);
+    }
+  } catch (err) {
+    toast(err.message, 'error', 6000);
+    openShaders();
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ *  Aide et derniers plantages
+ * ------------------------------------------------------------------ */
+
+async function renderCrashes() {
+  const crashes = await api.crashes.list().catch(() => []);
+  $('crash-list').innerHTML = crashes.length
+    ? crashes.map((crash) => `
+      <li class="crash">
+        <span class="crash__text">
+          <strong>${escapeHtml(crash.description)}</strong>
+          <span class="help">${escapeHtml(new Date(crash.date).toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }))}${crash.cause ? ` · ${escapeHtml(crash.cause)}` : ''}</span>
+        </span>
+        <button class="btn btn--ghost btn--small" data-crash-copy="${escapeHtml(crash.name)}">Copier</button>
+        <button class="btn btn--ghost btn--small" data-crash-open="${escapeHtml(crash.name)}">Ouvrir</button>
+      </li>`).join('')
+    : '<li class="help">Aucun plantage récent. Tant mieux !</li>';
+}
+
+function openHelp() {
+  openDrawer('drawer-help');
+  renderCrashes();
+}
+
+async function crashAction(event) {
+  const button = event.target.closest('[data-crash-copy], [data-crash-open]');
+  if (!button) return;
+  try {
+    if (button.dataset.crashCopy) {
+      await api.crashes.copy(button.dataset.crashCopy);
+      toast('Rapport de plantage copié : envoie-le au staff sur Discord.', 'success', 5000);
+    } else {
+      await api.crashes.open(button.dataset.crashOpen);
+    }
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+/* ------------------------------------------------------------------ *
  *  Captures d'écran
  * ------------------------------------------------------------------ */
 
@@ -1174,7 +1476,8 @@ const BEHAVIOR_HELP = {
 };
 
 function renderChoices() {
-  const { launcherBehavior, background, graphicsPreset, uiScale } = state.settings;
+  const { launcherBehavior, background, graphicsPreset, uiScale, accent } = state.settings;
+  for (const input of document.querySelectorAll('input[name="accent"]')) input.checked = input.value === accent;
   for (const input of document.querySelectorAll('input[name="behavior"]')) input.checked = input.value === launcherBehavior;
   for (const input of document.querySelectorAll('input[name="background"]')) input.checked = input.value === background;
   for (const input of document.querySelectorAll('input[name="graphics"]')) input.checked = input.value === graphicsPreset;
@@ -1236,6 +1539,10 @@ async function openSettings() {
   $('check-light-mode').checked = s.lightMode;
   $('check-open-at-login').checked = s.openAtLogin;
   $('check-sounds').checked = s.sounds;
+  $('check-contrast').checked = s.highContrast;
+  $('check-auto-prepare').checked = s.autoPrepare;
+  $('check-auto-clean').checked = s.autoClean;
+  $('select-speed').value = s.downloadSpeed;
   $('check-quiet').checked = s.quietWhilePlaying;
   $('select-break').value = String(s.breakReminder);
   refreshBackups();
@@ -1251,6 +1558,24 @@ async function openSettings() {
 }
 
 function wireSettings() {
+  $('accents').addEventListener('change', async (e) => {
+    await saveSettings({ accent: e.target.value }).catch(() => {});
+    applyAppearance();
+  });
+  $('check-contrast').addEventListener('change', async (e) => {
+    await saveSettings({ highContrast: e.target.checked }).catch(() => {});
+    applyAppearance();
+  });
+  $('select-speed').addEventListener('change', (e) => {
+    saveSettings({ downloadSpeed: e.target.value }).catch(() => {});
+  });
+  $('check-auto-prepare').addEventListener('change', (e) => {
+    saveSettings({ autoPrepare: e.target.checked }).catch(() => {});
+  });
+  $('check-auto-clean').addEventListener('change', (e) => {
+    saveSettings({ autoClean: e.target.checked }).catch(() => {});
+  });
+
   const ram = $('input-ram');
   ram.addEventListener('input', () => { $('output-ram').textContent = formatRam(ram.value); });
   ram.addEventListener('change', () => {
@@ -1660,6 +1985,25 @@ async function init() {
   $('btn-tour-skip').addEventListener('click', endTour);
   window.addEventListener('resize', () => { if (!$('tour').hidden) showTourStep(); });
   api.app.onShortcutPlay(play);
+  $('btn-shaders').addEventListener('click', openShaders);
+  $('shader-list').addEventListener('click', shaderAction);
+  $('btn-shaders-off').addEventListener('click', async () => {
+    try {
+      renderShaders(await api.shaders.activate(null));
+      toast('Shaders désactivés pour ta prochaine partie.', 'info', 4000);
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  });
+  $('btn-help').addEventListener('click', openHelp);
+  $('crash-list').addEventListener('click', crashAction);
+  $('btn-help-report').addEventListener('click', copyReport);
+  $('btn-help-discord').addEventListener('click', () => openLink(state.info.links?.discord, 'le Discord'));
+  $('btn-share-stats').addEventListener('click', shareStats);
+  for (const tab of document.querySelectorAll('[data-mods-tab]')) tab.addEventListener('click', () => showModsTab(tab.dataset.modsTab));
+  for (const pick of document.querySelectorAll('[data-pick]')) pick.addEventListener('click', () => applyQuickPick(pick.dataset.pick));
+  $('server-mods-search').addEventListener('input', renderServerMods);
+  api.storage.onAutoCleaned(({ freed }) => toast(`Nettoyage de la semaine : ${formatBytes(freed)} libérés.`, 'info', 5000));
   $('btn-settings').addEventListener('click', () => openSettings().catch((err) => toast(err.message, 'error')));
   api.app.onTrayPlay(play);
 

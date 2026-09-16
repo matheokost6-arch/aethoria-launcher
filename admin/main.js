@@ -188,6 +188,43 @@ function registerIpc() {
     return { whois, seen };
   });
 
+  handle('players:message', async (pseudo, message) => {
+    const name = moderation.checkPseudo(pseudo);
+    const text = moderation.cleanMessage(message);
+    const command = `msg ${name} ${text}`;
+    const output = await run(command);
+    appendJournal({ action: 'message', pseudo: name, reason: text, command, output });
+    return output || 'Message envoyé.';
+  });
+
+  // --- Serveur ---
+  handle('server:broadcast', async (message) => {
+    const text = moderation.cleanMessage(message);
+    const command = `broadcast ${text}`;
+    const output = await run(command);
+    appendJournal({ action: 'broadcast', reason: text, command, output });
+    return output || 'Annonce envoyée.';
+  });
+
+  handle('server:world', async (action) => {
+    const command = moderation.worldCommand(action);
+    const output = await run(command);
+    appendJournal({ action: 'server', command, output });
+    return output || 'Commande envoyée.';
+  });
+
+  handle('server:bans', async () => moderation.parseBanList(await run('minecraft:banlist players')));
+
+  handle('server:whitelist', async () => moderation.parseWhitelist(await run('minecraft:whitelist list')));
+
+  handle('server:whitelistEdit', async ({ pseudo, add }) => {
+    const name = moderation.checkPseudo(pseudo);
+    const command = `minecraft:whitelist ${add ? 'add' : 'remove'} ${name}`;
+    const output = await run(command);
+    appendJournal({ action: add ? 'whitelist-add' : 'whitelist-remove', pseudo: name, command, output });
+    return output || 'Liste blanche modifiée.';
+  });
+
   // --- Console et journal ---
   handle('console:run', async (command) => {
     const text = String(command || '').replace(/^\//, '').trim();

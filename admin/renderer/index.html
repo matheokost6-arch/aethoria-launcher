@@ -75,6 +75,10 @@
         <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.8 3.5 6"/></svg>
         Joueurs
       </button>
+      <button class="nav" data-view="server">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+        Serveur
+      </button>
       <button class="nav" data-view="console">
         <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>
         Console
@@ -110,6 +114,64 @@
         <div class="players" id="players-list"></div>
       </section>
 
+      <!-- Serveur -->
+      <section class="view" id="view-server" hidden>
+        <header class="view__head">
+          <div>
+            <h2>Serveur</h2>
+            <p class="help">Annonces, monde, liste blanche et bannissements.</p>
+          </div>
+        </header>
+
+        <div class="server-grid">
+          <form class="card stack" id="form-broadcast" autocomplete="off">
+            <h3>Annonce à tous les joueurs</h3>
+            <input class="input" id="input-broadcast" placeholder="Le siège commence dans 10 minutes !" maxlength="256">
+            <div class="action__buttons">
+              <button class="btn btn--primary" type="submit">Annoncer</button>
+            </div>
+          </form>
+
+          <div class="card stack">
+            <h3>Monde</h3>
+            <div class="chips">
+              <button class="btn btn--small btn--ghost" data-world="day">Jour</button>
+              <button class="btn btn--small btn--ghost" data-world="night">Nuit</button>
+              <button class="btn btn--small btn--ghost" data-world="clear">Beau temps</button>
+              <button class="btn btn--small btn--ghost" data-world="rain">Pluie</button>
+              <button class="btn btn--small btn--ghost" data-world="thunder">Orage</button>
+            </div>
+            <div class="action__buttons">
+              <button class="btn btn--ghost" data-world="save">Sauvegarder le monde</button>
+            </div>
+          </div>
+
+          <div class="card stack">
+            <div class="card__head">
+              <h3>Liste blanche</h3>
+              <span class="chips">
+                <button class="btn btn--small btn--ghost" data-world="whitelist-on">Activer</button>
+                <button class="btn btn--small btn--ghost" data-world="whitelist-off">Désactiver</button>
+              </span>
+            </div>
+            <form class="field__row" id="form-whitelist" autocomplete="off">
+              <input class="input" id="input-whitelist" placeholder="Pseudo à autoriser" maxlength="16" spellcheck="false">
+              <button class="btn btn--primary" type="submit">Ajouter</button>
+            </form>
+            <ul class="names" id="whitelist-list"></ul>
+          </div>
+
+          <div class="card stack">
+            <div class="card__head">
+              <h3>Joueurs bannis</h3>
+              <button class="btn btn--small btn--ghost" id="btn-bans-refresh">Actualiser</button>
+            </div>
+            <ul class="names" id="bans-list"></ul>
+          </div>
+        </div>
+        <p class="result" id="server-result" hidden></p>
+      </section>
+
       <!-- Console -->
       <section class="view view--console" id="view-console" hidden>
         <header class="view__head">
@@ -133,6 +195,20 @@
             <p class="help">Les 500 dernières actions faites depuis ce PC.</p>
           </div>
         </header>
+        <div class="field__row">
+          <input class="input" id="journal-search" placeholder="Rechercher un pseudo, une raison, une commande" spellcheck="false" autocomplete="off">
+          <select class="input input--select" id="journal-filter" aria-label="Type d’action">
+            <option value="">Toutes les actions</option>
+            <option value="ban">Bannissements</option>
+            <option value="unban">Débannissements</option>
+            <option value="mute">Mutes</option>
+            <option value="kick">Expulsions</option>
+            <option value="message">Messages privés</option>
+            <option value="broadcast">Annonces</option>
+            <option value="server">Serveur</option>
+            <option value="console">Console</option>
+          </select>
+        </div>
         <div class="journal" id="journal-list"></div>
       </section>
     </main>
@@ -161,6 +237,14 @@
 
       <div class="drawer__body">
         <div class="tab-panel" id="tab-sanctions">
+          <form class="card action" id="form-message" autocomplete="off">
+            <h3>Message privé</h3>
+            <input class="input" id="message-text" placeholder="Message (le joueur doit être connecté)" maxlength="256">
+            <div class="action__buttons">
+              <button class="btn btn--ghost" type="submit">Envoyer</button>
+            </div>
+          </form>
+
           <div class="card action">
             <h3>Expulser</h3>
             <input class="input" id="kick-reason" placeholder="Raison (visible par le joueur)" maxlength="200">

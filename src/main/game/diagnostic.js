@@ -126,4 +126,4 @@ function extraireLigne(texte, motif) {
   return null;
 }
 
-module.exports = { analyser, REGLES };
+module.exports = { analyser };

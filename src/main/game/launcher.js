@@ -11,6 +11,7 @@ const forge = require('./forge');
 const modpack = require('./modpack');
 const java = require('./java');
 const diagnostic = require('./diagnostic');
+const downloader = require('./downloader');
 const auth = require('../auth');
 const store = require('../store');
 const pkg = require('../../../package.json');
@@ -251,14 +252,19 @@ async function ensureFrenchByDefault() {
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
  */
-async function launch({ prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady }) {
+async function launch({
+  prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady, onStep, onModpackChanges,
+}) {
   if (running) throw new Error('Le jeu est déjà en cours de lancement ou d’exécution.');
 
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
   paths.ensureAll();
+  downloader.setSpeed(settings.downloadSpeed);
 
   const status = (message) => { onStatus?.(message); };
+  // Etapes affichees au joueur : 1 modpack, 2 Java, 3 Forge, 4 fichiers, 5 mods, 6 demarrage.
+  const step = (number) => { onStep?.(number); };
 
   // Premiere installation : rien n'a encore ete telecharge. On previent
   // le joueur, sinon il croit a un blocage pendant les minutes de
@@ -271,6 +277,7 @@ async function launch({ prepareOnly = false, onStatus, onProgress, onLog, onExit
 
   await checkDiskSpace(status);
 
+  step(1);
   const { manifest, offline } = await modpack.fetchManifest({ onStatus: status });
   if (offline) status('Mode hors ligne : le modpack ne sera pas vérifié.');
 
@@ -280,23 +287,28 @@ async function launch({ prepareOnly = false, onStatus, onProgress, onLog, onExit
   // Le JSON de la version vanilla est necessaire avant Forge : l'installateur
   // s'appuie dessus, et il nous donne la version de Java a utiliser.
   status(`Préparation de Minecraft ${mcVersion}...`);
+  step(2);
   const baseVersion = await vanilla.ensureVersionJson(mcVersion);
   const javaHome = await java.ensureJava(baseVersion, settings, { onStatus: status, onProgress });
 
+  step(3);
   const versionId = await forge.install(mcVersion, forgeVersion, javaHome, {
     onStatus: status,
     fullVersion: manifest.forgeFullVersion,
   });
 
   status('Vérification des fichiers du jeu...');
+  step(4);
   const installed = await vanilla.install(versionId, { onStatus: status, onProgress });
 
   if (!offline) {
-    await modpack.sync(manifest, {
+    step(5);
+    const changes = await modpack.sync(manifest, {
       optionalEnabled: settings.optionalMods || [],
       onStatus: status,
       onProgress,
     });
+    if (changes.modsAdded.length || changes.modsRemoved.length) onModpackChanges?.(changes);
   }
 
   // "Vérifier les fichiers" : tout est controle et retelecharge si besoin,
@@ -317,6 +329,7 @@ async function launch({ prepareOnly = false, onStatus, onProgress, onLog, onExit
   });
 
   status('Démarrage de Minecraft...');
+  step(6);
   await ensureFrenchByDefault();
   await ensureServerListed(serveur);
   await writeLaunchLog(command, account);
@@ -451,4 +464,4 @@ async function repair({ onStatus } = {}) {
   return true;
 }
 
-module.exports = { launch, isRunning, focusGame, stop, repair, buildCommand, versionAtLeast, flattenArguments };
+module.exports = { launch, isRunning, focusGame, stop, repair };

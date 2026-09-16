@@ -5,6 +5,29 @@
  * Une version absente de cette liste ne déclenche aucune fenêtre.
  */
 const CHANGELOG = {
+  '1.6.0': {
+    title: 'Le grand final',
+    items: [
+      ['Shaders', 'Installe et active un shader en un clic : Complementary, BSL, MakeUp…'],
+      ['Fond d’écran perso', 'Tes propres captures d’écran en fond du launcher.'],
+      ['Mods du serveur', 'La liste complète des mods du modpack, avec recherche.'],
+      ['Changements du modpack', 'Le launcher t’indique les mods ajoutés ou retirés.'],
+      ['Vitesse de téléchargement', 'Rapide, normale ou économe pour ne pas saturer ta connexion.'],
+      ['Mises à jour en avance', 'Le modpack se met à jour dès l’ouverture : JOUER est immédiat.'],
+      ['Heure de fin', 'Les longs téléchargements affichent l’heure à laquelle ils finiront.'],
+      ['Étapes du lancement', 'Suis le lancement étape par étape, de Java au démarrage.'],
+      ['Derniers plantages', 'Retrouve tes plantages récents et copie-les pour le staff.'],
+      ['Graphismes automatiques', 'À ta première partie, les graphismes s’adaptent à ton PC.'],
+      ['Joueurs vus récemment', 'Retrouve qui est passé sur le serveur ces derniers jours.'],
+      ['Nouveaux succès', 'Oiseau de nuit, Pilier du royaume, Collectionneur et Esthète.'],
+      ['Partager mes stats', 'Copie tes stats pour les montrer à tes amis.'],
+      ['Aide', 'Les réponses aux questions fréquentes, directement dans le launcher.'],
+      ['Contraste élevé', 'Des textes et bordures plus lisibles.'],
+      ['Couleur d’accent', 'Rouge, or, bleu ou vert : choisis la couleur du launcher.'],
+      ['Nettoyage automatique', 'Les vieux journaux disparaissent chaque semaine, tout seuls.'],
+      ['Sélections rapides', 'Essentiels, Exploration ou Immersion : les bons mods en un clic.'],
+    ],
+  },
   '1.5.0': {
     title: 'Succès, pauses et partage',
     items: [

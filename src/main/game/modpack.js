@@ -157,6 +157,7 @@ async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } 
 async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {}) {
   paths.ensureAll();
   const files = normalizeFiles(manifest, { optionalEnabled });
+  const previous = await readLedger();
 
   const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
     cleanDirs: manifest.deleteExtraIn || ['mods'],
@@ -179,8 +180,37 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
     onStatus?.('Modpack à jour.');
   }
 
-  await writeLedger(files.map((f) => f.relative));
-  return { installed: tasks.length, removed: removed.length, total: files.length };
+  const current = files.map((f) => f.relative);
+  await writeLedger(current);
+  return { installed: tasks.length, removed: removed.length, total: files.length, ...modChanges(manifest, previous, current) };
+}
+
+const modName = (relative) => path.posix.basename(relative).replace(/\.jar$/i, '');
+
+/**
+ * Mods du serveur ajoutes ou retires depuis la derniere synchronisation. Les
+ * mods optionnels coches ou decoches par le joueur ne comptent pas : ce sont
+ * ses propres choix, pas une mise a jour du serveur.
+ */
+function modChanges(manifest, previous, current) {
+  // Premiere installation : aucun journal precedent, rien a annoncer.
+  if (!previous.length) return { modsAdded: [], modsRemoved: [] };
+  const optional = new Set((manifest.optionalMods || [])
+    .flatMap((mod) => [mod, ...(mod.requires || [])])
+    .map((entry) => entry.path));
+  const serverMod = (relative) => relative.startsWith('mods/') && relative.endsWith('.jar') && !optional.has(relative);
+  return {
+    modsAdded: current.filter((r) => serverMod(r) && !previous.includes(r)).map(modName),
+    modsRemoved: previous.filter((r) => serverMod(r) && !current.includes(r)).map(modName),
+  };
+}
+
+/** Mods imposes par le serveur, pour la liste consultable par le joueur. */
+function listServerMods(manifest) {
+  return (manifest.files || [])
+    .filter((file) => String(file.path || '').startsWith('mods/'))
+    .map((file) => ({ name: modName(file.path), size: file.size || 0 }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
 }
 
 /**
@@ -221,4 +251,4 @@ function listOptionalMods(manifest, enabled = []) {
   }));
 }
 
-module.exports = { fetchManifest, sync, normalizeFiles, pendingDownload, listOptionalMods };
+module.exports = { fetchManifest, sync, pendingDownload, listOptionalMods, listServerMods };

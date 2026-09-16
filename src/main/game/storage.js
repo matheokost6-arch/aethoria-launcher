@@ -47,8 +47,14 @@ async function cleanableFiles() {
     listFiles(paths.logs),
     listFiles(paths.temp),
   ]);
+  // Les plantages de moins de 7 jours restent : l'onglet Aide les affiche.
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const oldCrashReports = (await Promise.all(crashReports.map(async (file) => (
+    (await fsp.stat(file).then((s) => s.mtimeMs, () => 0)) < weekAgo ? file : null
+  )))).filter(Boolean);
+
   return [
-    ...crashReports,
+    ...oldCrashReports,
     // Minecraft archive chaque ancien journal en .gz ; latest.log reste.
     ...gameLogs.filter((file) => file.endsWith('.gz')),
     // Les 5 derniers journaux de lancement servent encore au diagnostic.

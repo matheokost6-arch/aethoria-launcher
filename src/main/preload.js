@@ -66,6 +66,7 @@ contextBridge.exposeInMainWorld('aethoria', {
   modpack: {
     info: () => call('modpack:info'),
     pending: () => call('modpack:pending'),
+    serverMods: () => call('modpack:serverMods'),
     optionalMods: () => call('modpack:optionalMods'),
     setOptionalMods: (ids) => call('modpack:setOptionalMods', ids),
   },
@@ -76,6 +77,7 @@ contextBridge.exposeInMainWorld('aethoria', {
 
   screenshots: {
     list: () => call('screenshots:list'),
+    backgrounds: () => call('screenshots:backgrounds'),
     open: (name) => call('screenshots:open', name),
     folder: () => call('screenshots:folder'),
     copy: (name) => call('screenshots:copy', name),
@@ -85,13 +87,26 @@ contextBridge.exposeInMainWorld('aethoria', {
   storage: {
     info: () => call('storage:info'),
     clean: () => call('storage:clean'),
+    onAutoCleaned: (cb) => subscribe('storage:autoCleaned', cb),
+  },
+
+  shaders: {
+    list: () => call('shaders:list'),
+    install: (slug) => call('shaders:install', slug),
+    activate: (slug) => call('shaders:activate', slug),
+    remove: (slug) => call('shaders:remove', slug),
+  },
+
+  crashes: {
+    list: () => call('crashes:list'),
+    open: (name) => call('crashes:open', name),
+    copy: (name) => call('crashes:copy', name),
   },
 
   game: {
     launch: () => call('game:launch'),
     prepare: () => call('game:prepare'),
     focus: () => call('game:focus'),
-    isRunning: () => call('game:isRunning'),
     stop: () => call('game:stop'),
     repair: () => call('game:repair'),
     onStatus: (cb) => subscribe('game:status', cb),
@@ -99,6 +114,9 @@ contextBridge.exposeInMainWorld('aethoria', {
     onLog: (cb) => subscribe('game:log', cb),
     onFirstRun: (cb) => subscribe('game:firstRun', cb),
     onReady: (cb) => subscribe('game:ready', cb),
+    onStep: (cb) => subscribe('game:step', cb),
+    onModpackChanges: (cb) => subscribe('game:modpackChanges', cb),
+    onAutoPreset: (cb) => subscribe('game:autoPreset', cb),
     onExit: (cb) => subscribe('game:exit', cb),
   },
 

@@ -11,6 +11,11 @@ const ACTION_LABELS = {
   unmute: 'Parole rendue',
   ban: 'Bannissement',
   unban: 'Débannissement',
+  message: 'Message privé',
+  broadcast: 'Annonce',
+  server: 'Serveur',
+  'whitelist-add': 'Liste blanche +',
+  'whitelist-remove': 'Liste blanche −',
   console: 'Console',
 };
 
@@ -22,6 +27,7 @@ const state = {
   history: [],          // commandes de la console
   historyIndex: 0,
   confirm: null,        // résolution de la confirmation en cours
+  journal: [],          // entrées du journal, filtrées à l'affichage
 };
 
 /* ------------------------------------------------------------------ *
@@ -121,14 +127,18 @@ function backToConnect(message) {
 
 function showView(name) {
   for (const nav of document.querySelectorAll('.nav')) nav.classList.toggle('is-active', nav.dataset.view === name);
-  for (const view of ['players', 'console', 'journal']) $(`view-${view}`).hidden = view !== name;
+  for (const view of ['players', 'server', 'console', 'journal']) $(`view-${view}`).hidden = view !== name;
 
   clearInterval(state.refreshTimer);
   if (name === 'players') {
     refreshPlayers();
     state.refreshTimer = setInterval(refreshPlayers, 15000);
   }
-  if (name === 'journal') renderJournal();
+  if (name === 'journal') loadJournal();
+  if (name === 'server') {
+    loadWhitelist();
+    loadBans();
+  }
   if (name === 'console') $('input-console').focus();
 }
 
@@ -182,7 +192,7 @@ async function openPlayer(pseudo, tab = 'sanctions') {
   $('player-status').textContent = online ? '● En ligne' : 'Hors ligne';
   $('player-status').className = `help${online ? ' is-online' : ''}`;
   $('player-avatar').src = avatar(await api.players.avatar(name));
-  for (const id of ['kick-reason', 'mute-reason', 'ban-reason']) $(id).value = '';
+  for (const id of ['kick-reason', 'mute-reason', 'ban-reason', 'message-text']) $(id).value = '';
   $('action-result').hidden = true;
   $('drawer-player').hidden = false;
   showTab(tab);
@@ -227,6 +237,18 @@ async function act(action) {
     showResult(err.message, 'error');
   } finally {
     buttons.forEach((b) => { b.disabled = false; });
+  }
+}
+
+async function sendMessage(event) {
+  event.preventDefault();
+  const input = $('message-text');
+  if (!input.value.trim()) return;
+  try {
+    showResult(await api.players.message(state.player, input.value), 'success');
+    input.value = '';
+  } catch (err) {
+    showResult(err.message, 'error');
   }
 }
 
@@ -285,6 +307,100 @@ async function loadInfo() {
 }
 
 /* ------------------------------------------------------------------ *
+ *  Serveur : annonces, monde, liste blanche, bannis
+ * ------------------------------------------------------------------ */
+
+function serverResult(text, kind) {
+  const result = $('server-result');
+  result.textContent = text;
+  result.className = `result is-${kind}`;
+  result.hidden = false;
+}
+
+async function broadcast(event) {
+  event.preventDefault();
+  const input = $('input-broadcast');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!await confirmAction('Envoyer cette annonce ?', `Tous les joueurs connectés verront : « ${text} »`)) return;
+  try {
+    serverResult(await api.server.broadcast(text), 'success');
+    toast('Annonce envoyée.', 'success');
+    input.value = '';
+  } catch (err) {
+    serverResult(err.message, 'error');
+  }
+}
+
+const WORLD_CONFIRM = {
+  'whitelist-on': ['Activer la liste blanche ?', 'Seuls les joueurs de la liste pourront rejoindre le serveur.'],
+  'whitelist-off': ['Désactiver la liste blanche ?', 'Tout le monde pourra de nouveau rejoindre le serveur.'],
+};
+
+async function worldAction(button) {
+  const action = button.dataset.world;
+  if (WORLD_CONFIRM[action] && !await confirmAction(...WORLD_CONFIRM[action])) return;
+  button.disabled = true;
+  try {
+    serverResult(await api.server.world(action), 'success');
+  } catch (err) {
+    serverResult(err.message, 'error');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function namesHtml(entries, emptyText) {
+  return entries.length ? entries.join('') : `<li class="help">${emptyText}</li>`;
+}
+
+async function loadWhitelist() {
+  try {
+    const names = await api.server.whitelist();
+    $('whitelist-list').innerHTML = namesHtml(names.map((name) => `
+      <li><span>${escapeHtml(name)}</span>
+        <button class="btn btn--small btn--ghost" data-whitelist-remove="${escapeHtml(name)}">Retirer</button></li>`),
+    'Personne dans la liste blanche.');
+  } catch (err) {
+    $('whitelist-list').innerHTML = `<li class="help">Liste indisponible : ${escapeHtml(err.message)}</li>`;
+  }
+}
+
+async function editWhitelist(pseudo, add) {
+  try {
+    serverResult(await api.server.whitelistEdit(pseudo, add), 'success');
+    loadWhitelist();
+  } catch (err) {
+    serverResult(err.message, 'error');
+  }
+}
+
+async function loadBans() {
+  try {
+    const bans = await api.server.bans();
+    $('bans-list').innerHTML = namesHtml(bans.map((ban) => `
+      <li><span><strong>${escapeHtml(ban.name)}</strong>
+        <span class="help" title="${escapeHtml(ban.reason)}">${escapeHtml(ban.reason || 'Sans raison')} · par ${escapeHtml(ban.by)}</span></span>
+        <button class="btn btn--small btn--ghost" data-unban="${escapeHtml(ban.name)}">Débannir</button></li>`),
+    'Aucun joueur banni.');
+  } catch (err) {
+    $('bans-list').innerHTML = `<li class="help">Liste indisponible : ${escapeHtml(err.message)}</li>`;
+  }
+}
+
+async function unbanFromList(pseudo) {
+  if (!await confirmAction(`Débannir ${pseudo} ?`, 'Le joueur pourra de nouveau rejoindre le serveur.')) return;
+  try {
+    const { output } = await api.players.act({ action: 'unban', pseudo });
+    serverResult(output, 'success');
+    toast(`Débannissement : ${pseudo}`, 'success');
+    loadBans();
+  } catch (err) {
+    serverResult(err.message, 'error');
+  }
+}
+
+/* ------------------------------------------------------------------ *
  *  Console et journal
  * ------------------------------------------------------------------ */
 
@@ -320,8 +436,16 @@ function browseHistory(event) {
   $('input-console').value = state.history[state.historyIndex] || '';
 }
 
-async function renderJournal() {
-  const entries = await api.journal.list().catch(() => []);
+async function loadJournal() {
+  state.journal = await api.journal.list().catch(() => []);
+  renderJournal();
+}
+
+function renderJournal() {
+  const query = $('journal-search').value.trim().toLowerCase();
+  const type = $('journal-filter').value;
+  const entries = state.journal.filter((entry) => (!type || entry.action === type || (type === 'server' && entry.action.startsWith('whitelist')))
+    && (!query || [entry.pseudo, entry.reason, entry.command, entry.output].some((field) => String(field || '').toLowerCase().includes(query))));
   $('journal-list').innerHTML = entries.length
     ? entries.map((entry) => `
       <div class="journal__row">
@@ -334,7 +458,7 @@ async function renderJournal() {
         </span>
         <span class="journal__output" title="${escapeHtml(entry.output)}">${escapeHtml(entry.output)}</span>
       </div>`).join('')
-    : '<p class="empty">Aucune action pour le moment.</p>';
+    : `<p class="empty">${state.journal.length ? 'Aucune action ne correspond.' : 'Aucune action pour le moment.'}</p>`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -381,6 +505,28 @@ async function init() {
     if (!$('modal-confirm').hidden) settleConfirm(false);
     else $('drawer-player').hidden = true;
   });
+
+  $('form-message').addEventListener('submit', sendMessage);
+  $('form-broadcast').addEventListener('submit', broadcast);
+  for (const button of document.querySelectorAll('[data-world]')) button.addEventListener('click', () => worldAction(button));
+  $('form-whitelist').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = $('input-whitelist');
+    if (!input.value.trim()) return;
+    editWhitelist(input.value.trim(), true);
+    input.value = '';
+  });
+  $('whitelist-list').addEventListener('click', (e) => {
+    const button = e.target.closest('[data-whitelist-remove]');
+    if (button) editWhitelist(button.dataset.whitelistRemove, false);
+  });
+  $('bans-list').addEventListener('click', (e) => {
+    const button = e.target.closest('[data-unban]');
+    if (button) unbanFromList(button.dataset.unban);
+  });
+  $('btn-bans-refresh').addEventListener('click', loadBans);
+  $('journal-search').addEventListener('input', renderJournal);
+  $('journal-filter').addEventListener('change', renderJournal);
 
   $('form-console').addEventListener('submit', runConsole);
   $('input-console').addEventListener('keydown', browseHistory);

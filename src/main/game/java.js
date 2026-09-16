@@ -172,4 +172,4 @@ async function ensureJava(version, settings = {}, hooks = {}) {
   }
 }
 
-module.exports = { ensureJava, javaBinary, probeJavaVersion, findSystemJava, RUNTIME_PLATFORM };
+module.exports = { ensureJava, javaBinary };
