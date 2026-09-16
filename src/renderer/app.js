@@ -2040,3 +2040,6 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Un fichier glisse sur la fenetre ne doit jamais etre ouvert a la place de l'interface.
+for (const type of ['dragover', 'drop']) document.addEventListener(type, (event) => event.preventDefault());

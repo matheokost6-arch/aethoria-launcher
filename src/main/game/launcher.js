@@ -17,6 +17,7 @@ const store = require('../store');
 const pkg = require('../../../package.json');
 
 let running = null; // un seul processus de jeu a la fois
+let preparing = false; // telechargements et installation en cours
 let stopRequested = false;
 
 /* ------------------------------------------------------------------ *
@@ -252,10 +253,21 @@ async function ensureFrenchByDefault() {
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
  */
-async function launch({
+async function launch(options) {
+  if (running || preparing) throw new Error('Le jeu est déjà en cours de lancement ou d’exécution.');
+  // Tant que des fichiers s'ecrivent, reparer, nettoyer ou changer de dossier
+  // corromprait l'installation : isRunning() le signale aux autres actions.
+  preparing = true;
+  try {
+    return await prepareAndStart(options);
+  } finally {
+    preparing = false;
+  }
+}
+
+async function prepareAndStart({
   prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady, onStep, onModpackChanges,
 }) {
-  if (running) throw new Error('Le jeu est déjà en cours de lancement ou d’exécution.');
 
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
@@ -361,12 +373,16 @@ async function launch({
   child.stdout.on('data', (b) => b.toString().split(/\r?\n/).forEach(pushLine));
   child.stderr.on('data', (b) => b.toString().split(/\r?\n/).forEach(pushLine));
 
+  let failedToStart = false;
   child.on('error', (err) => {
+    if (running !== child) return;
+    failedToStart = true;
     running = null;
     onExit?.({ code: -1, error: `Java n'a pas pu démarrer : ${err.message}` });
   });
 
   child.on('close', (code) => {
+    if (failedToStart) return;
     running = null;
     const durationSeconds = Math.round((Date.now() - startedAt) / 1000);
     store.addPlaySession(durationSeconds);
@@ -426,17 +442,19 @@ async function rotateLogs() {
   }
 }
 
+/** Vrai pendant la partie, mais aussi pendant les telechargements qui la precedent. */
 function isRunning() {
-  return Boolean(running);
+  return Boolean(running || preparing);
 }
 
 /** Ramene la fenetre du jeu au premier plan. */
 function focusGame() {
   if (!running) return false;
-  spawn('powershell', [
+  const shell = spawn('powershell', [
     '-NoProfile', '-WindowStyle', 'Hidden', '-Command',
     `(New-Object -ComObject WScript.Shell).AppActivate(${Number(running.pid)}) | Out-Null`,
   ], { windowsHide: true, stdio: 'ignore' });
+  shell.on('error', () => {}); // PowerShell absent ou bloque : on ne fait simplement rien
   return true;
 }
 
@@ -449,7 +467,7 @@ function stop() {
 
 /** Reinstallation propre : on supprime ce qui est reconstructible, pas les sauvegardes. */
 async function repair({ onStatus } = {}) {
-  if (running) throw new Error('Ferme Minecraft avant de réparer l’installation.');
+  if (running || preparing) throw new Error('Attends la fin du téléchargement ou de la partie pour réparer.');
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
 

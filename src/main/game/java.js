@@ -3,7 +3,8 @@
 const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
-const { execFile } = require('child_process');
+const crypto = require('crypto');
+const { execFile, execFileSync } = require('child_process');
 const { promisify } = require('util');
 const paths = require('./paths');
 const config = require('../../shared/config');
@@ -55,7 +56,14 @@ async function probeJavaVersion(binary) {
 async function findSystemJava(requiredMajor) {
   const candidates = [];
   if (process.env.JAVA_HOME) candidates.push(javaBinary(process.env.JAVA_HOME, { console: true }));
-  candidates.push(process.platform === 'win32' ? 'java.exe' : 'java');
+  // Java du PATH, avec son vrai emplacement : le home en est deduit plus bas.
+  try {
+    const found = execFileSync(process.platform === 'win32' ? 'where' : 'which', ['java'], { encoding: 'utf8', windowsHide: true, timeout: 5000 });
+    const first = found.split(/\r?\n/).map((line) => line.trim()).find((line) => path.isAbsolute(line));
+    if (first) candidates.push(first);
+  } catch {
+    // aucun Java dans le PATH
+  }
 
   for (const dir of [process.env.ProgramFiles, process.env['ProgramFiles(x86)']].filter(Boolean)) {
     for (const vendor of ['Java', 'Eclipse Adoptium', 'Microsoft', 'Zulu', 'Amazon Corretto']) {
@@ -68,7 +76,7 @@ async function findSystemJava(requiredMajor) {
   }
 
   for (const candidate of candidates) {
-    if (candidate.includes(path.sep) && !fs.existsSync(candidate)) continue;
+    if (!fs.existsSync(candidate)) continue;
     const major = await probeJavaVersion(candidate);
     if (major && (!requiredMajor || major === requiredMajor)) {
       // On renvoie le home, pas le binaire : l'appelant choisira java ou javaw.
@@ -91,7 +99,15 @@ async function downloadRuntime(component, { onProgress, onStatus } = {}) {
     throw new Error(`Aucun runtime Java "${component}" disponible pour ${RUNTIME_PLATFORM}.`);
   }
 
-  const manifest = await getJson(entry.manifest.url);
+  // Le manifest liste les empreintes de chaque fichier de Java : il doit lui-meme
+  // correspondre a l'empreinte publiee par Mojang.
+  const res = await fetch(entry.manifest.url);
+  if (!res.ok) throw new Error(`Téléchargement de Java impossible (HTTP ${res.status}).`);
+  const raw = Buffer.from(await res.arrayBuffer());
+  if (entry.manifest.sha1 && crypto.createHash('sha1').update(raw).digest('hex') !== entry.manifest.sha1) {
+    throw new Error('Le manifest de Java téléchargé est altéré.');
+  }
+  const manifest = JSON.parse(raw.toString('utf8'));
   const tasks = [];
   const links = [];
   const executables = [];

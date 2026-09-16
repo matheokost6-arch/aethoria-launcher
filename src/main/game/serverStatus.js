@@ -27,6 +27,18 @@ function varInt(value) {
   return Buffer.from(bytes);
 }
 
+/** Lit un VarInt : { value, size }, ou null s'il n'est pas encore complet. */
+function readVarInt(buffer, offset) {
+  let value = 0;
+  for (let i = 0; i < 5; i += 1) {
+    if (offset + i >= buffer.length) return null;
+    const byte = buffer[offset + i];
+    value |= (byte & 0x7f) << (7 * i);
+    if (!(byte & 0x80)) return { value, size: i + 1 };
+  }
+  throw new Error('VarInt trop long');
+}
+
 function varString(text) {
   const body = Buffer.from(text, 'utf8');
   return Buffer.concat([varInt(body.length), body]);
@@ -103,12 +115,17 @@ function ping(host, port = 25565) {
       // le joueur ressentira comme latence en jeu.
       if (latency === null) latency = Date.now() - sentAt;
       buffer = Buffer.concat([buffer, chunk]);
-      const start = buffer.indexOf(0x7b); // '{' : debut du JSON
-      if (start < 0) return;
       try {
-        // La reponse arrive en plusieurs morceaux : tant que le JSON est
-        // incomplet, l'analyse echoue et on attend la suite.
-        const data = JSON.parse(buffer.slice(start).toString('utf8'));
+        // Paquet : longueur, identifiant, puis la chaine JSON prefixee de sa
+        // taille. La reponse arrive en plusieurs morceaux : on attend qu'elle
+        // soit complete.
+        const length = readVarInt(buffer, 0);
+        if (!length || buffer.length < length.size + length.value) return;
+        const id = readVarInt(buffer, length.size);
+        const text = id && readVarInt(buffer, length.size + id.size);
+        if (!text) throw new Error('Réponse invalide');
+        const start = length.size + id.size + text.size;
+        const data = JSON.parse(buffer.toString('utf8', start, start + text.value));
         done({
           online: true,
           version: data.version?.name || null,
@@ -121,8 +138,8 @@ function ping(host, port = 25565) {
           latency,
           motd: extractMotd(data.description),
         });
-      } catch {
-        // JSON encore tronque
+      } catch (err) {
+        done({ online: false, reason: err.message });
       }
     });
 

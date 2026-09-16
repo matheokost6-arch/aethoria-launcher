@@ -127,7 +127,11 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
 
   onStatus?.(`Téléchargement de Forge ${coords.full}...`);
   try {
-    await downloadFile(coords.url, coords.jar);
+    // L'installateur est execute : son empreinte publiee par Forge est exigee.
+    const res = await fetch(`${coords.url}.sha1`);
+    const expected = res.ok ? (await res.text()).trim().slice(0, 40) : '';
+    if (!/^[0-9a-f]{40}$/i.test(expected)) throw new Error('empreinte de l’installateur introuvable');
+    await downloadFile(coords.url, coords.jar, { sha1: expected });
   } catch (err) {
     throw new Error(
       `Forge ${coords.full} est introuvable sur le depot officiel (${err.message}). `

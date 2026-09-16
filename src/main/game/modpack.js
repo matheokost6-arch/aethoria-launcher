@@ -33,10 +33,16 @@ async function writeLedger(files) {
 }
 
 /** Refuse toute destination sortant du dossier de jeu (manifest compromis ou mal ecrit). */
+/** Le chemin reste-t-il dans le dossier de jeu ? Correct aussi pour une racine comme D:\\. */
+function isInsideRoot(full) {
+  const relative = path.relative(paths.root, full);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
 function safeJoin(relative) {
-  const normalized = path.normalize(relative).replace(/^([/\\])+/, '');
+  const normalized = path.normalize(String(relative)).replace(/^([/\\])+/, '');
   const full = path.resolve(paths.root, normalized);
-  if (full !== paths.root && !full.startsWith(paths.root + path.sep)) {
+  if (!isInsideRoot(full)) {
     throw new Error(`Chemin de fichier refusé dans le manifest : ${relative}`);
   }
   return full;
@@ -110,7 +116,7 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
         name: entry.name || path.basename(relative),
         relative: relative.split('\\').join('/'),
         dest: safeJoin(relative),
-        url: entry.url,
+        url: /^https:\/\//.test(entry.url) ? entry.url : null,
         sha1: entry.sha1 || entry.hash,
         size: entry.size,
       };
@@ -131,7 +137,7 @@ async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } 
   for (const relative of previous) {
     if (current.has(relative)) continue;
     const full = path.resolve(paths.root, relative);
-    if (!full.startsWith(paths.root + path.sep) || !fs.existsSync(full)) continue;
+    if (full === paths.root || !isInsideRoot(full) || !fs.existsSync(full)) continue;
     await fsp.rm(full, { force: true });
     removed.push(relative);
   }
@@ -160,7 +166,9 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
   const previous = await readLedger();
 
   const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
-    cleanDirs: manifest.deleteExtraIn || ['mods'],
+    // Seul le dossier mods peut etre vide : un manifest ne doit jamais effacer
+    // les mondes, options ou captures du joueur.
+    cleanDirs: (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods'),
     onStatus,
   });
 

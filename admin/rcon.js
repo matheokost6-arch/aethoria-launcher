@@ -19,6 +19,7 @@ const TIMEOUT_MS = 8000;
 // Une longue reponse arrive en plusieurs paquets : on attend ce silence avant
 // de la considerer complete.
 const END_OF_RESPONSE_MS = 180;
+const MAX_PACKET = 4096 + 10; // taille maximale d'un paquet de reponse RCON
 
 function encode(id, type, body) {
   const payload = Buffer.from(body, 'utf8');
@@ -93,6 +94,12 @@ class Rcon {
     this.buffer = Buffer.concat([this.buffer, chunk]);
     while (this.buffer.length >= 4) {
       const length = this.buffer.readInt32LE(0);
+      // Paquet impossible : reponse corrompue ou serveur hostile, on coupe.
+      if (length < 10 || length > MAX_PACKET) {
+        this.buffer = Buffer.alloc(0);
+        this.socket?.destroy(new Error('Réponse RCON invalide.'));
+        return;
+      }
       if (this.buffer.length < length + 4) return;
       const id = this.buffer.readInt32LE(4);
       const type = this.buffer.readInt32LE(8);
@@ -102,9 +109,11 @@ class Rcon {
       if (this.onAuth && type === TYPE_COMMAND) {
         this.onAuth(id);
       } else if (this.pending && id === this.pending.id) {
-        this.pending.parts.push(body);
-        clearTimeout(this.pending.idle);
-        this.pending.idle = setTimeout(() => this.pending?.finish(), END_OF_RESPONSE_MS);
+        const current = this.pending;
+        current.parts.push(body);
+        clearTimeout(current.idle);
+        // Lie a cette commande : jamais la suivante, si celle-ci a expire entre-temps.
+        current.idle = setTimeout(() => { if (this.pending === current) current.finish(); }, END_OF_RESPONSE_MS);
       }
     }
   }
@@ -119,6 +128,7 @@ class Rcon {
       const id = this.nextId;
       this.nextId += 1;
       const timeout = setTimeout(() => {
+        clearTimeout(this.pending?.idle);
         this.pending = null;
         reject(new Error('Le serveur n’a pas répondu à la commande.'));
       }, TIMEOUT_MS);

@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const { pathToFileURL } = require('url');
 const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray, clipboard } = require('electron');
 const config = require('../shared/config');
 const paths = require('./game/paths');
@@ -135,7 +136,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
     },
   });
 
@@ -148,16 +149,19 @@ function createWindow() {
 
   // Toute navigation externe part dans le navigateur du systeme : la fenetre du
   // launcher ne doit jamais devenir un navigateur generaliste.
+  // Seuls les liens https partent dans le navigateur : un autre protocole
+  // (ms-msdt:, search-ms:, file:...) pourrait lancer un programme.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:/.test(url)) shell.openExternal(url);
+    if (isWebLink(url)) shell.openExternal(url);
     return { action: 'deny' };
   });
+  // La fenetre n'affiche jamais que l'interface du launcher : un fichier ou un
+  // lien glisse dessus ne doit pas remplacer la page et profiter de son pont.
   mainWindow.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith('file://')) {
-      event.preventDefault();
-      shell.openExternal(url);
-    }
+    event.preventDefault();
+    if (isWebLink(url)) shell.openExternal(url);
   });
+  mainWindow.webContents.on('will-attach-webview', (event) => event.preventDefault());
 
   mainWindow.on('closed', () => { mainWindow = null; });
 }
@@ -202,8 +206,20 @@ function setupAutoUpdater() {
  * ------------------------------------------------------------------ */
 
 /** Enveloppe un handler pour renvoyer { ok, data } ou { ok:false, error }. */
+const RENDERER_URL = pathToFileURL(path.join(__dirname, '..', 'renderer', 'index.html')).href;
+
+const isWebLink = (url) => {
+  try {
+    return new URL(url).protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 function handle(channel, fn) {
   ipcMain.handle(channel, async (event, ...args) => {
+    // Seule l'interface du launcher peut appeler le processus principal.
+    if (event.senderFrame?.url.split(/[?#]/)[0] !== RENDERER_URL) return { ok: false, error: 'Appel refusé.' };
     try {
       return { ok: true, data: await fn(...args) };
     } catch (err) {
@@ -297,6 +313,9 @@ function registerIpc() {
     recommendedRamMb: store.getRecommendedRamMb(),
   }));
   handle('settings:save', (patch) => {
+    if (patch && ('gameRoot' in patch || 'javaPath' in patch || 'jvmArgs' in patch) && launcher.isRunning()) {
+      throw new Error('Attends la fin du téléchargement ou de la partie pour modifier ce réglage.');
+    }
     const next = store.saveSettings(patch);
     if (patch && 'openAtLogin' in patch) applyOpenAtLogin(next.openAtLogin);
     return next;
@@ -307,7 +326,14 @@ function registerIpc() {
       properties: ['openDirectory', 'createDirectory'],
       defaultPath: paths.root,
     });
-    return result.canceled ? null : result.filePaths[0];
+    if (result.canceled) return null;
+    const chosen = result.filePaths[0];
+    // Le launcher supprime les mods inconnus et, en reparation, les versions :
+    // un dossier qui contient deja autre chose (un .minecraft, un disque
+    // entier...) recoit un sous-dossier dedie.
+    const entries = fs.readdirSync(chosen).filter((name) => !/^desktop\.ini$/i.test(name));
+    const managed = fs.existsSync(path.join(chosen, '.aethoria-managed.json'));
+    return entries.length && !managed ? path.join(chosen, 'Aethoria') : chosen;
   });
   handle('settings:pickJava', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
@@ -341,12 +367,12 @@ function registerIpc() {
 
   handle('storage:info', () => storage.info());
   handle('storage:clean', () => {
-    if (launcher.isRunning()) throw new Error('Ferme Minecraft avant de nettoyer.');
+    if (launcher.isRunning()) throw new Error('Attends la fin du téléchargement ou de la partie pour nettoyer.');
     return storage.clean();
   });
 
   handle('shell:openExternal', (url) => {
-    if (!/^https?:\/\//.test(url)) throw new Error('Lien refusé.');
+    if (!isWebLink(url)) throw new Error('Lien refusé.');
     return shell.openExternal(url);
   });
 
@@ -528,6 +554,7 @@ function registerIpc() {
         + 'Tes sauvegardes, options et captures d’écran sont conservés.',
     });
     if (confirmation.response !== 1) return false;
+    if (launcher.isRunning()) throw new Error('Attends la fin du téléchargement ou de la partie pour réparer.');
     return launcher.repair({ onStatus: (message) => send('game:status', { message }) });
   });
 }
@@ -549,8 +576,10 @@ app.whenReady().then(() => {
 
   // Le dossier de jeu personnalise doit etre applique avant tout acces disque.
   const settings = store.getSettings();
-  if (settings.gameRoot && fs.existsSync(path.dirname(settings.gameRoot))) {
-    paths.setRoot(settings.gameRoot);
+  try {
+    if (settings.gameRoot && fs.existsSync(path.dirname(settings.gameRoot))) paths.setRoot(settings.gameRoot);
+  } catch {
+    // dossier illisible : l'emplacement par defaut reste utilise
   }
 
   registerIpc();

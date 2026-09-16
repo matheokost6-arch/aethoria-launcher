@@ -12,7 +12,9 @@ const folder = () => path.join(paths.root, 'screenshots');
 
 /** Un nom de fichier seul : l'interface ne doit pas pouvoir viser autre chose. */
 function screenshotPath(name) {
-  if (path.basename(String(name)) !== name) throw new Error('Capture introuvable.');
+  if (typeof name !== 'string' || path.basename(name) !== name || !/^[^<>:"/\\|?*]+\.(png|jpe?g)$/i.test(name)) {
+    throw new Error('Capture introuvable.');
+  }
   return path.join(folder(), name);
 }
 

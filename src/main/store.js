@@ -78,6 +78,26 @@ const GRAPHICS_PRESETS = ['performance', 'balanced', 'quality'];
 const UI_SCALES = [0.9, 1, 1.1, 1.25];
 const PSEUDO = /^[A-Za-z0-9_]{3,16}$/;
 
+/**
+ * Arguments Java acceptes : options du ramasse-miettes et proprietes simples.
+ * Tout ce qui charge ou execute du code (-javaagent, -agentlib,
+ * -XX:OnOutOfMemoryError, -Xbootclasspath, log4j...) est ecarte.
+ */
+const JVM_ARG = /^(-XX:[+-]?[A-Za-z0-9]+(=[A-Za-z0-9.%_-]+)?|-D[A-Za-z0-9._-]+=[A-Za-z0-9._:%-]*|-Xs[sm]\d+[kKmMgG]?|-Xmn\d+[kKmMgG]?)$/;
+const JVM_FORBIDDEN = /^-XX:[+-]?(On|ErrorFile|HeapDumpPath|LogFile|Flags|VMOptionsFile|CompileCommandFile)|^-D(log4j|java\.security|java\.library|jdk\.|sun\.|java\.ext|java\.class|javax\.net|fml\.|forge\.|legacyClassPath|libraryDirectory)/i;
+
+function cleanJvmArgs(value) {
+  return String(value || '').trim().split(/\s+/)
+    .filter((arg) => JVM_ARG.test(arg) && !JVM_FORBIDDEN.test(arg))
+    .slice(0, 30)
+    .join(' ');
+}
+
+/** Chemin absolu, ou null. */
+function cleanPath(value) {
+  return typeof value === 'string' && value.length < 260 && path.isAbsolute(value) ? path.normalize(value) : null;
+}
+
 const DEFAULT_SETTINGS = {
   gameRoot: null,          // null = emplacement par defaut
   minRamMb: config.defaults.minRamMb,
@@ -163,6 +183,17 @@ const store = {
       next[key] = Boolean(next[key]);
     }
     next.lastAutoClean = Number(next.lastAutoClean) || 0;
+    next.gameRoot = cleanPath(next.gameRoot);
+    // Le racine d'un disque serait videe de ses mods et versions : refusee.
+    if (next.gameRoot && path.parse(next.gameRoot).root === next.gameRoot) next.gameRoot = null;
+    next.javaPath = cleanPath(next.javaPath);
+    if (next.javaPath && !/^javaw?(\.exe)?$/i.test(path.basename(next.javaPath)) && fs.existsSync(next.javaPath) && fs.statSync(next.javaPath).isFile()) {
+      next.javaPath = null; // un executable qui n'est pas Java
+    }
+    next.jvmArgs = cleanJvmArgs(next.jvmArgs);
+    next.autoJoinServer = Boolean(next.autoJoinServer);
+    next.lastSeenVersion = typeof next.lastSeenVersion === 'string' ? next.lastSeenVersion.slice(0, 20) : null;
+    next.optionalMods = (Array.isArray(next.optionalMods) ? next.optionalMods : []).map(String).slice(0, 100);
     writeJson(paths.settingsFile, next);
     if (next.gameRoot) paths.setRoot(next.gameRoot);
     return next;

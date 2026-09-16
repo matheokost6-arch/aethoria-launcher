@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const { pathToFileURL } = require('url');
 const { app, BrowserWindow, ipcMain, safeStorage, Menu } = require('electron');
 const { Rcon } = require('./rcon');
 const moderation = require('./moderation');
@@ -68,11 +69,18 @@ function createWindow() {
   window.loadFile(path.join(__dirname, 'renderer', 'index.html'));
   window.once('ready-to-show', () => window.show());
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  // La fenetre n'affiche que l'interface : un fichier glisse dessus ne doit
+  // jamais la remplacer et profiter de l'acces RCON.
+  window.webContents.on('will-navigate', (event) => event.preventDefault());
+  window.webContents.on('will-attach-webview', (event) => event.preventDefault());
   window.on('closed', () => { window = null; });
 }
 
+const RENDERER_URL = pathToFileURL(path.join(__dirname, 'renderer', 'index.html')).href;
+
 function handle(channel, fn) {
-  ipcMain.handle(channel, async (_event, ...args) => {
+  ipcMain.handle(channel, async (event, ...args) => {
+    if (event.senderFrame?.url.split(/[?#]/)[0] !== RENDERER_URL) return { ok: false, error: 'Appel refusé.' };
     try {
       return { ok: true, data: await fn(...args) };
     } catch (err) {
