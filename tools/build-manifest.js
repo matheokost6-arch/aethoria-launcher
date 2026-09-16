@@ -84,7 +84,7 @@ async function main() {
 
   const packDir = path.resolve(args.pack || 'pack');
   const outFile = path.resolve(args.out || 'manifest.json');
-  const owner = args.owner || config.github.owner;
+  const owner = args.owner || config.github.distOwner || config.github.owner;
   // Par defaut le depot de distribution : c'est de la que les joueurs
   // telechargent, le depot du code pouvant rester prive.
   const repo = args.repo || config.github.dist || config.github.repo;

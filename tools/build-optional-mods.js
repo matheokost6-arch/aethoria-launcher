@@ -22,7 +22,7 @@ const fs = require('fs');
 const path = require('path');
 
 const API = 'https://api.modrinth.com/v2';
-const UA = 'aethoria-launcher (github.com/matheokost6-arch/aethoria-launcher)';
+const UA = 'aethoria-launcher (github.com/aethoria-mc/aethoria)';
 
 // Liste par defaut : du confort visuel et ergonomique. Aucun de ces mods ne
 // modifie les regles du jeu ni ne demande quoi que ce soit au serveur.

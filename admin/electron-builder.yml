@@ -1,0 +1,27 @@
+# Launcher admin : construit a part, jamais publie avec le launcher joueur.
+appId: fr.aethoria.admin
+productName: Aethoria Admin
+copyright: Copyright © 2026 Aethoria
+electronVersion: 44.2.0
+
+directories:
+  output: dist
+
+files:
+  - main.js
+  - preload.js
+  - rcon.js
+  - moderation.js
+  - renderer/**/*
+  - icon.ico
+  - package.json
+
+win:
+  # Portable : un seul .exe a donner au staff, sans installation.
+  target:
+    - target: portable
+      arch: [x64]
+  icon: icon.ico
+  artifactName: Aethoria-Admin.${ext}
+
+publish: null

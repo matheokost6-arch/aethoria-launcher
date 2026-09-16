@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: https://crafatar.com; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Aethoria Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="titlebar">
+    <span class="titlebar__brand">
+      <img src="assets/icon.png" alt="" width="18" height="18">
+      Aethoria Admin
+    </span>
+    <span class="titlebar__status" id="connection-status"></span>
+    <button class="titlebar__btn" id="btn-minimize" aria-label="Réduire">
+      <svg viewBox="0 0 12 12"><path d="M2 6h8"/></svg>
+    </button>
+    <button class="titlebar__btn titlebar__btn--close" id="btn-close" aria-label="Fermer">
+      <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+    </button>
+  </header>
+
+  <!-- Connexion -->
+  <main class="connect" id="view-connect">
+    <form class="card connect__card" id="form-connect" autocomplete="off">
+      <img class="connect__logo" src="assets/logo.png" alt="Aethoria">
+      <h1 class="connect__title">Launcher admin</h1>
+      <p class="help">Connexion au serveur par RCON. Réservé à l’équipe d’administration.</p>
+
+      <div class="field__row">
+        <div class="field field--grow">
+          <label class="label" for="input-host">Adresse du serveur</label>
+          <input class="input" id="input-host" spellcheck="false">
+        </div>
+        <div class="field field--port">
+          <label class="label" for="input-port">Port RCON</label>
+          <input class="input" id="input-port" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="input-password">Mot de passe RCON</label>
+        <input class="input" id="input-password" type="password">
+        <p class="help" id="password-help" hidden>Mot de passe mémorisé sur ce PC : laisse vide pour l’utiliser.</p>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="check-remember">
+        <span>Mémoriser le mot de passe sur ce PC (chiffré par Windows)</span>
+      </label>
+
+      <p class="error" id="connect-error" role="alert" hidden></p>
+      <button class="btn btn--primary btn--block" type="submit" id="btn-connect">Se connecter</button>
+      <button class="link" type="button" id="btn-forget" hidden>Oublier le mot de passe mémorisé</button>
+
+      <details class="guide">
+        <summary>Activer RCON sur le serveur</summary>
+        <ol>
+          <li>Dans le panel de l’hébergeur, ouvre <code>server.properties</code>.</li>
+          <li>Mets <code>enable-rcon=true</code>, choisis <code>rcon.port</code> (souvent 25575) et un long <code>rcon.password</code>.</li>
+          <li>Vérifie que l’hébergeur ouvre ce port, puis redémarre le serveur.</li>
+        </ol>
+        <p class="help">RCON n’est pas chiffré : n’administre jamais depuis un Wi-Fi public.</p>
+      </details>
+    </form>
+  </main>
+
+  <!-- Application -->
+  <div class="shell" id="view-app" hidden>
+    <nav class="sidebar">
+      <button class="nav is-active" data-view="players">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.8 3.5 6"/></svg>
+        Joueurs
+      </button>
+      <button class="nav" data-view="console">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg>
+        Console
+      </button>
+      <button class="nav" data-view="journal">
+        <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg>
+        Journal
+      </button>
+      <span class="sidebar__spacer"></span>
+      <p class="sidebar__server" id="server-label"></p>
+      <button class="btn btn--ghost btn--block" id="btn-disconnect">Déconnexion</button>
+    </nav>
+
+    <main class="content">
+      <!-- Joueurs -->
+      <section class="view" id="view-players">
+        <header class="view__head">
+          <div>
+            <h2>Joueurs</h2>
+            <p class="help" id="players-count">Chargement…</p>
+          </div>
+          <button class="btn btn--ghost" id="btn-refresh">Actualiser</button>
+        </header>
+
+        <form class="card" id="form-find" autocomplete="off">
+          <label class="label" for="input-find">Gérer un joueur, même hors ligne</label>
+          <div class="field__row">
+            <input class="input" id="input-find" placeholder="Pseudo" maxlength="16" spellcheck="false">
+            <button class="btn btn--primary" type="submit">Ouvrir</button>
+          </div>
+        </form>
+
+        <div class="players" id="players-list"></div>
+      </section>
+
+      <!-- Console -->
+      <section class="view view--console" id="view-console" hidden>
+        <header class="view__head">
+          <div>
+            <h2>Console</h2>
+            <p class="help">Toute commande du serveur, sans le « / ». Flèches haut et bas : historique.</p>
+          </div>
+        </header>
+        <div class="console" id="console-output"></div>
+        <form class="field__row" id="form-console" autocomplete="off">
+          <input class="input input--mono" id="input-console" placeholder="say Bonjour à tous" spellcheck="false">
+          <button class="btn btn--primary" type="submit">Envoyer</button>
+        </form>
+      </section>
+
+      <!-- Journal -->
+      <section class="view" id="view-journal" hidden>
+        <header class="view__head">
+          <div>
+            <h2>Journal</h2>
+            <p class="help">Les 500 dernières actions faites depuis ce PC.</p>
+          </div>
+        </header>
+        <div class="journal" id="journal-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Fiche joueur -->
+  <div class="drawer" id="drawer-player" hidden>
+    <div class="drawer__overlay" data-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="player-name">
+      <header class="drawer__head">
+        <img class="player-head" id="player-avatar" alt="" width="48" height="48">
+        <div class="drawer__title">
+          <h2 id="player-name"></h2>
+          <p class="help" id="player-status"></p>
+        </div>
+        <button class="icon-btn" data-close aria-label="Fermer">
+          <svg viewBox="0 0 12 12"><path d="m2.5 2.5 7 7m0-7-7 7"/></svg>
+        </button>
+      </header>
+
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" data-tab="sanctions" role="tab">Sanctions</button>
+        <button class="tab" data-tab="inventory" role="tab">Inventaire</button>
+        <button class="tab" data-tab="info" role="tab">Infos</button>
+      </div>
+
+      <div class="drawer__body">
+        <div class="tab-panel" id="tab-sanctions">
+          <div class="card action">
+            <h3>Expulser</h3>
+            <input class="input" id="kick-reason" placeholder="Raison (visible par le joueur)" maxlength="200">
+            <div class="action__buttons">
+              <button class="btn btn--ghost" data-act="kick">Expulser</button>
+            </div>
+          </div>
+
+          <div class="card action">
+            <h3>Rendre muet</h3>
+            <div class="durations" data-for="mute"></div>
+            <input class="input" id="mute-reason" placeholder="Raison" maxlength="200">
+            <div class="action__buttons">
+              <button class="btn btn--ghost" data-act="unmute">Rendre la parole</button>
+              <button class="btn btn--warning" data-act="mute">Rendre muet</button>
+            </div>
+          </div>
+
+          <div class="card action">
+            <h3>Bannir</h3>
+            <div class="durations" data-for="ban"></div>
+            <input class="input" id="ban-reason" placeholder="Raison (visible par le joueur)" maxlength="200">
+            <div class="action__buttons">
+              <button class="btn btn--ghost" data-act="unban">Débannir</button>
+              <button class="btn btn--danger" data-act="ban">Bannir</button>
+            </div>
+          </div>
+
+          <p class="result" id="action-result" hidden></p>
+        </div>
+
+        <div class="tab-panel" id="tab-inventory" hidden>
+          <div class="durations" id="container-choice">
+            <label><input type="radio" name="container" value="Inventory" checked><span>Inventaire</span></label>
+            <label><input type="radio" name="container" value="EnderItems"><span>Coffre de l’Ender</span></label>
+          </div>
+          <div id="inventory-view"></div>
+        </div>
+
+        <div class="tab-panel" id="tab-info" hidden>
+          <p class="subtitle">whois</p>
+          <pre class="output" id="info-whois"></pre>
+          <p class="subtitle">seen</p>
+          <pre class="output" id="info-seen"></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Confirmation : au-dessus de tout le reste -->
+  <div class="modal" id="modal-confirm" hidden>
+    <div class="modal__overlay"></div>
+    <section class="modal__panel" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title"></h2>
+      <p class="help" id="confirm-text"></p>
+      <div class="action__buttons">
+        <button class="btn btn--ghost" id="btn-confirm-cancel">Annuler</button>
+        <button class="btn btn--danger" id="btn-confirm-ok">Confirmer</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

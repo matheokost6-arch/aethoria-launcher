@@ -1,6 +1,6 @@
 {
   "name": "aethoria-launcher",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Launcher officiel du serveur Minecraft Aethoria",
   "main": "src/main/main.js",
   "author": "Aethoria",
@@ -12,7 +12,9 @@
     "build": "electron-builder --win",
     "deploy": "node tools/deploy.js",
     "deploy:launcher": "node tools/deploy.js --skip-pack",
-    "deploy:rapide": "node tools/deploy.js --skip-pack --skip-build"
+    "deploy:rapide": "node tools/deploy.js --skip-pack --skip-build",
+    "admin": "electron admin",
+    "build:admin": "electron-builder --projectDir admin --publish never"
   },
   "devDependencies": {
     "electron": "^44.2.0",

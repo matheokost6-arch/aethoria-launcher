@@ -5,7 +5,7 @@ par pseudo, connexion directe au serveur, mises à jour automatiques du modpack
 et du launcher. Distribué en `.exe` pour Windows.
 
 Lien de téléchargement pour les joueurs :
-<https://github.com/matheokost6-arch/aethoria/releases/latest/download/Aethoria-Setup.exe>
+<https://github.com/aethoria-mc/aethoria/releases/latest/download/Aethoria-Setup.exe>
 
 ---
 
@@ -145,6 +145,33 @@ joueurs le voient au prochain démarrage :
 Les valeurs de repli, utilisées si le manifest est injoignable, sont dans
 `src/shared/config.js`. Si tu changes de bande-annonce, remplace aussi
 `src/renderer/assets/trailer.jpg`.
+
+---
+
+## Launcher admin (staff)
+
+Application séparée, dans `admin/`, **jamais publiée** avec le launcher joueur.
+Elle pilote le serveur par RCON :
+
+- joueurs en ligne, et fiche de n'importe quel pseudo (même hors ligne) ;
+- expulser, rendre muet (10 min à définitif), rendre la parole, bannir
+  (temporaire ou définitif, avec confirmation), débannir — via EssentialsX ;
+- inventaire et coffre de l'Ender d'un joueur connecté ;
+- infos `whois` / `seen`, console libre, journal des 500 dernières actions.
+
+```bash
+npm run admin          # lancer en développement
+npm run build:admin    # produit admin/dist/Aethoria-Admin.exe (portable)
+```
+
+**Activer RCON** dans `server.properties` : `enable-rcon=true`, `rcon.port`
+(souvent 25575) et un long `rcon.password`, puis redémarrer. L'hébergeur doit
+laisser ce port accessible.
+
+Le mot de passe RCON n'est dans aucun fichier du projet : chaque admin le saisit,
+et peut le mémoriser chiffré par Windows sur son PC. RCON n'est pas chiffré sur
+le réseau : ne jamais administrer depuis un Wi-Fi public. « Rendre la parole »
+vérifie d'abord l'état du joueur, car la commande `mute` d'EssentialsX bascule.
 
 ---
 

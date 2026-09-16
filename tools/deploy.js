@@ -40,7 +40,7 @@ const config = require('../src/shared/config');
 const pkg = require('../package.json');
 
 const CODE = `${config.github.owner}/${config.github.repo}`;
-const DIST = `${config.github.owner}/${config.github.dist}`;
+const DIST = `${config.github.distOwner}/${config.github.dist}`;
 const DOSSIER_DIST = path.resolve('dist');
 const DOSSIER_PACK = path.resolve('pack');
 

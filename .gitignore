@@ -11,3 +11,6 @@ plus pour le launcher/
 mod/build/
 mod/.gradle/
 mod/run/
+
+# Launcher admin : exe construit localement, jamais publie.
+admin/dist/

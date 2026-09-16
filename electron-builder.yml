@@ -55,7 +55,7 @@ nsis:
 # chez un joueur n'a aucun moyen de lire un depot prive.
 publish:
   provider: github
-  owner: matheokost6-arch
+  owner: aethoria-mc
   repo: aethoria
   releaseType: release
 

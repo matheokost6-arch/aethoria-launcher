@@ -15,18 +15,21 @@ module.exports = {
     owner: 'matheokost6-arch',
     // Depot du code source, prive : le launcher n'y accede jamais.
     repo: 'aethoria-launcher',
-    // Depot de distribution, public : manifest, mods et installateur.
+    // Depot de distribution, public : manifest, mods et installateur. Il vit
+    // dans l'organisation du serveur, pour que les liens donnes aux joueurs ne
+    // contiennent aucun nom personnel.
+    distOwner: 'aethoria-mc',
     dist: 'aethoria',
     branch: 'main',
   },
 
   // Propose au joueur quand la mise a jour automatique echoue.
   get downloadUrl() {
-    return `https://github.com/${this.github.owner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
+    return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
   },
 
   get manifestUrl() {
-    return `https://raw.githubusercontent.com/${this.github.owner}/${this.github.dist}/${this.github.branch}/manifest.json`;
+    return `https://raw.githubusercontent.com/${this.github.distOwner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },
 
   server: {

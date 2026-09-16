@@ -1,0 +1,10 @@
+{
+  "name": "aethoria-admin",
+  "productName": "Aethoria Admin",
+  "version": "1.0.0",
+  "description": "Launcher admin du serveur Aethoria, réservé au staff",
+  "main": "main.js",
+  "author": "Aethoria",
+  "license": "UNLICENSED",
+  "private": true
+}
