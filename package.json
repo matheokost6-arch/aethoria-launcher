@@ -16,7 +16,8 @@
     "admin": "electron admin",
     "build:admin": "electron-builder --projectDir admin --publish never",
     "build:mac": "electron-builder --mac --publish never",
-    "build:linux": "electron-builder --linux --publish never"
+    "build:linux": "electron-builder --linux --publish never",
+    "deploy:mac-linux": "node tools/deploy.js --only-mac-linux"
   },
   "devDependencies": {
     "electron": "^44.2.0",

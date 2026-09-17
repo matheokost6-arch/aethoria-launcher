@@ -28,6 +28,8 @@
  *   --skip-build       Reutilise dist/ tel quel
  *   --skip-pack        Ne touche pas aux mods (publication du launcher seul)
  *   --message "..."    Message du commit de code
+ *   --skip-mac-linux   Ne construit pas les versions macOS et Linux
+ *   --only-mac-linux   Ajoute seulement macOS et Linux a la version deja publiee
  */
 
 const fs = require('fs');
@@ -370,22 +372,76 @@ function publierLauncher(sauterBuild) {
  * Elles ne peuvent pas etre construites depuis Windows : GitHub s'en charge sur
  * de vraies machines macOS et Linux, puis les ajoute a la release publique.
  */
-function lancerMacEtLinux() {
+const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Identifiant de la construction lancee apres une date donnee. */
+function trouverConstruction(depuis) {
+  const runs = JSON.parse(gh(['run', 'list', '--repo', CODE, '--workflow', 'mac-linux.yml',
+    '--limit', '5', '--json', 'databaseId,createdAt,status']) || '[]');
+  return runs.find((run) => new Date(run.createdAt).getTime() >= depuis) || null;
+}
+
+async function lancerMacEtLinux(sauter) {
   titre('Versions macOS et Linux');
 
-  if (ghSilencieux(['api', `repos/${CODE}/actions/secrets/AETHORIA_DIST_TOKEN`]).status !== 0) {
-    info('secret AETHORIA_DIST_TOKEN absent : seule la version Windows est publiee.');
-    info('pour les activer : README, section "Versions macOS et Linux".');
+  if (sauter) {
+    info('--skip-mac-linux : ignore, seule la version Windows est publiee.');
     return;
   }
 
-  const lancement = ghSilencieux(['workflow', 'run', 'mac-linux.yml', '--repo', CODE, '-f', `tag=v${pkg.version}`]);
+  const depuis = Date.now() - 60_000;
+  const lancement = ghSilencieux(['workflow', 'run', 'mac-linux.yml', '--repo', CODE]);
   if (lancement.status !== 0) {
     info(`construction non lancee : ${String(lancement.stderr || '').trim().split('\n')[0]}`);
     return;
   }
-  info('construction lancee sur GitHub (environ 10 minutes).');
-  info(`suivi : https://github.com/${CODE}/actions`);
+  info('construction lancee sur de vraies machines macOS et Linux.');
+
+  // GitHub met quelques secondes a enregistrer la construction.
+  let run = null;
+  for (let i = 0; i < 20 && !run; i += 1) {
+    await attendre(3000);
+    run = trouverConstruction(depuis);
+  }
+  if (!run) {
+    info(`construction introuvable : suis-la sur https://github.com/${CODE}/actions`);
+    return;
+  }
+  info(`en cours (10 a 15 minutes) : https://github.com/${CODE}/actions/runs/${run.databaseId}`);
+
+  const limite = Date.now() + 30 * 60_000;
+  let etat = run.status;
+  while (etat !== 'completed' && Date.now() < limite) {
+    await attendre(20_000);
+    etat = JSON.parse(gh(['run', 'view', String(run.databaseId), '--repo', CODE, '--json', 'status'])).status;
+  }
+  if (etat !== 'completed') {
+    info('construction trop longue : relance "npm run deploy:mac-linux" plus tard.');
+    return;
+  }
+
+  // Les fichiers construits sont recuperes ici, puis publies avec le meme
+  // compte GitHub que l'installateur Windows : aucun jeton a configurer.
+  const dossier = path.join(DOSSIER_DIST, 'mac-linux');
+  fs.rmSync(dossier, { recursive: true, force: true });
+  const recuperation = ghSilencieux(['run', 'download', String(run.databaseId), '--repo', CODE, '--dir', dossier]);
+  if (recuperation.status !== 0) {
+    info(`aucun fichier recupere : ${String(recuperation.stderr || '').trim().split('\n')[0]}`);
+    info(`detail : https://github.com/${CODE}/actions/runs/${run.databaseId}`);
+    return;
+  }
+
+  const fichiers = fs.readdirSync(dossier, { recursive: true, withFileTypes: true })
+    .filter((entree) => entree.isFile())
+    .map((entree) => path.join(entree.parentPath || entree.path, entree.name));
+  if (!fichiers.length) {
+    info('aucun fichier construit : voir la construction sur GitHub.');
+    return;
+  }
+
+  gh(['release', 'upload', `v${pkg.version}`, ...fichiers, '--repo', DIST, '--clobber'], { stdio: 'inherit' });
+  info(`${fichiers.length} fichiers macOS et Linux publies.`);
+  for (const fichier of fichiers) info(`  ${path.basename(fichier)}`);
 }
 
 /* ------------------------------------------------------------------ *
@@ -430,7 +486,7 @@ async function verifierAcces(manifest) {
 
   const controles = [
     await tester('manifest', config.manifestUrl),
-    await tester('installateur', `https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe`),
+    await tester('installateur Windows', `https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe`),
     await tester('mises a jour', `https://github.com/${DIST}/releases/latest/download/latest.yml`),
   ];
 
@@ -464,6 +520,13 @@ async function main() {
 
   verifierPrealables();
 
+  // Completer une version deja publiee avec macOS et Linux, sans rien republier.
+  if (args['only-mac-linux']) {
+    etape = 6;
+    await lancerMacEtLinux(false);
+    return;
+  }
+
   const manifestActuel = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
   const packTag = args['pack-tag'] || `pack-${manifestActuel.modpackVersion}`;
 
@@ -475,7 +538,7 @@ async function main() {
   publierLauncher(args['skip-build']);
   enregistrerCode(args.message);
   // Apres le push : GitHub ne lance que les workflows deja en ligne.
-  lancerMacEtLinux();
+  await lancerMacEtLinux(args['skip-mac-linux']);
   await verifierAcces(manifest);
 }
 

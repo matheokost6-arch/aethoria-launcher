@@ -102,29 +102,22 @@ est téléchargée en arrière-plan et installée à la fermeture.
 
 Elles ne peuvent pas être construites depuis Windows. `npm run deploy` demande
 donc à GitHub de les construire sur de vraies machines macOS et Linux
-(`.github/workflows/mac-linux.yml`), puis de les ajouter à la release publique,
-à côté de l'installateur Windows. Compter une dizaine de minutes après la
-publication : le lien Windows fonctionne tout de suite, les autres suivent.
+(`.github/workflows/mac-linux.yml`), attend la fin (10 à 15 minutes), récupère
+les fichiers et les ajoute lui-même à la release publique, à côté de
+l'installateur Windows.
 
-Une seule chose à faire, une fois pour toutes, pour que GitHub ait le droit
-d'écrire dans le dépôt public :
+Rien à configurer : la publication se fait avec le compte `gh` déjà connecté,
+celui qui publie déjà Windows. Aucun jeton, aucun secret.
 
-1. Créer un jeton sur <https://github.com/settings/personal-access-tokens/new> :
-   - propriétaire : `aethoria-mc` ;
-   - dépôt : `aethoria` ;
-   - permission **Contents : Read and write** ;
-   - durée : la plus longue possible.
-2. L'enregistrer comme secret du dépôt de code :
+```bash
+npm run deploy                          # tout, les trois systèmes
+npm run deploy -- --skip-mac-linux      # Windows seulement, sans attendre
+npm run deploy:mac-linux                # ajoute macOS et Linux à la version déjà publiée
+```
 
-   ```bash
-   gh secret set AETHORIA_DIST_TOKEN --repo matheokost6-arch/aethoria-launcher
-   ```
-
-Sans ce secret, `npm run deploy` le signale et publie seulement Windows.
-
-Le jeton expire un jour : si les fichiers macOS et Linux manquent dans une
-release, regarder <https://github.com/matheokost6-arch/aethoria-launcher/actions>
-et refaire ces deux étapes.
+Si la construction échoue, elle est visible sur
+<https://github.com/matheokost6-arch/aethoria-launcher/actions>, et
+`npm run deploy:mac-linux` la relance.
 
 ### Les deux dépôts
 
