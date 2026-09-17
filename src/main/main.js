@@ -38,7 +38,8 @@ let mainWindow = null;
 let tray = null;
 let updater = null;
 
-const ICON = path.join(__dirname, '..', '..', 'build', 'icon.ico');
+// Windows lit le .ico ; macOS et Linux veulent une image PNG.
+const ICON = path.join(__dirname, '..', '..', 'build', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
 function send(channel, payload) {
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -63,7 +64,14 @@ function showWindow() {
 
 /** Icone pres de l'horloge : le launcher cache pendant la partie y reste accessible. */
 function createTray() {
-  tray = new Tray(ICON);
+  // Tous les bureaux Linux n'ont pas de zone de notification : son absence ne
+  // doit pas empecher le launcher de s'ouvrir.
+  try {
+    tray = new Tray(ICON);
+  } catch {
+    tray = null;
+    return;
+  }
   tray.setToolTip(config.appName);
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Afficher Aethoria', click: showWindow },
@@ -74,9 +82,41 @@ function createTray() {
   tray.on('click', showWindow);
 }
 
+/** Fichier .desktop : le format commun aux bureaux Linux (raccourcis et demarrage). */
+function desktopEntry({ play = false } = {}) {
+  const exec = process.env.APPIMAGE || process.execPath;
+  return [
+    '[Desktop Entry]',
+    'Type=Application',
+    `Name=${play ? 'Jouer à Aethoria' : 'Aethoria'}`,
+    `Comment=${play ? 'Ouvre Aethoria et lance directement le jeu' : 'Launcher du serveur Aethoria'}`,
+    `Exec="${exec}"${play ? ' --play' : ' --hidden'}`,
+    `Icon=${ICON}`,
+    'Terminal=false',
+    'Categories=Game;',
+    '',
+  ].join('\n');
+}
+
 function applyOpenAtLogin(enabled) {
   // En developpement, l'executable est Electron lui-meme : rien a enregistrer.
   if (!app.isPackaged) return;
+  if (process.platform === 'linux') {
+    // Electron ne gere pas le demarrage automatique sous Linux : on ecrit
+    // nous-memes le fichier attendu par les bureaux (GNOME, KDE, XFCE...).
+    const file = path.join(app.getPath('home'), '.config', 'autostart', 'aethoria.desktop');
+    try {
+      if (!enabled) {
+        fs.rmSync(file, { force: true });
+        return;
+      }
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, desktopEntry(), 'utf8');
+    } catch {
+      // dossier non accessible : le reglage reste sans effet
+    }
+    return;
+  }
   app.setLoginItemSettings({ openAtLogin: enabled, args: ['--hidden'] });
 }
 
@@ -122,6 +162,39 @@ function setTaskbarProgress(value) {
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.setProgressBar(value);
 }
 
+function appliquerMenu() {
+  if (process.platform !== 'darwin') {
+    Menu.setApplicationMenu(null);
+    return;
+  }
+  // macOS : sans menu, les raccourcis Cmd+Q, Cmd+C et Cmd+V disparaissent.
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    {
+      label: config.appName,
+      submenu: [
+        { role: 'about', label: `À propos d'${config.appName}` },
+        { type: 'separator' },
+        { role: 'hide', label: 'Masquer' },
+        { role: 'hideOthers', label: 'Masquer les autres' },
+        { type: 'separator' },
+        { role: 'quit', label: 'Quitter' },
+      ],
+    },
+    {
+      label: 'Édition',
+      submenu: [
+        { role: 'undo', label: 'Annuler' },
+        { role: 'redo', label: 'Rétablir' },
+        { type: 'separator' },
+        { role: 'cut', label: 'Couper' },
+        { role: 'copy', label: 'Copier' },
+        { role: 'paste', label: 'Coller' },
+        { role: 'selectAll', label: 'Tout sélectionner' },
+      ],
+    },
+  ]));
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -140,7 +213,7 @@ function createWindow() {
     },
   });
 
-  Menu.setApplicationMenu(null);
+  appliquerMenu();
   mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
   mainWindow.once('ready-to-show', () => {
     if (!startHidden) mainWindow.show();
@@ -233,7 +306,9 @@ function registerIpc() {
   ipcMain.on('window:minimize', () => mainWindow?.minimize());
   ipcMain.on('window:close', () => mainWindow?.close());
   ipcMain.on('window:restore', () => showWindow());
-  ipcMain.on('window:hide', () => mainWindow?.hide());
+  // Sans zone de notification (certains bureaux Linux), une fenetre cachee
+  // serait introuvable : on la reduit dans la barre des taches a la place.
+  ipcMain.on('window:hide', () => (tray ? mainWindow?.hide() : mainWindow?.minimize()));
   ipcMain.on('window:setZoom', (_event, factor) => {
     if (!mainWindow) return;
     const zoom = [0.9, 1, 1.1, 1.25].includes(factor) ? factor : 1;
@@ -255,7 +330,8 @@ function registerIpc() {
     server: config.server,
     links: config.links,
     authNotice: config.authNotice,
-    downloadUrl: config.downloadUrl,
+    downloadUrl: config.downloadFor(),
+    downloadPage: config.downloadPage,
     gameRoot: paths.root,
     defaultRoot: paths.defaultRoot(),
     platform: process.platform,
@@ -263,6 +339,16 @@ function registerIpc() {
   }));
 
   handle('shortcut:create', () => {
+    if (process.platform === 'linux') {
+      // Un fichier .desktop executable : l'equivalent Linux du raccourci.
+      const file = path.join(app.getPath('desktop'), 'jouer-a-aethoria.desktop');
+      fs.writeFileSync(file, desktopEntry({ play: true }), 'utf8');
+      fs.chmodSync(file, 0o755);
+      return file;
+    }
+    if (process.platform !== 'win32') {
+      throw new Error('Sur macOS, garde Aethoria dans le Dock : clic droit sur son icône, Options, Garder dans le Dock.');
+    }
     const file = path.join(app.getPath('desktop'), 'Jouer à Aethoria.lnk');
     // "create" cree ou ecrase ; "replace" echouerait si le raccourci n'existe pas encore.
     const created = shell.writeShortcutLink(file, 'create', {
@@ -341,7 +427,7 @@ function registerIpc() {
       properties: ['openFile'],
       filters: process.platform === 'win32'
         ? [{ name: 'Exécutable Java', extensions: ['exe'] }]
-        : [],
+        : [{ name: 'Exécutable Java', extensions: ['*'] }],
     });
     return result.canceled ? null : result.filePaths[0];
   });

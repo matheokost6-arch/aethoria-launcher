@@ -5,6 +5,15 @@
  * Une version absente de cette liste ne déclenche aucune fenêtre.
  */
 const CHANGELOG = {
+  '1.7.0': {
+    title: 'Aethoria sur Mac et Linux',
+    items: [
+      ['macOS', 'Aethoria s’installe sur Mac, avec ou sans puce Apple.'],
+      ['Linux', 'Une version AppImage et un paquet .deb pour Debian, Ubuntu et Mint.'],
+      ['Un lien pour tous', 'Le message d’invitation envoie vers la page qui liste les trois systèmes.'],
+      ['Sécurité', 'Corrections issues d’un audit complet du launcher.'],
+    ],
+  },
   '1.6.0': {
     title: 'Le grand final',
     items: [

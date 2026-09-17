@@ -2,10 +2,21 @@
 
 Launcher Minecraft du serveur **Aethoria** : modpack Forge 1.20.1, connexion
 par pseudo, connexion directe au serveur, mises à jour automatiques du modpack
-et du launcher. Distribué en `.exe` pour Windows.
+et du launcher. Windows, macOS et Linux.
 
-Lien de téléchargement pour les joueurs :
-<https://github.com/aethoria-mc/aethoria/releases/latest/download/Aethoria-Setup.exe>
+Lien à donner aux joueurs, tous systèmes confondus :
+<https://github.com/aethoria-mc/aethoria/releases/latest>
+
+| Système | Fichier | Remarque |
+| --- | --- | --- |
+| Windows | `Aethoria-Setup.exe` | installateur, mise à jour automatique |
+| macOS (Apple Silicon) | `Aethoria-mac-arm64.dmg` | app non signée : premier lancement par clic droit → Ouvrir |
+| macOS (Intel) | `Aethoria-mac-x64.dmg` | idem |
+| Linux | `Aethoria-linux-x64.AppImage` | à rendre exécutable (`chmod +x`) |
+| Debian, Ubuntu, Mint | `Aethoria-linux-x64.deb` | `sudo apt install ./Aethoria-linux-x64.deb` |
+
+Le dossier de jeu suit le système : `%APPDATA%\.aethoria` sous Windows,
+`~/Library/Application Support/aethoria` sous macOS, `~/.aethoria` sous Linux.
 
 ---
 
@@ -57,6 +68,17 @@ npm run dev        # idem, avec les outils de développement
 
 Node.js 20 ou plus.
 
+Construire à la main :
+
+```bash
+npm run build          # Windows (depuis Windows)
+npm run build:mac      # macOS (depuis un Mac)
+npm run build:linux    # Linux (depuis Linux)
+```
+
+Un système ne construit que pour lui-même : les versions macOS et Linux sont
+donc construites par GitHub (voir plus bas).
+
 ---
 
 ## Publier
@@ -75,6 +97,34 @@ contrôle qu'un joueur sans compte GitHub peut tout télécharger.
 
 Les launchers installés se mettent à jour d'eux-mêmes : la nouvelle version
 est téléchargée en arrière-plan et installée à la fermeture.
+
+### Versions macOS et Linux
+
+Elles ne peuvent pas être construites depuis Windows. `npm run deploy` demande
+donc à GitHub de les construire sur de vraies machines macOS et Linux
+(`.github/workflows/mac-linux.yml`), puis de les ajouter à la release publique,
+à côté de l'installateur Windows. Compter une dizaine de minutes après la
+publication : le lien Windows fonctionne tout de suite, les autres suivent.
+
+Une seule chose à faire, une fois pour toutes, pour que GitHub ait le droit
+d'écrire dans le dépôt public :
+
+1. Créer un jeton sur <https://github.com/settings/personal-access-tokens/new> :
+   - propriétaire : `aethoria-mc` ;
+   - dépôt : `aethoria` ;
+   - permission **Contents : Read and write** ;
+   - durée : la plus longue possible.
+2. L'enregistrer comme secret du dépôt de code :
+
+   ```bash
+   gh secret set AETHORIA_DIST_TOKEN --repo matheokost6-arch/aethoria-launcher
+   ```
+
+Sans ce secret, `npm run deploy` le signale et publie seulement Windows.
+
+Le jeton expire un jour : si les fichiers macOS et Linux manquent dans une
+release, regarder <https://github.com/matheokost6-arch/aethoria-launcher/actions>
+et refaire ces deux étapes.
 
 ### Les deux dépôts
 

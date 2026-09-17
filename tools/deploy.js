@@ -57,7 +57,7 @@ const ARTEFACTS = [
 let etape = 0;
 const titre = (texte) => {
   etape += 1;
-  console.log(`\n[${etape}/7] ${texte}`);
+  console.log(`\n[${etape}/8] ${texte}`);
 };
 const info = (texte) => console.log(`      ${texte}`);
 
@@ -346,11 +346,46 @@ function publierLauncher(sauterBuild) {
   if (ghSilencieux(['release', 'view', tag, '--repo', DIST]).status !== 0) {
     gh(['release', 'create', tag, '--repo', DIST,
       '--title', `Aethoria Launcher ${pkg.version}`,
-      '--notes', `Version ${pkg.version}.\n\nTelecharge **Aethoria-Setup.exe** et lance-le.`]);
+      '--notes', [
+        `Version ${pkg.version}.`,
+        '',
+        '| Systeme | Fichier a telecharger |',
+        '| --- | --- |',
+        '| Windows | **Aethoria-Setup.exe** |',
+        '| macOS (Apple Silicon) | **Aethoria-mac-arm64.dmg** |',
+        '| macOS (Intel) | **Aethoria-mac-x64.dmg** |',
+        '| Linux | **Aethoria-linux-x64.AppImage**, ou le .deb |',
+      ].join('\n')]);
   }
 
   gh(['release', 'upload', tag, ...chemins, '--repo', DIST, '--clobber'], { stdio: 'inherit' });
   info(`version ${pkg.version} publiee.`);
+}
+
+/* ------------------------------------------------------------------ *
+ *  7. Versions macOS et Linux
+ * ------------------------------------------------------------------ */
+
+/**
+ * Elles ne peuvent pas etre construites depuis Windows : GitHub s'en charge sur
+ * de vraies machines macOS et Linux, puis les ajoute a la release publique.
+ */
+function lancerMacEtLinux() {
+  titre('Versions macOS et Linux');
+
+  if (ghSilencieux(['api', `repos/${CODE}/actions/secrets/AETHORIA_DIST_TOKEN`]).status !== 0) {
+    info('secret AETHORIA_DIST_TOKEN absent : seule la version Windows est publiee.');
+    info('pour les activer : README, section "Versions macOS et Linux".');
+    return;
+  }
+
+  const lancement = ghSilencieux(['workflow', 'run', 'mac-linux.yml', '--repo', CODE, '-f', `tag=v${pkg.version}`]);
+  if (lancement.status !== 0) {
+    info(`construction non lancee : ${String(lancement.stderr || '').trim().split('\n')[0]}`);
+    return;
+  }
+  info('construction lancee sur GitHub (environ 10 minutes).');
+  info(`suivi : https://github.com/${CODE}/actions`);
 }
 
 /* ------------------------------------------------------------------ *
@@ -415,7 +450,8 @@ async function verifierAcces(manifest) {
 
   console.log('\nTout est en ligne et accessible.');
   console.log(`\nLien a donner aux joueurs :`);
-  console.log(`  https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe`);
+  console.log(`  https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe   (Windows)`);
+  console.log(`  https://github.com/${DIST}/releases/latest                              (tous les systemes)`);
 }
 
 /* ------------------------------------------------------------------ *
@@ -433,11 +469,13 @@ async function main() {
 
   const manifest = majManifest(packTag, args['skip-pack']);
   if (!args['skip-pack']) envoyerMods(manifest, packTag);
-  else { etape += 1; console.log(`\n[${etape}/7] Mods du modpack\n      --skip-pack : ignore.`); }
+  else { etape += 1; console.log(`\n[${etape}/8] Mods du modpack\n      --skip-pack : ignore.`); }
 
   publierManifest();
   publierLauncher(args['skip-build']);
   enregistrerCode(args.message);
+  // Apres le push : GitHub ne lance que les workflows deja en ligne.
+  lancerMacEtLinux();
   await verifierAcces(manifest);
 }
 

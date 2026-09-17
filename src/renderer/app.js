@@ -631,10 +631,10 @@ async function setFriend(name, add) {
 
 /** Message d'invitation prêt à coller : lien du launcher et Discord, jamais l'adresse du serveur. */
 async function inviteFriend() {
-  const { downloadUrl, links } = state.info;
+  const { downloadPage, links } = state.info;
   const message = [
     'Viens jouer avec moi sur Aethoria, un serveur Minecraft médiéval !',
-    `Télécharge le launcher : ${downloadUrl}`,
+    `Télécharge le launcher : ${downloadPage}`,
     links?.discord ? `Rejoins le Discord : ${links.discord}` : null,
     `Mon pseudo en jeu : ${state.account.name}`,
   ].filter(Boolean).join('\n');
@@ -1167,7 +1167,7 @@ async function shareStats() {
     `⏱ ${formatPlaytime(stats.totalSeconds)} de jeu en ${plural(stats.sessions, 'partie')}`,
     `🏆 ${unlocked} succès sur ${ACHIEVEMENTS.length}`,
     `🔥 Record : ${plural(dayStreaks(stats.history).best, 'jour')} de jeu d’affilée`,
-    `Rejoins-moi : ${state.info.downloadUrl}`,
+    `Rejoins-moi : ${state.info.downloadPage}`,
   ].join('\n');
   try {
     await api.app.copyText(message);
@@ -1684,6 +1684,8 @@ function wireSettings() {
     saveSettings({ breakReminder: Number(e.target.value) }).catch(() => {});
   });
 
+  // macOS n'a pas de raccourci de bureau : l'application se garde dans le Dock.
+  $('row-shortcut').hidden = state.info.platform === 'darwin';
   $('btn-shortcut').addEventListener('click', async () => {
     try {
       await api.app.createPlayShortcut();

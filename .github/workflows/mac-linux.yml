@@ -1,0 +1,52 @@
+# Versions macOS et Linux du launcher.
+#
+# Elles ne peuvent pas etre construites depuis Windows : GitHub s'en charge sur
+# de vraies machines macOS et Linux, puis depose les fichiers dans la release
+# publique, a cote de Aethoria-Setup.exe.
+#
+# "npm run deploy" declenche cette construction tout seul. Elle a besoin d'un
+# secret AETHORIA_DIST_TOKEN autorise a ecrire dans le depot public (voir le
+# README, section "Versions macOS et Linux").
+
+name: Versions macOS et Linux
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag de la release a completer, par exemple v1.6.2
+        required: true
+
+jobs:
+  construire:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            cible: --mac
+            fichiers: dist/Aethoria-mac-*.dmg dist/Aethoria-mac-*.zip dist/latest-mac.yml
+          - os: ubuntu-latest
+            cible: --linux
+            fichiers: dist/Aethoria-linux-*.AppImage dist/Aethoria-linux-*.deb dist/latest-linux.yml
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Construire
+        run: npx electron-builder ${{ matrix.cible }} --publish never
+
+      - name: Deposer dans la release publique
+        env:
+          GH_TOKEN: ${{ secrets.AETHORIA_DIST_TOKEN }}
+        run: gh release upload "${{ inputs.tag }}" ${{ matrix.fichiers }} --repo aethoria-mc/aethoria --clobber

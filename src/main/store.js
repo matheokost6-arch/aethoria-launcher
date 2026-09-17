@@ -9,13 +9,28 @@ const config = require('../shared/config');
 
 /** Persistance en JSON des preferences, du pseudo et du temps de jeu. */
 
-// Copie du pseudo dans le registre de Windows. Elle survit a la
-// desinstallation du launcher comme a la suppression de son dossier de
-// donnees : c'est elle qui rend le pseudo definitif sur la machine.
+// Copie du pseudo hors du dossier de donnees du launcher : registre sous
+// Windows, petit fichier cache sous macOS et Linux. Elle survit a la
+// desinstallation comme a la suppression du dossier de donnees : c'est elle qui
+// rend le pseudo definitif sur la machine.
 const REGISTRE = 'HKCU\\Software\\Aethoria';
 
+/** Emplacement du pseudo hors Windows, dans la configuration de l'utilisateur. */
+function fichierPseudo() {
+  const base = process.platform === 'darwin'
+    ? path.join(os.homedir(), 'Library', 'Application Support', 'Aethoria')
+    : path.join(process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config'), 'aethoria');
+  return path.join(base, 'pseudo');
+}
+
 function lireRegistre() {
-  if (process.platform !== 'win32') return null;
+  if (process.platform !== 'win32') {
+    try {
+      return fs.readFileSync(fichierPseudo(), 'utf8').trim() || null;
+    } catch {
+      return null; // jamais enregistre sur cette machine
+    }
+  }
   try {
     const sortie = execFileSync('reg', ['query', REGISTRE, '/v', 'Pseudo'], {
       encoding: 'utf8',
@@ -29,8 +44,13 @@ function lireRegistre() {
 }
 
 function ecrireRegistre(pseudo) {
-  if (process.platform !== 'win32') return;
   try {
+    if (process.platform !== 'win32') {
+      const file = fichierPseudo();
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, `${pseudo}\n`, 'utf8');
+      return;
+    }
     execFileSync('reg', ['add', REGISTRE, '/v', 'Pseudo', '/t', 'REG_SZ', '/d', pseudo, '/f'], {
       windowsHide: true,
       stdio: 'ignore',

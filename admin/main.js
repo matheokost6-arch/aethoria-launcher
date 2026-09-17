@@ -65,7 +65,8 @@ function createWindow() {
       sandbox: true,
     },
   });
-  Menu.setApplicationMenu(null);
+  // Sous macOS on garde le menu par defaut : il porte Cmd+Q, Cmd+C et Cmd+V.
+  if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
   window.loadFile(path.join(__dirname, 'renderer', 'index.html'));
   window.once('ready-to-show', () => window.show());
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));

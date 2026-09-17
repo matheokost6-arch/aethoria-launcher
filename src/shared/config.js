@@ -28,6 +28,23 @@ module.exports = {
     return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
   },
 
+  /** Page qui liste Windows, macOS et Linux : le lien a donner a un ami. */
+  get downloadPage() {
+    return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest`;
+  },
+
+  /** Fichier a telecharger pour un systeme donne. */
+  downloadFor(platform = process.platform, arch = process.arch) {
+    const name = {
+      win32: 'Aethoria-Setup.exe',
+      darwin: `Aethoria-mac-${arch === 'arm64' ? 'arm64' : 'x64'}.dmg`,
+      linux: 'Aethoria-linux-x64.AppImage',
+    }[platform];
+    return name
+      ? `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest/download/${name}`
+      : this.downloadPage;
+  },
+
   get manifestUrl() {
     return `https://raw.githubusercontent.com/${this.github.distOwner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },

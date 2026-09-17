@@ -15,6 +15,7 @@ files:
   # elle dans le paquet, Electron journalise "Failed to load image from path"
   # et les fenetres s'affichent sans icone chez les joueurs.
   - build/icon.ico
+  - build/icon.png
   - '!**/*.map'
   - '!**/.git/**'
 
@@ -48,6 +49,47 @@ nsis:
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
+
+mac:
+  target:
+    # dmg pour installer, zip pour les mises a jour automatiques.
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
+  icon: build/icon.png
+  category: public.app-category.games
+  # Application non signee : Gatekeeper demandera au joueur de confirmer
+  # l'ouverture la premiere fois (clic droit, Ouvrir).
+  identity: null
+  notarize: false
+  artifactName: Aethoria-mac-${arch}.${ext}
+
+dmg:
+  title: Aethoria
+
+linux:
+  target:
+    # AppImage : un seul fichier a rendre executable, valable sur toutes les
+    # distributions. Le .deb sert a Debian, Ubuntu et Mint.
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+  icon: build/icon.png
+  category: Game
+  synopsis: Launcher du serveur Minecraft Aethoria
+  maintainer: Aethoria <aethoria-mc@users.noreply.github.com>
+  executableName: aethoria
+
+# Noms figes, sans numero de version ni nom d'architecture : les liens de
+# telechargement restent valables d'une version a l'autre. (Sans cela,
+# electron-builder ecrirait x86_64 pour l'AppImage et amd64 pour le .deb.)
+appImage:
+  artifactName: Aethoria-linux-x64.AppImage
+
+deb:
+  artifactName: Aethoria-linux-x64.deb
 
 # Mises a jour automatiques via les Releases GitHub.
 # Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).

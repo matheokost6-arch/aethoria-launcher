@@ -450,11 +450,21 @@ function isRunning() {
 /** Ramene la fenetre du jeu au premier plan. */
 function focusGame() {
   if (!running) return false;
-  const shell = spawn('powershell', [
-    '-NoProfile', '-WindowStyle', 'Hidden', '-Command',
-    `(New-Object -ComObject WScript.Shell).AppActivate(${Number(running.pid)}) | Out-Null`,
-  ], { windowsHide: true, stdio: 'ignore' });
-  shell.on('error', () => {}); // PowerShell absent ou bloque : on ne fait simplement rien
+  const pid = Number(running.pid);
+  // Chaque systeme a sa facon de remonter une fenetre : PowerShell sous
+  // Windows, AppleScript sous macOS, wmctrl ou xdotool sous Linux.
+  const commands = {
+    win32: ['powershell', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command',
+      `(New-Object -ComObject WScript.Shell).AppActivate(${pid}) | Out-Null`]],
+    darwin: ['osascript', ['-e',
+      `tell application "System Events" to set frontmost of (first process whose unix id is ${pid}) to true`]],
+    linux: ['wmctrl', ['-x', '-a', 'Minecraft']],
+  }[process.platform];
+  if (!commands) return false;
+
+  const helper = spawn(commands[0], commands[1], { windowsHide: true, stdio: 'ignore' });
+  // Outil absent (wmctrl n'est pas installe partout) : on ne fait rien.
+  helper.on('error', () => {});
   return true;
 }
 

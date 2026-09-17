@@ -3,6 +3,7 @@
 const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
+const os = require('os');
 const crypto = require('crypto');
 const { execFile, execFileSync } = require('child_process');
 const { promisify } = require('util');
@@ -65,13 +66,21 @@ async function findSystemJava(requiredMajor) {
     // aucun Java dans le PATH
   }
 
-  for (const dir of [process.env.ProgramFiles, process.env['ProgramFiles(x86)']].filter(Boolean)) {
-    for (const vendor of ['Java', 'Eclipse Adoptium', 'Microsoft', 'Zulu', 'Amazon Corretto']) {
-      const base = path.join(dir, vendor);
-      if (!fs.existsSync(base)) continue;
-      for (const entry of fs.readdirSync(base)) {
-        candidates.push(javaBinary(path.join(base, entry), { console: true }));
-      }
+  // Emplacements habituels des Java installes, selon le systeme.
+  const searchDirs = process.platform === 'win32'
+    ? [process.env.ProgramFiles, process.env['ProgramFiles(x86)']].filter(Boolean)
+      .flatMap((dir) => ['Java', 'Eclipse Adoptium', 'Microsoft', 'Zulu', 'Amazon Corretto'].map((vendor) => path.join(dir, vendor)))
+    : process.platform === 'darwin'
+      ? ['/Library/Java/JavaVirtualMachines', path.join(os.homedir(), 'Library/Java/JavaVirtualMachines'), '/opt/homebrew/opt', '/usr/local/opt']
+      : ['/usr/lib/jvm', '/usr/lib64/jvm', '/opt/java', '/opt'];
+
+  for (const base of searchDirs) {
+    if (!fs.existsSync(base)) continue;
+    for (const entry of fs.readdirSync(base)) {
+      const home = path.join(base, entry);
+      candidates.push(javaBinary(home, { console: true }));
+      // Sous macOS, le home d'un JDK est dans Contents/Home.
+      if (process.platform === 'darwin') candidates.push(javaBinary(path.join(home, 'Contents', 'Home'), { console: true }));
     }
   }
 
