@@ -179,8 +179,19 @@
             <h2>Console</h2>
             <p class="help">Toute commande du serveur, sans le « / ». Flèches haut et bas : historique.</p>
           </div>
+          <button class="btn btn--ghost btn--small" id="btn-console-clear">Effacer</button>
         </header>
-        <div class="console" id="console-output"></div>
+        <div class="chips" id="console-quick">
+          <span class="help">Commandes rapides :</span>
+          <button class="btn btn--small btn--ghost" data-cmd="list">Joueurs en ligne</button>
+          <button class="btn btn--small btn--ghost" data-cmd="tps">Performances</button>
+          <button class="btn btn--small btn--ghost" data-cmd="seen " data-fill>Infos d’un joueur…</button>
+          <button class="btn btn--small btn--ghost" data-cmd="minecraft:time query daytime">Heure du jeu</button>
+          <button class="btn btn--small btn--ghost" data-cmd="say " data-fill>Message à tous…</button>
+        </div>
+        <div class="console" id="console-output">
+          <p class="console__hint">Les réponses du serveur s’affichent ici, avec leurs couleurs.</p>
+        </div>
         <form class="field__row" id="form-console" autocomplete="off">
           <input class="input input--mono" id="input-console" placeholder="say Bonjour à tous" spellcheck="false">
           <button class="btn btn--primary" type="submit">Envoyer</button>

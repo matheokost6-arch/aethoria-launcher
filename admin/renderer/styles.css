@@ -120,9 +120,6 @@ code { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.0
 
 /* Console */
 .console { min-height: 240px; overflow-y: auto; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: #08090b; font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; user-select: text; }
-.console__line--command { margin-top: 8px; color: var(--gold); }
-.console__line--output { color: #d8d5cf; }
-.console__line--error { color: #ff8a8f; }
 
 /* Journal */
 .journal { display: grid; gap: 4px; }
@@ -208,3 +205,19 @@ code { padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.0
 .input--select option { background: var(--surface); }
 .tag--message, .tag--broadcast { background: rgba(76, 141, 246, 0.18); color: #9cc1ff; }
 .tag--server, .tag--whitelist-add, .tag--whitelist-remove { background: rgba(230, 184, 92, 0.14); color: var(--gold); }
+
+/* Console : une entree par commande, reponse coloree comme en jeu */
+.console__hint { margin: 0; color: var(--faint); font-family: var(--font); }
+.console__entry { margin-bottom: 10px; padding: 8px 10px; border-left: 3px solid var(--line-strong); border-radius: 0 8px 8px 0; background: rgba(255, 255, 255, 0.02); }
+.console__entry.is-ok { border-left-color: var(--green); }
+.console__entry.is-error { border-left-color: var(--red-bright); background: rgba(208, 42, 49, 0.08); }
+.console__entry.is-pending { border-left-color: var(--gold); }
+.console__cmd { display: flex; gap: 10px; color: var(--gold); }
+.console__cmd time { margin-left: auto; color: var(--faint); font-size: 11.5px; }
+.console__out { margin-top: 4px; color: #d8d5cf; }
+.console__out.is-muted { color: var(--muted); font-family: var(--font); font-style: italic; }
+.console__entry.is-error .console__out { color: #ffb3b6; }
+.mc-bold { font-weight: 700; }
+.mc-italic { font-style: italic; }
+.mc-underline { text-decoration: underline; }
+.mc-strike { text-decoration: line-through; }

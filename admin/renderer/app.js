@@ -404,12 +404,52 @@ async function unbanFromList(pseudo) {
  *  Console et journal
  * ------------------------------------------------------------------ */
 
-function consoleLine(text, kind) {
-  const line = document.createElement('div');
-  line.className = `console__line console__line--${kind}`;
-  line.textContent = text;
-  $('console-output').appendChild(line);
+/* Couleurs Minecraft (codes §), eclaircies quand elles seraient illisibles sur fond noir. */
+const MC_COLORS = {
+  0: '#8a8a8a', 1: '#6f8bff', 2: '#3fbf5f', 3: '#3fbfbf', 4: '#e05555', 5: '#c05cc0', 6: '#ffaa00', 7: '#bdbdbd',
+  8: '#8a8a8a', 9: '#7f7fff', a: '#55ff55', b: '#55ffff', c: '#ff5555', d: '#ff55ff', e: '#ffff55', f: '#ffffff',
+};
+const MC_FORMATS = { l: 'mc-bold', o: 'mc-italic', n: 'mc-underline', m: 'mc-strike' };
+
+/** Texte avec codes couleur -> elements colores. Jamais de HTML : textContent uniquement. */
+function renderMinecraftText(target, text) {
+  let color = null;
+  let formats = [];
+  for (const part of String(text).split(/(§[0-9a-fk-or])/i)) {
+    const code = /^§([0-9a-fk-or])$/i.exec(part)?.[1]?.toLowerCase();
+    if (code) {
+      if (MC_COLORS[code]) { color = MC_COLORS[code]; formats = []; }
+      else if (MC_FORMATS[code]) formats.push(MC_FORMATS[code]);
+      else if (code === 'r') { color = null; formats = []; }
+      continue;
+    }
+    if (!part) continue;
+    const span = document.createElement('span');
+    span.textContent = part;
+    if (color) span.style.color = color;
+    if (formats.length) span.className = formats.join(' ');
+    target.appendChild(span);
+  }
+}
+
+function consoleEntry(command) {
+  $('console-output').querySelector('.console__hint')?.remove();
+  const entry = document.createElement('div');
+  entry.className = 'console__entry is-pending';
+  const head = document.createElement('div');
+  head.className = 'console__cmd';
+  const cmd = document.createElement('span');
+  cmd.textContent = `› ${command}`;
+  const time = document.createElement('time');
+  time.textContent = new Date().toLocaleTimeString('fr-FR');
+  head.append(cmd, time);
+  const out = document.createElement('div');
+  out.className = 'console__out is-muted';
+  out.textContent = 'Envoi…';
+  entry.append(head, out);
+  $('console-output').appendChild(entry);
   $('console-output').scrollTop = $('console-output').scrollHeight;
+  return { entry, out };
 }
 
 async function runConsole(event) {
@@ -420,12 +460,24 @@ async function runConsole(event) {
   state.history.push(command);
   state.historyIndex = state.history.length;
   input.value = '';
-  consoleLine(`> ${command}`, 'command');
+  const { entry, out } = consoleEntry(command);
   try {
-    consoleLine(await api.console.run(command) || '(aucune réponse)', 'output');
+    const { output, error } = await api.console.run(command);
+    out.textContent = '';
+    if (output) {
+      out.className = 'console__out';
+      renderMinecraftText(out, output);
+    } else {
+      // Beaucoup de commandes reussies ne repondent rien (say, tellraw, gamemode...).
+      out.textContent = 'Commande exécutée. Le serveur n’a rien répondu, c’est normal pour cette commande.';
+    }
+    entry.className = `console__entry ${error ? 'is-error' : 'is-ok'}`;
   } catch (err) {
-    consoleLine(err.message, 'error');
+    out.className = 'console__out';
+    out.textContent = err.message;
+    entry.className = 'console__entry is-error';
   }
+  $('console-output').scrollTop = $('console-output').scrollHeight;
 }
 
 function browseHistory(event) {
@@ -529,6 +581,17 @@ async function init() {
   $('journal-filter').addEventListener('change', renderJournal);
 
   $('form-console').addEventListener('submit', runConsole);
+  $('console-quick').addEventListener('click', (e) => {
+    const button = e.target.closest('[data-cmd]');
+    if (!button) return;
+    $('input-console').value = button.dataset.cmd;
+    // "Infos d'un joueur…" attend un pseudo : on laisse la main, sinon on envoie.
+    if ('fill' in button.dataset) $('input-console').focus();
+    else runConsole();
+  });
+  $('btn-console-clear').addEventListener('click', () => {
+    $('console-output').innerHTML = '<p class="console__hint">Les réponses du serveur s’affichent ici, avec leurs couleurs.</p>';
+  });
   $('input-console').addEventListener('keydown', browseHistory);
 
   state.durations = await api.durations();

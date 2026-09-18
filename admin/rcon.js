@@ -118,8 +118,11 @@ class Rcon {
     }
   }
 
-  /** Execute une commande (sans "/") et renvoie la reponse, codes couleur retires. */
-  command(text) {
+  /**
+   * Execute une commande (sans "/") et renvoie la reponse, codes couleur
+   * retires. Avec { raw: true }, les codes couleur sont gardes (console).
+   */
+  command(text, { raw = false } = {}) {
     const run = () => new Promise((resolve, reject) => {
       if (!this.connected) {
         reject(new Error('Non connecté au serveur.'));
@@ -139,7 +142,8 @@ class Rcon {
         idle: null,
         finish: () => {
           clearTimeout(timeout);
-          const output = stripColors(this.pending.parts.join('')).trim();
+          const joined = this.pending.parts.join('');
+          const output = (raw ? joined : stripColors(joined)).trim();
           this.pending = null;
           resolve(output);
         },

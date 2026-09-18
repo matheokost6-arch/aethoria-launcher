@@ -43,9 +43,9 @@ function appendJournal(entry) {
   writeJson(journalFile(), journal.slice(-JOURNAL_LIMIT));
 }
 
-function run(command) {
+function run(command, options) {
   if (!rcon?.connected) throw new Error('Non connecté au serveur.');
-  return rcon.command(command);
+  return rcon.command(command, options);
 }
 
 function createWindow() {
@@ -171,7 +171,9 @@ function registerIpc() {
     }
 
     const command = moderation.buildCommand(action, { pseudo: name, duration, reason });
-    const output = await run(command);
+    const output = moderation.tidyOutput(await run(command));
+    // Refus du serveur (joueur introuvable, permission...) : affiche en erreur.
+    if (moderation.isErrorOutput(output)) throw new Error(output);
     appendJournal({
       action,
       pseudo: name,
@@ -192,32 +194,37 @@ function registerIpc() {
 
   handle('players:info', async (pseudo) => {
     const name = moderation.checkPseudo(pseudo);
-    const whois = await run(`whois ${name}`);
-    const seen = await run(`seen ${name}`);
-    return { whois, seen };
+    // whois ne connait que les joueurs connectes : pour les autres, seen suffit.
+    const whois = moderation.tidyOutput(await run(`whois ${name}`));
+    const seen = moderation.tidyOutput(await run(`seen ${name}`));
+    return { whois: moderation.isErrorOutput(whois) ? 'Joueur hors ligne : voir ci-dessous.' : whois, seen };
   });
 
   handle('players:message', async (pseudo, message) => {
     const name = moderation.checkPseudo(pseudo);
-    const text = moderation.cleanMessage(message);
-    const command = `msg ${name} ${text}`;
+    const { command, text } = moderation.privateMessageCommand(name, message);
     const output = await run(command);
+    // tellraw ne repond rien quand tout va bien, et "No player was found"
+    // quand le joueur n'est pas connecte.
+    if (moderation.isErrorOutput(output)) throw new Error(`${name} n’est pas connecté : le message n’a pas été envoyé.`);
     appendJournal({ action: 'message', pseudo: name, reason: text, command, output });
-    return output || 'Message envoyé.';
+    return `Message envoyé à ${name}.`;
   });
 
   // --- Serveur ---
   handle('server:broadcast', async (message) => {
     const text = moderation.cleanMessage(message);
     const command = `broadcast ${text}`;
-    const output = await run(command);
+    const output = moderation.tidyOutput(await run(command));
+    if (moderation.isErrorOutput(output)) throw new Error(output);
     appendJournal({ action: 'broadcast', reason: text, command, output });
     return output || 'Annonce envoyée.';
   });
 
   handle('server:world', async (action) => {
     const command = moderation.worldCommand(action);
-    const output = await run(command);
+    const output = moderation.tidyOutput(await run(command));
+    if (moderation.isErrorOutput(output)) throw new Error(output);
     appendJournal({ action: 'server', command, output });
     return output || 'Commande envoyée.';
   });
@@ -239,9 +246,10 @@ function registerIpc() {
     const text = String(command || '').replace(/^\//, '').trim();
     if (!text) throw new Error('Entre une commande.');
     if (/[\r\n]/.test(text)) throw new Error('Une seule commande à la fois.');
-    const output = await run(text);
+    const raw = moderation.tidyOutput(await run(text, { raw: true }));
+    const output = raw.replace(/§./g, '');
     appendJournal({ action: 'console', command: text, output });
-    return output;
+    return { output: raw, error: moderation.isErrorOutput(raw) };
   });
 
   handle('journal:list', () => readJson(journalFile(), []).reverse());
