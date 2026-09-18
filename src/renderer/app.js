@@ -1684,8 +1684,6 @@ function wireSettings() {
     saveSettings({ breakReminder: Number(e.target.value) }).catch(() => {});
   });
 
-  // macOS n'a pas de raccourci de bureau : l'application se garde dans le Dock.
-  $('row-shortcut').hidden = state.info.platform === 'darwin';
   $('btn-shortcut').addEventListener('click', async () => {
     try {
       await api.app.createPlayShortcut();
@@ -2024,6 +2022,8 @@ async function init() {
 
   try {
     state.info = await api.app.info();
+    // macOS n'a pas de raccourci de bureau : l'application se garde dans le Dock.
+    $('row-shortcut').hidden = state.info.platform === 'darwin';
     state.settings = await api.settings.get();
     applyAppearance();
     $('btn-version').textContent = `v${state.info.version}`;
