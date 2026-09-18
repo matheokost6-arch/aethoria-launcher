@@ -119,6 +119,7 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
         url: /^https:\/\//.test(entry.url) ? entry.url : null,
         sha1: entry.sha1 || entry.hash,
         size: entry.size,
+        keepExisting: entry.keepExisting === true,
       };
     });
 }
@@ -165,7 +166,10 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
   const files = normalizeFiles(manifest, { optionalEnabled });
   const previous = await readLedger();
 
-  const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
+  // Les fichiers "de depart" (configs) n'entrent pas dans le journal : ils
+  // appartiennent au joueur des qu'ils sont poses, et ne sont jamais supprimes.
+  const managed = files.filter((f) => !f.keepExisting);
+  const removed = await pruneRemovedFiles(managed.map((f) => f.relative), {
     // Seul le dossier mods peut etre vide : un manifest ne doit jamais effacer
     // les mondes, options ou captures du joueur.
     cleanDirs: (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods'),
@@ -177,6 +181,7 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
     if (!file.url) {
       throw new Error(`Le fichier "${file.relative}" du manifest n'a pas d'URL.`);
     }
+    if (file.keepExisting && fs.existsSync(file.dest)) continue;
     if (await isValid(file.dest, { sha1: file.sha1, size: file.size })) continue;
     tasks.push({ name: file.name, dest: file.dest, url: file.url, sha1: file.sha1, size: file.size });
   }
@@ -188,7 +193,7 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
     onStatus?.('Modpack à jour.');
   }
 
-  const current = files.map((f) => f.relative);
+  const current = managed.map((f) => f.relative);
   await writeLedger(current);
   return { installed: tasks.length, removed: removed.length, total: files.length, ...modChanges(manifest, previous, current) };
 }
@@ -231,6 +236,7 @@ async function pendingDownload(manifest, optionalEnabled = []) {
   let bytes = 0;
   await Promise.all(files.map(async (file) => {
     const size = await fsp.stat(file.dest).then((s) => s.size, () => -1);
+    if (file.keepExisting && size !== -1) return;
     if (size === -1 || (file.size && size !== file.size)) {
       count += 1;
       bytes += file.size || 0;

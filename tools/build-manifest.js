@@ -30,6 +30,9 @@ const { pipeline } = require('stream/promises');
 
 const config = require('../src/shared/config');
 
+/** Dossiers dont les fichiers ne sont installes que s'ils manquent chez le joueur. */
+const KEEP_EXISTING = /^(config|defaultconfigs)\//;
+
 function parseArgs(argv) {
   const args = {};
   for (let i = 0; i < argv.length; i += 1) {
@@ -119,6 +122,10 @@ async function main() {
       url: `${baseUrl}/${assetName(relative)}`,
       sha1: await sha1(full),
       size: stat.size,
+      // Les reglages des mods sont des valeurs de depart : le jeu les reecrit et
+      // le joueur les modifie. Imposes a chaque lancement, ils effaceraient ses
+      // choix ; ils ne sont donc installes que s'ils manquent.
+      ...(KEEP_EXISTING.test(relative) ? { keepExisting: true } : {}),
     });
     process.stdout.write(`\r  ${files.length}/${relatives.length} fichiers analyses`);
   }

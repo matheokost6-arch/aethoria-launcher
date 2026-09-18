@@ -1,5 +1,5 @@
 {
-  "modpackVersion": "1.1.0",
+  "modpackVersion": "2.0.0",
   "minecraftVersion": "1.20.1",
   "forgeVersion": "47.4.10",
   "server": {
@@ -11,6 +11,11 @@
     "trailer": "https://www.youtube.com/watch?v=WW6Dqu7jxkQ"
   },
   "news": [
+    {
+      "title": "Nouveau modpack : Aethoria 2.0",
+      "body": "Le serveur passe à un nouveau modpack : Cold Sweat, Twigs, les mods Let’s Do (boulangerie, brasserie, prairie), Siegeworks et bien d’autres. Le launcher installe tout seul la nouvelle version au prochain lancement.",
+      "date": "18 septembre 2026"
+    },
     {
       "title": "Bienvenue sur Aethoria",
       "body": "Le serveur est ouvert. Rejoins-nous et commence ton aventure médiévale.",
@@ -27,436 +32,1085 @@
   ],
   "files": [
     {
-      "path": "mods/Aethoria-1_1_0-source.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Aethoria-1_1_0-source.jar",
-      "sha1": "ccc1523f171f7daf1a89fb4131a13cff8860bc12",
-      "size": 19395
+      "path": "config/MouseTweaks.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_MouseTweaks.cfg",
+      "sha1": "651b3e4db2d430dc1da3566b2984b264061a6794",
+      "size": 135,
+      "keepExisting": true
+    },
+    {
+      "path": "config/ambientsounds-client.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_ambientsounds-client.json",
+      "sha1": "e29bba5ead5073bd4f0149c3c6738084d8d8e307",
+      "size": 4198,
+      "keepExisting": true
+    },
+    {
+      "path": "config/appleskin-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_appleskin-client.toml",
+      "sha1": "01ddb88e420140c33e4cfc0c105edd6e40a5f2c7",
+      "size": 1361,
+      "keepExisting": true
+    },
+    {
+      "path": "config/astikorcartsredux-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_astikorcartsredux-client.toml",
+      "sha1": "1413624b66bef4f606f0dd749db9854a0098c3b4",
+      "size": 553,
+      "keepExisting": true
+    },
+    {
+      "path": "config/astikorcartsredux-common.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_astikorcartsredux-common.toml",
+      "sha1": "0578d257acd756051960fe6f3f7548155b75a3c9",
+      "size": 4537,
+      "keepExisting": true
+    },
+    {
+      "path": "config/betsyross-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_betsyross-client.toml",
+      "sha1": "3669d2b08a33201b2cd4045cf5f0422b35773035",
+      "size": 137,
+      "keepExisting": true
+    },
+    {
+      "path": "config/bettercombat/client.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_bettercombat_client.json5",
+      "sha1": "06b1511550962b3bfe7cb155493ececd77c4d599",
+      "size": 520,
+      "keepExisting": true
+    },
+    {
+      "path": "config/bettercombat/fallback_compatibility.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_bettercombat_fallback_compatibility.json",
+      "sha1": "8efde77c49f6cd7c4035ee3f554c25f63532335a",
+      "size": 2995,
+      "keepExisting": true
+    },
+    {
+      "path": "config/bettercombat/server.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_bettercombat_server.json5",
+      "sha1": "9fc3c1b5cb15328d634a72ce4d4b879f9c59c0fd",
+      "size": 5169,
+      "keepExisting": true
+    },
+    {
+      "path": "config/bettermobcombat/server.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_bettermobcombat_server.json5",
+      "sha1": "7a1a62d3e52d9b90246bd04afec073e312ae0ec9",
+      "size": 6492,
+      "keepExisting": true
+    },
+    {
+      "path": "config/burnt_basic.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_burnt_basic.json",
+      "sha1": "7e5ec8b6ae30e6c10a99b0b769e64d2084819534",
+      "size": 1114,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_client.toml",
+      "sha1": "9a25a801e37f33a5d7834bbd9b29d496c9b22d7d",
+      "size": 13189,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/disabled_mods.txt",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_disabled_mods.txt",
+      "sha1": "883acefb7cef7ec8b6cca9b91676f93142ee1247",
+      "size": 152,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/entity.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_entity.toml",
+      "sha1": "5af538323a38e02e32f21edca9a3ff6ed34fa719",
+      "size": 7836,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/item.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_item.toml",
+      "sha1": "6f017c4537fd5005c0cf66a0e53b53a4cbbeab9d",
+      "size": 16506,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/main.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_main.toml",
+      "sha1": "b391c01e60a2582bdb9cc718356804b08f94385f",
+      "size": 8310,
+      "keepExisting": true
+    },
+    {
+      "path": "config/coldsweat/world.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_coldsweat_world.toml",
+      "sha1": "4973be85e29cc0800b3ade794c70cc3b1b8d2a06",
+      "size": 23710,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/dialog_client.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_dialog_client.cfg",
+      "sha1": "f0ce516215b551893d2830d175b3bc1190956d37",
+      "size": 280,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/dialog_options.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_dialog_options.cfg",
+      "sha1": "a1735f3b7c4a0048d7a2f165c9d0a1198e0443c2",
+      "size": 476,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/highlight_client.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_highlight_client.cfg",
+      "sha1": "6c18f26243c155f2fdaabd017a3895c0bb48e31f",
+      "size": 193,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/name_tag_client.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_name_tag_client.cfg",
+      "sha1": "08c4e5a145ad328b8fe9fde3e5cbc6a974b730b7",
+      "size": 466,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/npc_base.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_npc_base.cfg",
+      "sha1": "bb08ea4e8d3d89aed8c4e4d45840c7143c5efefd",
+      "size": 216,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/remote_texture.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_remote_texture.cfg",
+      "sha1": "961ace8d9fe8040b4aeda9707b0c21cddc28dbe8",
+      "size": 248,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/render_entity_type_support.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_render_entity_type_support.cfg",
+      "sha1": "e29d25b75da17616e048980920cd46884be08bb5",
+      "size": 31657,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/security.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_security.cfg",
+      "sha1": "a7d80a00b9282e1a9dcd6c6a9cc64a23e7bf3cb4",
+      "size": 4240,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/allay/allay_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_allay_allay_template.png",
+      "sha1": "1151704465feb6c1a7bd61f0ff8494e704df3926",
+      "size": 246,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/cat/cat_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_cat_cat_template.png",
+      "sha1": "f981ae83c4147058677a8cf18e108c6d9a55b157",
+      "size": 283,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/chicken/chicken_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_chicken_chicken_template.png",
+      "sha1": "de1a6a0b5a157df1d58d00f8ce4ba5306272631b",
+      "size": 287,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/creeper/creeper_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_creeper_creeper_template.png",
+      "sha1": "1bd7ae2462edc3b96764f0790162f87961ee6d2e",
+      "size": 255,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/ender_man/ender_man_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_ender_man_ender_man_template.png",
+      "sha1": "624941707c02dc7b46282c2a411cbded82b77dd1",
+      "size": 276,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/fairy/fairy_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_fairy_fairy_template.png",
+      "sha1": "dedd04b716203978bcdbcebfb901f0b753f912e7",
+      "size": 434,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/fox/fox_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_fox_fox_template.png",
+      "sha1": "6d042f9a9b7969386b634f9aa9320abf389f8f13",
+      "size": 335,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/humanoid/humanoid_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_humanoid_humanoid_template.png",
+      "sha1": "87c4ab5f89cbefc8680e76aabf68582c66b5698b",
+      "size": 360,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/humanoid_slim/humanoid_slim_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_humanoid_slim_humanoid_slim_template.png",
+      "sha1": "0cffa4769a12c1f8e83a40e0216572e2320e8b12",
+      "size": 384,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/husk/husk_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_husk_husk_template.png",
+      "sha1": "fa8b868467e44763e80eadad2b40532ccd333119",
+      "size": 531,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/illager/illager_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_illager_illager_template.png",
+      "sha1": "9c5cf8d7b514c33e6c4d1ae99a0223b2733aff2e",
+      "size": 300,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/iron_golem/iron_golem_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_iron_golem_iron_golem_template.png",
+      "sha1": "5fbc0225ac05828ab84aca26548e872be296e186",
+      "size": 451,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/orc/orc_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_orc_orc_template.png",
+      "sha1": "b494c4efeff9a3e6f3118dbb2e5780975f40b986",
+      "size": 521,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/pig/pig_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_pig_pig_template.png",
+      "sha1": "5c3a096c8cad3612f63cdf2f8875a785970de9cb",
+      "size": 270,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/piglin/piglin_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_piglin_piglin_template.png",
+      "sha1": "4d412fe70936217cf0c212dcf165c47290a12bc9",
+      "size": 361,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/skeleton/skeleton_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_skeleton_skeleton_template.png",
+      "sha1": "7046abde4ca1fec60b6825974ba1cff520586c26",
+      "size": 259,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/spider/spider_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_spider_spider_template.png",
+      "sha1": "885cba971843e569bbeced599d59f2c67e8af629",
+      "size": 308,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/stray/stray_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_stray_stray_template.png",
+      "sha1": "fa8b868467e44763e80eadad2b40532ccd333119",
+      "size": 531,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/vex/vex_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_vex_vex_template.png",
+      "sha1": "c2b16be9372168b1e9687b0a3f70ce576787f571",
+      "size": 247,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/villager/villager_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_villager_villager_template.png",
+      "sha1": "15dba09fac0d202181e73bb319b423498da8abff",
+      "size": 357,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/villager/villager_without_hat_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_villager_villager_without_hat_template.png",
+      "sha1": "0a2bb149580640d4f38e56ba665862a550abc6a7",
+      "size": 331,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/witch/witch_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_witch_witch_template.png",
+      "sha1": "e73ef43416ca972aa3438cb2f29128ce86c65d55",
+      "size": 431,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/wolf/wolf_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_wolf_wolf_template.png",
+      "sha1": "06f7e51f5c125d869f6fe85b626b9ec14d1039b1",
+      "size": 321,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/zombie/zombie_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_zombie_zombie_template.png",
+      "sha1": "77daf16b4c1284869ab5d7bb3d1e0afb369f7937",
+      "size": 292,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/skin/zombie_villager/zombie_villager_template.png",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_skin_zombie_villager_zombie_villager_template.png",
+      "sha1": "423c2f3c668b7aff01b292fc7939cdaa61966e35",
+      "size": 356,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/spawner_type.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_spawner_type.cfg",
+      "sha1": "3cb8697d3ae4b35a83c7890f4042a9112483fd1e",
+      "size": 1187,
+      "keepExisting": true
+    },
+    {
+      "path": "config/easy_npc/speech_bubble_client.cfg",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_easy_npc_speech_bubble_client.cfg",
+      "sha1": "c0b015834450864f7cbe432a42d8a5623b552e67",
+      "size": 875,
+      "keepExisting": true
+    },
+    {
+      "path": "config/ekotsk/weapons.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_ekotsk_weapons.json5",
+      "sha1": "8dbc695d919bce18df594e412d7c26fdedc80acb",
+      "size": 141,
+      "keepExisting": true
+    },
+    {
+      "path": "config/embeddium-mixins.properties",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_embeddium-mixins.properties",
+      "sha1": "a729ee50d18cf2204ff9fc33bc21641d55185c88",
+      "size": 269,
+      "keepExisting": true
+    },
+    {
+      "path": "config/embeddium-options.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_embeddium-options.json",
+      "sha1": "c46718c2b687959e2f8f7c46ba64eb2b7413a80d",
+      "size": 852,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epichunt.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epichunt.json",
+      "sha1": "504ec24662a03f28fb51fdcc7301588eb2ad84e3",
+      "size": 4477,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epicknights/armor.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epicknights_armor.json5",
+      "sha1": "c9b29e24eb45d66074b89ebbcd54f47d42679d9b",
+      "size": 12687,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epicknights/general.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epicknights_general.json5",
+      "sha1": "3352660b9e6b17d04a0b566f6b468fdbebd8f455",
+      "size": 1915,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epicknights/mobs_equipment.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epicknights_mobs_equipment.json5",
+      "sha1": "05f856c098bb6c49f360edc0b2b30b3c1592369c",
+      "size": 1991,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epicknights/shields.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epicknights_shields.json5",
+      "sha1": "27bd5e72b9108027e199029e342d7122b2ae8f7f",
+      "size": 1781,
+      "keepExisting": true
+    },
+    {
+      "path": "config/epicknights/weapons.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_epicknights_weapons.json5",
+      "sha1": "eb599aac0e79611ce682c0288cbefa4cf8894482",
+      "size": 9918,
+      "keepExisting": true
+    },
+    {
+      "path": "config/farmersdelight-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_farmersdelight-client.toml",
+      "sha1": "0837b7da65d2d2b5fe8430ecddae8a97379d8c55",
+      "size": 478,
+      "keepExisting": true
+    },
+    {
+      "path": "config/farmersdelight-common.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_farmersdelight-common.toml",
+      "sha1": "5f3a0af48b61c6b2935284df7282d6a32fad7414",
+      "size": 3930,
+      "keepExisting": true
+    },
+    {
+      "path": "config/fml.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_fml.toml",
+      "sha1": "726869383a0dd9368201319b75b902b2e5c8207f",
+      "size": 1148,
+      "keepExisting": true
+    },
+    {
+      "path": "config/forge-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_forge-client.toml",
+      "sha1": "55e80f51f0c9cf66de1f95c4d775b24dc59627a1",
+      "size": 1628,
+      "keepExisting": true
+    },
+    {
+      "path": "config/immersive_melodies.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_immersive_melodies.json",
+      "sha1": "f32e48a5994da35f8be57e0e1ef516ffa9f18e85",
+      "size": 1174,
+      "keepExisting": true
+    },
+    {
+      "path": "config/immersive_paintings.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_immersive_paintings.json",
+      "sha1": "3fda63d6a6fe8e4eafe9872c58fa8695283e3986",
+      "size": 584,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/blacklist.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_blacklist.json",
+      "sha1": "7a9c83de081216d9061bffda2d30114104ef6ee3",
+      "size": 19,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/ingredient-list-mod-sort-order.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_ingredient-list-mod-sort-order.ini",
+      "sha1": "2bbb06f731f46b0697e86261b7f80789ad6d65cf",
+      "size": 511,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/ingredient-list-type-sort-order.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_ingredient-list-type-sort-order.ini",
+      "sha1": "dc48be3ecfb2cd9c06a53712b3044f8123a6c06e",
+      "size": 74,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/jei-client.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_jei-client.ini",
+      "sha1": "eb958e2e22e54a58700abe3fc4f860fcd247b844",
+      "size": 12984,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/jei-colors.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_jei-colors.ini",
+      "sha1": "46f80e4857aa8f8d9b0928e107c4391d54b3b313",
+      "size": 1362,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/jei-debug.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_jei-debug.ini",
+      "sha1": "e76a74cd66991a5a40b0a3cd7f1dfad000ff726c",
+      "size": 939,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/jei-mod-id-format.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_jei-mod-id-format.ini",
+      "sha1": "2cd7853bd68950b2d61a80dd549ed65be0e0f6cb",
+      "size": 489,
+      "keepExisting": true
+    },
+    {
+      "path": "config/jei/recipe-category-sort-order.ini",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_jei_recipe-category-sort-order.ini",
+      "sha1": "04de7f31d57a0a862b6e89fcdd2e931b337d416e",
+      "size": 819,
+      "keepExisting": true
+    },
+    {
+      "path": "config/meadow.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_meadow.toml",
+      "sha1": "a0f2560d547320bcf6f2e4bd1a017b4ed1f3492d",
+      "size": 233,
+      "keepExisting": true
+    },
+    {
+      "path": "config/medieval_boomsticks-common.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_medieval_boomsticks-common.toml",
+      "sha1": "f117491aea35b493abed2fe6bcb50bc2414bb811",
+      "size": 2004,
+      "keepExisting": true
+    },
+    {
+      "path": "config/mobplayeranimator/client.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_mobplayeranimator_client.json5",
+      "sha1": "6c2314f3e28d8dc6d688ace514237d249c54fc60",
+      "size": 1616,
+      "keepExisting": true
+    },
+    {
+      "path": "config/musketmod.txt",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_musketmod.txt",
+      "sha1": "1300f5f708d1d42fa06005accb61409edc6fb064",
+      "size": 2186,
+      "keepExisting": true
+    },
+    {
+      "path": "config/quickskin-client.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_quickskin-client.json",
+      "sha1": "6b466abc89caf374f6033129075ebf12f8053f5e",
+      "size": 1302,
+      "keepExisting": true
+    },
+    {
+      "path": "config/quickskin-server.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_quickskin-server.json",
+      "sha1": "ab4a052b9542bb56ef81e4de7796c4fe83958bae",
+      "size": 72,
+      "keepExisting": true
+    },
+    {
+      "path": "config/recruits-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_recruits-client.toml",
+      "sha1": "1dad51277758dec0c3319337da1758443e64ffc6",
+      "size": 2125,
+      "keepExisting": true
+    },
+    {
+      "path": "config/sereneseasons/fertility.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_sereneseasons_fertility.toml",
+      "sha1": "14b9e3be4a982461c991df82f8abf7da46a3ceef",
+      "size": 485,
+      "keepExisting": true
+    },
+    {
+      "path": "config/sereneseasons/seasons.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_sereneseasons_seasons.toml",
+      "sha1": "8c628eec7c49d55f4bed9a7dcd633bb2a62f49bf",
+      "size": 6778,
+      "keepExisting": true
+    },
+    {
+      "path": "config/sidebar_buttons.json",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_sidebar_buttons.json",
+      "sha1": "3f545ec683be213b684475b39393a01d1faadbcb",
+      "size": 192,
+      "keepExisting": true
+    },
+    {
+      "path": "config/siege-machines-specs.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_siege-machines-specs.toml",
+      "sha1": "f96b2c00ae6c00e46d93c74ff11c60deca634845",
+      "size": 3240,
+      "keepExisting": true
+    },
+    {
+      "path": "config/siegeworks-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_siegeworks-client.toml",
+      "sha1": "862900f4cd78c80fd51d906645e790c232a33cdc",
+      "size": 102,
+      "keepExisting": true
+    },
+    {
+      "path": "config/smallships-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_smallships-client.toml",
+      "sha1": "594582b47f227aae4687ac2108877494f0b90db6",
+      "size": 1187,
+      "keepExisting": true
+    },
+    {
+      "path": "config/smallships-common.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_smallships-common.toml",
+      "sha1": "e82565d47d11a02f1adc27cfdc6b144370767432",
+      "size": 6271,
+      "keepExisting": true
+    },
+    {
+      "path": "config/smallships_upgrades.json5",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_smallships_upgrades.json5",
+      "sha1": "e4808e66586e5dd679f461d6e70f750051f9dede",
+      "size": 417,
+      "keepExisting": true
+    },
+    {
+      "path": "config/smallshipsheraldry-client.properties",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_smallshipsheraldry-client.properties",
+      "sha1": "5e8ec55a141aaf8452e1bc78968a8358cf66abca",
+      "size": 314,
+      "keepExisting": true
+    },
+    {
+      "path": "config/sodiumdynamiclights-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_sodiumdynamiclights-client.toml",
+      "sha1": "6cc0f822d81b95d1c458dfef92ba5a1daae9053b",
+      "size": 659,
+      "keepExisting": true
+    },
+    {
+      "path": "config/vinery.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_vinery.toml",
+      "sha1": "8317aa1c5dced88d7aea87c7c9beee098b768350",
+      "size": 2933,
+      "keepExisting": true
+    },
+    {
+      "path": "config/voicechat-client.toml",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_voicechat-client.toml",
+      "sha1": "6a87c562a167f9b5faf95bf1f446422f887ff96a",
+      "size": 94,
+      "keepExisting": true
+    },
+    {
+      "path": "config/voicechat/translations.properties",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_voicechat_translations.properties",
+      "sha1": "383e00e7dd0d5f00daa2ffcfd24c939d255dc7e3",
+      "size": 1182,
+      "keepExisting": true
+    },
+    {
+      "path": "config/voicechat/voicechat-client.properties",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_voicechat_voicechat-client.properties",
+      "sha1": "24a91d5a345807d908a89ad1b34fcbc633831eb4",
+      "size": 5063,
+      "keepExisting": true
+    },
+    {
+      "path": "config/voicechat/voicechat-server.properties",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/config_voicechat_voicechat-server.properties",
+      "sha1": "4d24b1dea6c3fe109ce7282637d3dc7e73ae4c49",
+      "size": 3072,
+      "keepExisting": true
     },
     {
       "path": "mods/AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
       "sha1": "87ea0cd8ec56763185ee0db09eec7c676969e4da",
       "size": 53429226
     },
     {
-      "path": "mods/Butchersdelight beta 1.20.1 2.1.0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Butchersdelight.beta.1.20.1.2.1.0.jar",
-      "sha1": "eefde2b0a35ae4380c131ac083116b8f797afe56",
-      "size": 3942918
+      "path": "mods/ColdSweat-2.4.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_ColdSweat-2.4.2.jar",
+      "sha1": "f5e203dbdca07470d29d872348e3233cd698f3a9",
+      "size": 2705107
     },
     {
       "path": "mods/Controlling-forge-1.20.1-12.0.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Controlling-forge-1.20.1-12.0.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_Controlling-forge-1.20.1-12.0.2.jar",
       "sha1": "f6d3cdd3ec68c5590cf5b2e89c38dbf031824bfd",
       "size": 115280
     },
     {
       "path": "mods/CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
       "sha1": "aef9a8ebdf0be50b6bd8da8ab4153f5085f71a80",
       "size": 1144128
     },
     {
-      "path": "mods/FarmersDelight-1.20.1-1.3.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_FarmersDelight-1.20.1-1.3.2.jar",
-      "sha1": "397763ae36dc2e0f526e0338c875850437580157",
-      "size": 3313327
-    },
-    {
-      "path": "mods/Forge 1.20.1 Minecraft Middle Ages 0.0.5.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Forge.1.20.1.Minecraft.Middle.Ages.0.0.5.jar",
-      "sha1": "99daf1ce9bc48bb5a415f7832f202b0cc0752148",
-      "size": 2674406
+      "path": "mods/FarmersDelight-1.20.1-1.3.4.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_FarmersDelight-1.20.1-1.3.4.jar",
+      "sha1": "26f615fd35f652021f5b0f1cba68afa7d578fe15",
+      "size": 3311051
     },
     {
       "path": "mods/GlitchCore-forge-1.20.1-0.0.1.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_GlitchCore-forge-1.20.1-0.0.1.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_GlitchCore-forge-1.20.1-0.0.1.1.jar",
       "sha1": "1a0aaf7c33b9acb26bf75899a43e8941cac1f6e7",
       "size": 87550
     },
     {
       "path": "mods/MouseTweaks-forge-mc1.20.1-2.25.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_MouseTweaks-forge-mc1.20.1-2.25.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "sha1": "d751153e722a4e014691c83f39f5b07c6ec5333c",
       "size": 76237
     },
     {
       "path": "mods/Quick Skin - Forge - 1.20.1-2.6.2.4.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Quick.Skin.-.Forge.-.1.20.1-2.6.2.4.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_Quick.Skin.-.Forge.-.1.20.1-2.6.2.4.jar",
       "sha1": "ace85ce63a791ae84d323d469d0b76003ab32718",
       "size": 3793684
     },
     {
-      "path": "mods/Recruits Siege Compatibility-2.1.0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Recruits.Siege.Compatibility-2.1.0.jar",
-      "sha1": "562c502cac57f4e6c437a99c7c6888e364446405",
-      "size": 77665
-    },
-    {
       "path": "mods/Searchables-forge-1.20.1-1.0.3.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_Searchables-forge-1.20.1-1.0.3.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_Searchables-forge-1.20.1-1.0.3.jar",
       "sha1": "ed5a23ec30c90fd06b3f1d8140614028e1fafaee",
       "size": 77732
     },
     {
-      "path": "mods/SereneSeasons-forge-1.20.1-9.1.0.3.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_SereneSeasons-forge-1.20.1-9.1.0.3.jar",
-      "sha1": "e553c2a50dc08d7b8b2aee6da1db0dc156fe961a",
-      "size": 160885
-    },
-    {
       "path": "mods/SiegeSystemFix-1.0.0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_SiegeSystemFix-1.0.0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_SiegeSystemFix-1.0.0.jar",
       "sha1": "27252f53af6822f466227bb7d54043583631b8e3",
       "size": 19421
     },
     {
-      "path": "mods/TreeChop-1.20.1-forge-0.19.0-fixed.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_TreeChop-1.20.1-forge-0.19.0-fixed.jar",
-      "sha1": "ac5a20b5a2fd9ed7d6e9a0c033f53307947e5f3f",
-      "size": 517225
+      "path": "mods/Twigs-1.20.1-3.1.0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_Twigs-1.20.1-3.1.0.jar",
+      "sha1": "704711f8abebf051945dca2ae2a1eba9c3405c57",
+      "size": 2766476
     },
     {
       "path": "mods/aethoriamenu-1.0.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_aethoriamenu-1.0.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_aethoriamenu-1.0.1.jar",
       "sha1": "f5a8d58a28b238e959e833983fb976c262549e13",
       "size": 10240249
     },
     {
-      "path": "mods/animal_armor_trims-forge-1.20.1-2.3.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_animal_armor_trims-forge-1.20.1-2.3.1.jar",
-      "sha1": "5a1b386d7a90c80e268061acc0121bbc05cdbaf7",
-      "size": 272315
-    },
-    {
       "path": "mods/appleskin-forge-mc1.20.1-2.5.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_appleskin-forge-mc1.20.1-2.5.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_appleskin-forge-mc1.20.1-2.5.1.jar",
       "sha1": "81919356f84eab14258db98924b66c3c38e372b1",
       "size": 47428
     },
     {
       "path": "mods/architectury-9.2.14-forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_architectury-9.2.14-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_architectury-9.2.14-forge.jar",
       "sha1": "a52918a500ff421180a1cbd1a0cabee712134ec4",
       "size": 580602
     },
     {
-      "path": "mods/astikorcartsredux-1.2.3.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_astikorcartsredux-1.2.3.jar",
-      "sha1": "62c693ee857ff6bd39e7582d02b57874ec0aa8ac",
-      "size": 530068
+      "path": "mods/astikorcartsredux-1.2.5.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_astikorcartsredux-1.2.5.jar",
+      "sha1": "77a95e6f367d286d903ea2bc2aa7145f2ec7108f",
+      "size": 530548
     },
     {
       "path": "mods/athena-forge-1.20.1-3.1.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_athena-forge-1.20.1-3.1.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_athena-forge-1.20.1-3.1.2.jar",
       "sha1": "2acee24454af859988a691f0506271a465f68f7b",
       "size": 91808
     },
     {
+      "path": "mods/betsyross-2.1.2+mc.1.20.1-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_betsyross-2.1.2.mc.1.20.1-forge.jar",
+      "sha1": "fac4bd2acb03ce795a62fa46db0d7aabf9232670",
+      "size": 355085
+    },
+    {
       "path": "mods/bettercombat-forge-1.8.6+1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_bettercombat-forge-1.8.6.1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_bettercombat-forge-1.8.6.1.20.1.jar",
       "sha1": "70c20cd81a4051b2ad4289ff6522e80b397d7b3d",
       "size": 1050118
     },
     {
       "path": "mods/bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
       "sha1": "bfddda8c3efc11803a33220fdc99003d3d2ae268",
       "size": 146704
     },
     {
-      "path": "mods/chat_heads-0.15.7-forge-1.20.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_chat_heads-0.15.7-forge-1.20.jar",
-      "sha1": "80582e413216eb014d83252b05c731a4a151fe9b",
-      "size": 724902
+      "path": "mods/burnt_basic-1.10.4.3-forge-1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_burnt_basic-1.10.4.3-forge-1.20.1.jar",
+      "sha1": "089328f1cae531ccf7243e4c0b9b6963f2b3067f",
+      "size": 21393267
     },
     {
       "path": "mods/chipped-forge-1.20.1-3.0.7.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_chipped-forge-1.20.1-3.0.7.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_chipped-forge-1.20.1-3.0.7.jar",
       "sha1": "25ee2a0846059d8f21d28b94b7e0229b60cb5499",
       "size": 15060263
     },
     {
       "path": "mods/cloth-config-11.1.136-forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_cloth-config-11.1.136-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_cloth-config-11.1.136-forge.jar",
       "sha1": "c65d07748acc57ceb45d53b3964368b84f34d54f",
       "size": 1181413
     },
     {
       "path": "mods/corpse-forge-1.20.1-1.0.23.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_corpse-forge-1.20.1-1.0.23.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_corpse-forge-1.20.1-1.0.23.jar",
       "sha1": "843b16ca88bc5c390bb22a2a84437e6bffdd43dd",
       "size": 245644
     },
     {
-      "path": "mods/easy_npc-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_easy_npc-forge-1.20.1-7.4.1.jar",
-      "sha1": "4c2cd233e307a5a6aed7860eaf1947c7686b349c",
-      "size": 2270248
+      "path": "mods/easy_npc-forge-1.20.1-7.12.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_easy_npc-forge-1.20.1-7.12.1.jar",
+      "sha1": "39d2f57946e311920453219e768977afc83f73fb",
+      "size": 2962180
     },
     {
-      "path": "mods/easy_npc_bundle-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_easy_npc_bundle-forge-1.20.1-7.4.1.jar",
-      "sha1": "cee00e8d676c1f71c6182100687570544a29e3cd",
-      "size": 25438
+      "path": "mods/easy_npc_bundle-forge-1.20.1-7.12.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_easy_npc_bundle-forge-1.20.1-7.12.1.jar",
+      "sha1": "2286c9b08342f3ec1ceae8304425b39e5301b028",
+      "size": 25441
     },
     {
-      "path": "mods/easy_npc_config_ui-forge-1.20.1-7.4.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_easy_npc_config_ui-forge-1.20.1-7.4.1.jar",
-      "sha1": "061a7f6b5c3eba30846919dc567482c5da67733d",
-      "size": 978860
+      "path": "mods/easy_npc_config_ui-forge-1.20.1-7.12.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_easy_npc_config_ui-forge-1.20.1-7.12.1.jar",
+      "sha1": "5b1a31235d6eafbd714f36b9c6e7ede2cdd182ee",
+      "size": 1092567
+    },
+    {
+      "path": "mods/ekotsk-forge-1.20.1_1.5.0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_ekotsk-forge-1.20.1_1.5.0.jar",
+      "sha1": "59590758987f629d4a4390557d3d5f645bb4c19d",
+      "size": 992920
     },
     {
       "path": "mods/embeddium-0.3.31+mc1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_embeddium-0.3.31.mc1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_embeddium-0.3.31.mc1.20.1.jar",
       "sha1": "bb2fa8f3e493af16af9160d049f96c614a1faf2f",
       "size": 1320675
     },
     {
       "path": "mods/epic-knights-1.20.1-forge-10.11.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_epic-knights-1.20.1-forge-10.11.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_epic-knights-1.20.1-forge-10.11.jar",
       "sha1": "b76f56523dcde7ae30f4a3c299b1d104348b92eb",
       "size": 2913733
     },
     {
-      "path": "mods/epic-knights-addon-1.20.x-forge-2.6.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_epic-knights-addon-1.20.x-forge-2.6.jar",
-      "sha1": "c5d284743d3d59a7ca4cdfdf42e4a01afb10e146",
-      "size": 2012821
-    },
-    {
-      "path": "mods/epic-knights-antique-legacy-1.20.x-forge-1.13.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_epic-knights-antique-legacy-1.20.x-forge-1.13.jar",
-      "sha1": "de812ad140b67bbace4ef7be33e035c7e1beca89",
-      "size": 5434731
-    },
-    {
-      "path": "mods/epic-knights-slavic-armory-1.20.x-forge-2.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_epic-knights-slavic-armory-1.20.x-forge-2.1.jar",
-      "sha1": "e54539d7eee96e5441db89ac580bcb4fc3ae534a",
-      "size": 1007892
+      "path": "mods/epichunt-forge-1.4.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_epichunt-forge-1.4.2.jar",
+      "sha1": "d0e22581436d096f4d59e2b3822dcf7e4ca15ccf",
+      "size": 4345866
     },
     {
       "path": "mods/ftb-library-forge-2001.2.13.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_ftb-library-forge-2001.2.13.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_ftb-library-forge-2001.2.13.jar",
       "sha1": "a5427d5ff07eb044144ed0b54308370d88bce17e",
       "size": 780558
     },
     {
       "path": "mods/ftb-quests-forge-2001.4.22.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_ftb-quests-forge-2001.4.22.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_ftb-quests-forge-2001.4.22.jar",
       "sha1": "70f3bd771ab3b5921ce1ff5f14166fab694ca1aa",
       "size": 1255469
     },
     {
       "path": "mods/ftb-teams-forge-2001.3.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_ftb-teams-forge-2001.3.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_ftb-teams-forge-2001.3.2.jar",
       "sha1": "c49023f5d471aa1ba7fc624d2565fe9e82b7117e",
       "size": 252579
     },
     {
       "path": "mods/geckolib-forge-1.20.1-4.8.4.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_geckolib-forge-1.20.1-4.8.4.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_geckolib-forge-1.20.1-4.8.4.jar",
       "sha1": "81982cc287f80ffabb2fd36d22cc95e4255c739d",
       "size": 1038209
     },
     {
-      "path": "mods/immersive_melodies-0.6.1+1.20.1-forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_immersive_melodies-0.6.1.1.20.1-forge.jar",
-      "sha1": "4b2f3f2ec9449ecaf5edd8b7a48bec854105c645",
-      "size": 5517554
+      "path": "mods/immersive_melodies-0.8.0+1.20.1-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_immersive_melodies-0.8.0.1.20.1-forge.jar",
+      "sha1": "02f8ea1f93fe6603671884fd81ffc94c3c914457",
+      "size": 5563706
     },
     {
       "path": "mods/immersive_paintings-0.6.13+1.20.1-forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_immersive_paintings-0.6.13.1.20.1-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_immersive_paintings-0.6.13.1.20.1-forge.jar",
       "sha1": "3f2a668f2235a6a908fde545d140013456b5412f",
       "size": 4856103
     },
     {
-      "path": "mods/jei-1.20.1-forge-15.20.0.106.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_jei-1.20.1-forge-15.20.0.106.jar",
-      "sha1": "77928d15d797663846cba44de8f79e4e4c5fdbb7",
-      "size": 1379220
+      "path": "mods/jei-1.20.1-forge-15.56.0.205.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_jei-1.20.1-forge-15.56.0.205.jar",
+      "sha1": "7f64b7f8fde7f001ef054dabe3618a8780ba2650",
+      "size": 1778129
     },
     {
-      "path": "mods/kaleidoscopetavern-1.2.0-forge+mc1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_kaleidoscopetavern-1.2.0-forge.mc1.20.1.jar",
-      "sha1": "2e8f6370fb4acae9796705b6e84716c4a398b9c5",
-      "size": 1749797
+      "path": "mods/kubejs-forge-2001.6.5-build.26.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_kubejs-forge-2001.6.5-build.26.jar",
+      "sha1": "8b0cc9797d4ed00fd2d1002d58960af8b32012ae",
+      "size": 1658792
     },
     {
-      "path": "mods/mcw-doors-1.1.5-mc1.20.1forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mcw-doors-1.1.5-mc1.20.1forge.jar",
-      "sha1": "fe6a9eb2fbc78300a6286fd25854c9f087e689a6",
-      "size": 1246753
+      "path": "mods/letsdo-API-forge-1.2.15-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_letsdo-API-forge-1.2.15-forge.jar",
+      "sha1": "a261043a45097d861a13a63ebdbb0ca350e06a63",
+      "size": 1440591
+    },
+    {
+      "path": "mods/letsdo-bakery-forge-1.1.15.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_letsdo-bakery-forge-1.1.15.jar",
+      "sha1": "c5cd44088089fca03f3291b851dcb0d00018fecb",
+      "size": 1539376
+    },
+    {
+      "path": "mods/letsdo-brewery-forge-1.1.9.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_letsdo-brewery-forge-1.1.9.jar",
+      "sha1": "50e5181e734dcfc599aa0eaac376ff4e312f63c2",
+      "size": 2228646
+    },
+    {
+      "path": "mods/letsdo-meadow-forge-1.3.25.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_letsdo-meadow-forge-1.3.25.jar",
+      "sha1": "da7d934ff35f03279bee6597362f30d2aea7462f",
+      "size": 2676511
     },
     {
       "path": "mods/mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
       "sha1": "d24bc6e1ba7f04e058db019ae5ca3d10edd9510a",
       "size": 708634
     },
     {
       "path": "mods/mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
       "sha1": "214da89b2153d496343bde8626283975e358edbd",
       "size": 1320692
     },
     {
-      "path": "mods/mcw-roofs-2.3.2-mc1.20.1forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mcw-roofs-2.3.2-mc1.20.1forge.jar",
-      "sha1": "2b02beb2bd177aa695dc6fc030fc3bb230ca96b1",
-      "size": 1864023
-    },
-    {
-      "path": "mods/mcw-trapdoors-1.1.5-mc1.20.1forge.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mcw-trapdoors-1.1.5-mc1.20.1forge.jar",
-      "sha1": "1b3b4b40041346b19bc9ab280b288a9f6b77b513",
-      "size": 604510
-    },
-    {
       "path": "mods/mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
       "sha1": "5767ecee24e34efb138403a45de1589e38ddc624",
       "size": 223397
     },
     {
-      "path": "mods/monolib-forge-1.20.1-4.0.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_monolib-forge-1.20.1-4.0.2.jar",
-      "sha1": "54b342e2fa8ec915a78016b9aecffd3d95d5216a",
-      "size": 173874
-    },
-    {
       "path": "mods/musketmod-1.20.1-forge-1.5.4.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_musketmod-1.20.1-forge-1.5.4.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_musketmod-1.20.1-forge-1.5.4.jar",
       "sha1": "44ed6aa820e86e9802ad917d4eddda5877982e5a",
       "size": 448661
     },
     {
       "path": "mods/oculus-mc1.20.1-1.8.0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_oculus-mc1.20.1-1.8.0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_oculus-mc1.20.1-1.8.0.jar",
       "sha1": "984f774e71790deaec674c7587bd24e0711871b2",
       "size": 2851119
     },
     {
       "path": "mods/player-animation-lib-forge-1.0.2-rc1+1.20.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_player-animation-lib-forge-1.0.2-rc1.1.20.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_player-animation-lib-forge-1.0.2-rc1.1.20.jar",
       "sha1": "16808f94a41d45d8e986b4e4ea6b02ba57fa058a",
       "size": 181437
     },
     {
-      "path": "mods/ranksandtitles-1.2.0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_ranksandtitles-1.2.0.jar",
-      "sha1": "3a9320d0a36029dc1113792d88de9edd6f7a622c",
-      "size": 68848
-    },
-    {
       "path": "mods/recruits-1.20.1-1.15.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_recruits-1.20.1-1.15.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_recruits-1.20.1-1.15.2.jar",
       "sha1": "8d2ed3f0ab18c67a1d9394526bcae47b3ec162ab",
       "size": 2811101
     },
     {
-      "path": "mods/reforgedplaymod-1.20.1-0.3.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_reforgedplaymod-1.20.1-0.3.1.jar",
-      "sha1": "37b714750d0e5487b488b29ff1e1623e5bb18ed6",
-      "size": 16661938
-    },
-    {
       "path": "mods/resourcefullib-forge-1.20.1-2.1.29.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_resourcefullib-forge-1.20.1-2.1.29.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_resourcefullib-forge-1.20.1-2.1.29.jar",
       "sha1": "6fc590a7c56a720fec57e290cbb0a106efbb3ffa",
       "size": 432753
     },
     {
+      "path": "mods/rhino-forge-2001.2.3-build.10.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_rhino-forge-2001.2.3-build.10.jar",
+      "sha1": "c83c9b719a6bab33fbd2b3f2f680eb3adbfc1aa1",
+      "size": 1798244
+    },
+    {
       "path": "mods/rpa-1.6.1-forge-1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_rpa-1.6.1-forge-1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_rpa-1.6.1-forge-1.20.1.jar",
       "sha1": "3b8e222a2db8666f039b6b50ec4df11d212c52de",
       "size": 4574333
     },
     {
-      "path": "mods/siege-machines-1.20.1-forge-1.39.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_siege-machines-1.20.1-forge-1.39.jar",
-      "sha1": "0b18809ea67014f527984fd07ca01c444beab03c",
-      "size": 1973951
+      "path": "mods/scrollwright-1.20.1-0.2.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_scrollwright-1.20.1-0.2.1.jar",
+      "sha1": "8a866341b6f6b6b6b37776dff2ae66a4155b8ac3",
+      "size": 175741
     },
     {
-      "path": "mods/siegeweapons-1.20.1-0.2.5.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_siegeweapons-1.20.1-0.2.5.jar",
-      "sha1": "f4ae32159b78d6d5e9f1c11588107678cd1151bd",
-      "size": 1040867
+      "path": "mods/siegeworks-0.7.0-fix.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_siegeworks-0.7.0-fix.2.jar",
+      "sha1": "9d8eb2be1a3e7de1647087af0e98edd676de1e0f",
+      "size": 2098580
     },
     {
       "path": "mods/sit-1.20.1-1.3.5.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_sit-1.20.1-1.3.5.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_sit-1.20.1-1.3.5.jar",
       "sha1": "228fa17d1bbacbc3e49c20e6d9b91050011f6ee2",
       "size": 14510
     },
     {
-      "path": "mods/skinlayers3d-forge-1.11.2-mc1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_skinlayers3d-forge-1.11.2-mc1.20.1.jar",
-      "sha1": "473b49e775f4c9dd746929f20c33f8132b86f235",
-      "size": 2168901
-    },
-    {
       "path": "mods/smallships-forge-1.20.1-2.0.0-b1.4.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_smallships-forge-1.20.1-2.0.0-b1.4.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_smallships-forge-1.20.1-2.0.0-b1.4.jar",
       "sha1": "9998ddc8a278e0b87ab642d289ae2a1e3dbebef6",
       "size": 1816687
     },
     {
+      "path": "mods/smallshipsheraldry-0.3.0+mc.1.20.1-forge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_smallshipsheraldry-0.3.0.mc.1.20.1-forge.jar",
+      "sha1": "e29958871c4c4935005cf5d46323127f4206ea68",
+      "size": 334378
+    },
+    {
       "path": "mods/sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_sodiumdynamiclights-forge-1.0.10-1.20.1.jar",
       "sha1": "d27524e85bed0f0af83c03be46f9ca3eb02a1be9",
       "size": 511601
     },
     {
       "path": "mods/sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_sodiumoptionsapi-forge-1.0.10-1.20.1.jar",
       "sha1": "7529fbf938787ed13a251cbf40936f8c29ec4b6c",
       "size": 443978
     },
     {
-      "path": "mods/sophisticatedbackpacks-1.20.1-3.24.62.2017.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_sophisticatedbackpacks-1.20.1-3.24.62.2017.jar",
-      "sha1": "fe4b90ab03b61ac0901125ce36a65cd188ea9c15",
-      "size": 1130880
-    },
-    {
-      "path": "mods/sophisticatedcore-1.20.1-1.3.73.2192.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_sophisticatedcore-1.20.1-1.3.73.2192.jar",
-      "sha1": "ec4403509162632bbad7f6c7be382a3fa6381a30",
-      "size": 1622705
-    },
-    {
-      "path": "mods/terrarialike_respawns-1.0.2-forge-1.20.1.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_terrarialike_respawns-1.0.2-forge-1.20.1.jar",
-      "sha1": "fe2839c588b08a12466695b4acfa94744a851cf4",
-      "size": 28411
-    },
-    {
       "path": "mods/twoplayersonehorse-forge-1.20.1-1.0.3.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_twoplayersonehorse-forge-1.20.1-1.0.3.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_twoplayersonehorse-forge-1.20.1-1.0.3.jar",
       "sha1": "95c9c0e3f5e38b756fd7e4d77a9f029d920602ef",
       "size": 24342
     },
     {
-      "path": "mods/voicechat-forge-1.20.1-2.6.21.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_voicechat-forge-1.20.1-2.6.21.jar",
-      "sha1": "77ae96b41c9328213659991c113a6e13c95724ba",
-      "size": 4918879
+      "path": "mods/voicechat-forge-1.20.1-2.6.22.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_voicechat-forge-1.20.1-2.6.22.jar",
+      "sha1": "cc94c3eecc325ea3066ee3cd8bf57142d1b11762",
+      "size": 4923439
     },
     {
       "path": "mods/workers-1.20.1-2.0.3.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_workers-1.20.1-2.0.3.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_workers-1.20.1-2.0.3.jar",
       "sha1": "1f68527132995485145433b07cd459fb4b602d06",
       "size": 1316715
     },
     {
       "path": "mods/zmedievalmusic-1.20.1-2.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-1.1.0/mods_zmedievalmusic-1.20.1-2.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/mods_zmedievalmusic-1.20.1-2.2.jar",
       "sha1": "8352744a85f8c6f95e2d9cddb7fed09896c785cb",
       "size": 304415885
+    },
+    {
+      "path": "resourcepacks/Excalibur_SmallShips_1.1_1.20.1.zip",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/resourcepacks_Excalibur_SmallShips_1.1_1.20.1.zip",
+      "sha1": "6dfeeac86d14dd91cb6a3a4deaa3936b2d02b89e",
+      "size": 116499
+    },
+    {
+      "path": "resourcepacks/Excalibur_V1.20.zip",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/resourcepacks_Excalibur_V1.20.zip",
+      "sha1": "5a49050cd16d898a29d329c21a3006b2381a0dcc",
+      "size": 17107369
+    },
+    {
+      "path": "shaderpacks/ComplementaryReimagined_r5.9.1.zip",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/shaderpacks_ComplementaryReimagined_r5.9.1.zip",
+      "sha1": "6a4f2107d25466c5c5bf5b3f5c2a982f940c0e91",
+      "size": 552945
+    },
+    {
+      "path": "shaderpacks/PotatoShaders_v1.0d.zip",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-2.0.0/shaderpacks_PotatoShaders_v1.0d.zip",
+      "sha1": "c60b72db0dc0b1aff486a76bfa4bec2704933c35",
+      "size": 393109
     }
   ],
   "optionalMods": [
