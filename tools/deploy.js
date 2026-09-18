@@ -439,9 +439,24 @@ async function lancerMacEtLinux(sauter) {
     return;
   }
 
-  gh(['release', 'upload', `v${pkg.version}`, ...fichiers, '--repo', DIST, '--clobber'], { stdio: 'inherit' });
+  // Un fichier a la fois, avec nouvelles tentatives : GitHub renvoie parfois
+  // une erreur 500 passagere sur les gros fichiers, et un envoi groupe
+  // echouerait en entier pour un seul d'entre eux.
+  const rates = [];
+  for (const fichier of fichiers) {
+    let envoye = false;
+    for (let essai = 1; essai <= 3 && !envoye; essai += 1) {
+      envoye = ghSilencieux(['release', 'upload', `v${pkg.version}`, fichier, '--repo', DIST, '--clobber']).status === 0;
+      if (!envoye && essai < 3) await attendre(10_000);
+    }
+    info(`${envoye ? 'ok   ' : 'ECHEC'} ${path.basename(fichier)}`);
+    if (!envoye) rates.push(fichier);
+  }
+  if (rates.length) {
+    info(`${rates.length} fichier(s) non envoye(s) : relance "npm run deploy:mac-linux".`);
+    return;
+  }
   info(`${fichiers.length} fichiers macOS et Linux publies.`);
-  for (const fichier of fichiers) info(`  ${path.basename(fichier)}`);
 }
 
 /* ------------------------------------------------------------------ *
