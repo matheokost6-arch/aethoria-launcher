@@ -53,7 +53,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb mesa-utils libgl1-mesa-dri pulseaudio
+          sudo apt-get install -y xvfb mesa-utils libgl1-mesa-dri pulseaudio rpm
           sudo apt-get install -y libfuse2t64 || sudo apt-get install -y libfuse2
           Xvfb :99 -screen 0 1600x900x24 &
           echo "DISPLAY=:99" >> "$GITHUB_ENV"
@@ -70,22 +70,47 @@ jobs:
             npx electron tests/verification.js
           fi
 
-      - name: Application compilee
+      - name: Construire les paquets
         if: always()
         shell: bash
         run: |
-          set -x
           if [ "$RUNNER_OS" = "Linux" ]; then
-            npx electron-builder --linux AppImage --publish never
-            # Comme un joueur : l'AppImage lancee directement, sans option.
-            npx electron --no-sandbox tests/app-compilee.js appimage dist/Aethoria-linux-x64.AppImage || true
-            # Sans FUSE (certaines distributions) : extraction automatique.
-            APPIMAGE_EXTRACT_AND_RUN=1 npx electron --no-sandbox tests/app-compilee.js appimage-sans-fuse dist/Aethoria-linux-x64.AppImage || true
+            npx electron-builder --linux deb rpm AppImage tar.gz --x64 --publish never
+            ls -la dist/*.deb dist/*.rpm dist/*.AppImage dist/*.tar.gz
           else
             npx electron-builder --mac --dir --publish never
+          fi
+
+      - name: Ouvrir l'application compilee
+        if: always()
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" != "Linux" ]; then
             APP=$(ls -d dist/mac*/Aethoria.app | head -1)
             npx electron tests/app-compilee.js macos "$APP/Contents/MacOS/Aethoria" || true
+            exit 0
           fi
+          # 1. Le paquet .deb, comme un joueur sous Debian ou Ubuntu.
+          sudo apt-get install -y ./dist/Aethoria-linux-amd64.deb
+          ls -l /opt/Aethoria/chrome-sandbox
+          npx electron tests/app-compilee.js deb /opt/Aethoria/aethoria || true
+          # 2. L'AppImage lancee directement, sans aucune option.
+          npx electron tests/app-compilee.js appimage "$PWD/dist/Aethoria-linux-x86_64.AppImage" || true
+          # 3. L'archive .tar.gz, decompressee a la main.
+          mkdir -p /tmp/aethoria-targz && tar -xzf dist/Aethoria-linux-x64.tar.gz -C /tmp/aethoria-targz
+          npx electron tests/app-compilee.js targz "$(ls -d /tmp/aethoria-targz/*/aethoria | head -1)" || true
+
+      - name: Le paquet .rpm dans un vrai Fedora
+        if: always() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          docker run --rm -v "$PWD/dist:/paquets" fedora:41 bash -lc '
+            set -e
+            dnf install -y -q /paquets/Aethoria-linux-x86_64.rpm > /dev/null
+            test -x /opt/Aethoria/aethoria && echo "OK    .rpm installe sur Fedora : /opt/Aethoria/aethoria"
+            ls -l /opt/Aethoria/chrome-sandbox
+            test -f /usr/share/applications/aethoria.desktop && echo "OK    raccourci du menu installe"
+          ' | tee -a verification/resume.txt
 
       - uses: actions/upload-artifact@v4
         if: always()
