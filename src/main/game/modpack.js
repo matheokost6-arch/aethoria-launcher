@@ -168,8 +168,10 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
 
   // Les fichiers "de depart" (configs) n'entrent pas dans le journal : ils
   // appartiennent au joueur des qu'ils sont poses, et ne sont jamais supprimes.
+  // Ils restent dans la liste des fichiers voulus : un ancien journal qui les
+  // contenait encore ne doit pas les faire effacer.
   const managed = files.filter((f) => !f.keepExisting);
-  const removed = await pruneRemovedFiles(managed.map((f) => f.relative), {
+  const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
     // Seul le dossier mods peut etre vide : un manifest ne doit jamais effacer
     // les mondes, options ou captures du joueur.
     cleanDirs: (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods'),

@@ -1,0 +1,89 @@
+# Verification du launcher sur de vraies machines macOS et Linux.
+#
+# Sur chacune : parcours complet d'un joueur (pseudo, JOUER, installation de
+# Java, Forge, Minecraft et du modpack, jeu jusqu'au menu), puis ouverture de
+# l'application compilee. Resultats et captures d'ecran dans l'artefact
+# "verification-<machine>".
+#
+# Windows est verifie en vrai sur le PC de developpement : les machines Windows
+# de GitHub n'ont pas de carte graphique, Minecraft ne peut pas s'y afficher.
+
+name: Verification multiplateforme
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verifier:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            nom: linux-ubuntu-22.04
+          - os: ubuntu-24.04
+            nom: linux-ubuntu-24.04
+          - os: macos-latest
+            nom: mac-apple-silicon
+          - os: macos-15-intel
+            nom: mac-intel
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Linux : ecran virtuel, rendu OpenGL logiciel (Mesa) et son factice,
+      # comme un PC sans carte graphique ni haut-parleurs.
+      - name: Ecran et son virtuels (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb mesa-utils libgl1-mesa-dri pulseaudio
+          sudo apt-get install -y libfuse2t64 || sudo apt-get install -y libfuse2
+          Xvfb :99 -screen 0 1600x900x24 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+          pulseaudio --start --exit-idle-time=-1 || true
+          sleep 2
+          glxinfo -B | grep -E "OpenGL (renderer|core profile version)" || true
+
+      - name: Parcours du joueur, jusqu'au menu du jeu
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            npx electron --no-sandbox tests/verification.js
+          else
+            npx electron tests/verification.js
+          fi
+
+      - name: Application compilee
+        if: always()
+        shell: bash
+        run: |
+          set -x
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            npx electron-builder --linux AppImage --publish never
+            # Comme un joueur : l'AppImage lancee directement, sans option.
+            npx electron --no-sandbox tests/app-compilee.js appimage dist/Aethoria-linux-x64.AppImage || true
+            # Sans FUSE (certaines distributions) : extraction automatique.
+            APPIMAGE_EXTRACT_AND_RUN=1 npx electron --no-sandbox tests/app-compilee.js appimage-sans-fuse dist/Aethoria-linux-x64.AppImage || true
+          else
+            npx electron-builder --mac --dir --publish never
+            APP=$(ls -d dist/mac*/Aethoria.app | head -1)
+            npx electron tests/app-compilee.js macos "$APP/Contents/MacOS/Aethoria" || true
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-${{ matrix.nom }}
+          retention-days: 7
+          path: verification/
