@@ -17,7 +17,13 @@ const execFileAsync = promisify(execFile);
 const RUNTIME_PLATFORM = (() => {
   if (process.platform === 'win32') return process.arch === 'arm64' ? 'windows-arm64' : (process.arch === 'ia32' ? 'windows-x86' : 'windows-x64');
   if (process.platform === 'darwin') return process.arch === 'arm64' ? 'mac-os-arm64' : 'mac-os';
-  return process.arch === 'arm64' ? 'linux' : (process.arch === 'ia32' ? 'linux-i386' : 'linux');
+  if (process.platform === 'linux') {
+    // Mojang ne publie Java que pour Intel/AMD sous Linux : sur un ARM
+    // (Raspberry Pi, portable ARM), on utilisera le Java du systeme.
+    if (process.arch === 'ia32') return 'linux-i386';
+    return process.arch === 'x64' ? 'linux' : null;
+  }
+  return null;
 })();
 
 const EXE = process.platform === 'win32' ? '.exe' : '';
@@ -97,6 +103,7 @@ async function findSystemJava(requiredMajor) {
 
 /** Telecharge le runtime Java officiel correspondant au composant demande. */
 async function downloadRuntime(component, { onProgress, onStatus } = {}) {
+  if (!RUNTIME_PLATFORM) throw new Error(`Java officiel indisponible pour ${process.platform} ${process.arch}`);
   const home = path.join(paths.runtime, component, RUNTIME_PLATFORM);
   const markerFile = path.join(home, '.installed');
   if (fs.existsSync(markerFile)) return home;
@@ -198,10 +205,14 @@ async function ensureJava(version, settings = {}, hooks = {}) {
     hooks.onStatus?.('Runtime Java officiel indisponible, recherche d’un Java installé...');
     const system = await findSystemJava(requiredMajor);
     if (system) return system;
-    throw new Error(
-      `Impossible d'obtenir Java ${requiredMajor || ''} (${err.message}). `
-      + 'Installe Java manuellement puis indique son chemin dans les paramètres du launcher.',
-    );
+    // Comment installer Java, selon le systeme : le joueur doit pouvoir s'en
+    // sortir sans chercher.
+    const conseil = process.platform === 'linux'
+      ? `Installe Java ${requiredMajor || 17} : sudo apt install openjdk-${requiredMajor || 17}-jre (Debian, Ubuntu, Mint) ou sudo dnf install java-${requiredMajor || 17}-openjdk (Fedora).`
+      : process.platform === 'darwin'
+        ? `Installe Java ${requiredMajor || 17} depuis adoptium.net, puis relance le launcher.`
+        : 'Installe Java manuellement puis indique son chemin dans les réglages du launcher.';
+    throw new Error(`Impossible d'obtenir Java ${requiredMajor || ''} (${err.message}). ${conseil}`);
   }
 }
 

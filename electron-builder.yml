@@ -70,26 +70,37 @@ dmg:
 
 linux:
   target:
-    # AppImage : un seul fichier a rendre executable, valable sur toutes les
-    # distributions. Le .deb sert a Debian, Ubuntu et Mint.
-    - target: AppImage
-      arch: [x64]
+    # Quatre formats pour couvrir toutes les distributions :
+    #   deb     Debian, Ubuntu, Mint, Pop!_OS  (installation propre, recommandee)
+    #   rpm     Fedora, RHEL, openSUSE
+    #   AppImage un seul fichier a rendre executable, partout (demande libfuse2)
+    #   tar.gz  dernier recours : a decompresser et lancer, sans installation
     - target: deb
+      arch: [x64, arm64]
+    - target: rpm
       arch: [x64]
+    - target: AppImage
+      arch: [x64, arm64]
+    - target: tar.gz
+      arch: [x64, arm64]
+  artifactName: Aethoria-linux-${arch}.${ext}
   icon: build/icon.png
   category: Game
   synopsis: Launcher du serveur Minecraft Aethoria
   maintainer: Aethoria <aethoria-mc@users.noreply.github.com>
   executableName: aethoria
 
-# Noms figes, sans numero de version ni nom d'architecture : les liens de
-# telechargement restent valables d'une version a l'autre. (Sans cela,
-# electron-builder ecrirait x86_64 pour l'AppImage et amd64 pour le .deb.)
+# Noms sans numero de version : les liens de telechargement restent valables
+# d'une version a l'autre. Chaque format garde le nom d'architecture qui lui est
+# propre (x86_64 pour l'AppImage, amd64 pour le .deb...).
 appImage:
-  artifactName: Aethoria-linux-x64.AppImage
+  artifactName: Aethoria-linux-${arch}.AppImage
 
 deb:
-  artifactName: Aethoria-linux-x64.deb
+  artifactName: Aethoria-linux-${arch}.deb
+
+rpm:
+  artifactName: Aethoria-linux-${arch}.rpm
 
 # Mises a jour automatiques via les Releases GitHub.
 # Remplace owner/repo par les tiens (ils doivent correspondre a src/shared/config.js).

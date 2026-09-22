@@ -33,12 +33,14 @@ module.exports = {
     return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest`;
   },
 
-  /** Fichier a telecharger pour un systeme donne. */
+  /**
+   * Fichier a telecharger pour un systeme donne. Sous Linux il existe quatre
+   * formats selon la distribution : on renvoie la page, qui les liste tous.
+   */
   downloadFor(platform = process.platform, arch = process.arch) {
     const name = {
       win32: 'Aethoria-Setup.exe',
       darwin: `Aethoria-mac-${arch === 'arm64' ? 'arm64' : 'x64'}.dmg`,
-      linux: 'Aethoria-linux-x64.AppImage',
     }[platform];
     return name
       ? `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest/download/${name}`

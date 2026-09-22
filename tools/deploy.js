@@ -353,10 +353,17 @@ function publierLauncher(sauterBuild) {
         '',
         '| Systeme | Fichier a telecharger |',
         '| --- | --- |',
-        '| Windows | **Aethoria-Setup.exe** |',
-        '| macOS (Apple Silicon) | **Aethoria-mac-arm64.dmg** |',
-        '| macOS (Intel) | **Aethoria-mac-x64.dmg** |',
-        '| Linux | **Aethoria-linux-x64.AppImage**, ou le .deb |',
+        '| Windows 10 ou 11 | **Aethoria-Setup.exe** |',
+        '| macOS 11 ou plus, Apple Silicon (M1 a M4) | **Aethoria-mac-arm64.dmg** |',
+        '| macOS 11 ou plus, Intel | **Aethoria-mac-x64.dmg** |',
+        '| Debian, Ubuntu, Mint, Pop!_OS | **Aethoria-linux-amd64.deb** |',
+        '| Fedora, RHEL, openSUSE | **Aethoria-linux-x86_64.rpm** |',
+        '| Autres Linux | **Aethoria-linux-x86_64.AppImage** (ou le .tar.gz) |',
+        '| Linux sur processeur ARM | les fichiers **arm64** / **arm_aarch64** |',
+        '',
+        'macOS : l application n est pas signee. Au premier lancement, ouvre',
+        'Reglages Systeme > Confidentialite et securite, puis clique sur',
+        '"Ouvrir quand meme" en bas de la page.',
       ].join('\n')]);
   }
 
@@ -436,7 +443,11 @@ async function lancerMacEtLinux(sauter) {
   const ATTENDUS = [
     'Aethoria-mac-x64.dmg', 'Aethoria-mac-arm64.dmg',
     'Aethoria-mac-x64.zip', 'Aethoria-mac-arm64.zip', 'latest-mac.yml',
-    'Aethoria-linux-x64.AppImage', 'Aethoria-linux-x64.deb', 'latest-linux.yml',
+    'Aethoria-linux-x86_64.AppImage', 'Aethoria-linux-arm_aarch64.AppImage',
+    'Aethoria-linux-amd64.deb', 'Aethoria-linux-arm64.deb',
+    'Aethoria-linux-x86_64.rpm',
+    'Aethoria-linux-x64.tar.gz', 'Aethoria-linux-arm64.tar.gz',
+    'latest-linux.yml', 'latest-linux-arm64.yml',
   ];
   const trouves = fs.readdirSync(dossier, { recursive: true, withFileTypes: true })
     .filter((entree) => entree.isFile())

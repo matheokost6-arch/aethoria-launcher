@@ -44,6 +44,11 @@ jobs:
 
       - run: npm ci
 
+      # Le format .rpm (Fedora, RHEL, openSUSE) a besoin de l'outil rpmbuild.
+      - name: Outils de paquetage (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
       - name: Construire
         run: npx electron-builder ${{ matrix.cible }} --publish never
 
@@ -59,4 +64,7 @@ jobs:
             dist/latest-mac.yml
             dist/Aethoria-linux-*.AppImage
             dist/Aethoria-linux-*.deb
+            dist/Aethoria-linux-*.rpm
+            dist/Aethoria-linux-*.tar.gz
             dist/latest-linux.yml
+            dist/latest-linux-arm64.yml

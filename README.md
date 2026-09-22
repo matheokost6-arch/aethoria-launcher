@@ -9,14 +9,29 @@ Lien à donner aux joueurs, tous systèmes confondus :
 
 | Système | Fichier | Remarque |
 | --- | --- | --- |
-| Windows | `Aethoria-Setup.exe` | installateur, mise à jour automatique |
-| macOS (Apple Silicon) | `Aethoria-mac-arm64.dmg` | app non signée : premier lancement par clic droit → Ouvrir |
-| macOS (Intel) | `Aethoria-mac-x64.dmg` | idem |
-| Linux | `Aethoria-linux-x64.AppImage` | à rendre exécutable (`chmod +x`) |
-| Debian, Ubuntu, Mint | `Aethoria-linux-x64.deb` | `sudo apt install ./Aethoria-linux-x64.deb` |
+| Windows 10 / 11 | `Aethoria-Setup.exe` | installateur, mise à jour automatique |
+| macOS 11+, Apple Silicon | `Aethoria-mac-arm64.dmg` | non signée, voir ci-dessous |
+| macOS 11+, Intel | `Aethoria-mac-x64.dmg` | idem |
+| Debian, Ubuntu, Mint, Pop!_OS | `Aethoria-linux-amd64.deb` | `sudo apt install ./Aethoria-linux-amd64.deb` |
+| Fedora, RHEL, openSUSE | `Aethoria-linux-x86_64.rpm` | `sudo dnf install ./Aethoria-linux-x86_64.rpm` |
+| Toute autre distribution | `Aethoria-linux-x86_64.AppImage` | `chmod +x`, puis double-clic. Demande `libfuse2` |
+| Sans installation | `Aethoria-linux-x64.tar.gz` | à décompresser, puis lancer `aethoria` |
+| Linux sur ARM | fichiers `arm64` / `arm_aarch64` | Java doit être installé : `sudo apt install openjdk-17-jre` |
+
+Les mises à jour automatiques fonctionnent sous Windows, macOS et avec
+l'AppImage. Avec un `.deb`, un `.rpm` ou le `.tar.gz`, il faut retélécharger.
+
+**macOS** : l'application n'est pas signée (certificat Apple payant). Au premier
+lancement, macOS la bloque : ouvrir **Réglages Système → Confidentialité et
+sécurité**, puis cliquer sur **« Ouvrir quand même »** en bas de la page.
+
+**Ce qu'il faut sur la machine** : un système 64 bits, Windows 10 ou plus,
+macOS 11 (Big Sur) ou plus, ou un Linux avec glibc 2.28 ou plus (Debian 10,
+Ubuntu 18.04, Fedora 29 et au-delà). Java est téléchargé par le launcher, sauf
+sur Linux ARM où il doit être installé par la distribution.
 
 Le dossier de jeu suit le système : `%APPDATA%\.aethoria` sous Windows,
-`~/Library/Application Support/aethoria` sous macOS, `~/.aethoria` sous Linux.
+`~/Library/Application Support/aethoria-jeu` sous macOS, `~/.aethoria` sous Linux.
 
 ---
 
