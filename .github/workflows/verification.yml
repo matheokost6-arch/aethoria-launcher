@@ -23,18 +23,10 @@ jobs:
   verifier:
     strategy:
       fail-fast: false
+      # Les machines a verifier, selon le choix fait au lancement.
       matrix:
-        include:
-          - os: ubuntu-22.04
-            nom: linux-ubuntu-22.04
-          - os: ubuntu-24.04
-            nom: linux-ubuntu-24.04
-          - os: macos-latest
-            nom: mac-apple-silicon
-          - os: macos-15-intel
-            nom: mac-intel
+        include: ${{ fromJSON(inputs.systemes == 'linux' && '[{"os":"ubuntu-22.04","nom":"linux-ubuntu-22.04"},{"os":"ubuntu-24.04","nom":"linux-ubuntu-24.04"}]' || (inputs.systemes == 'mac' && '[{"os":"macos-latest","nom":"mac-apple-silicon"},{"os":"macos-15-intel","nom":"mac-intel"}]' || '[{"os":"ubuntu-22.04","nom":"linux-ubuntu-22.04"},{"os":"ubuntu-24.04","nom":"linux-ubuntu-24.04"},{"os":"macos-latest","nom":"mac-apple-silicon"},{"os":"macos-15-intel","nom":"mac-intel"}]')) }}
 
-    if: ${{ inputs.systemes == 'tous' || (inputs.systemes == 'linux' && startsWith(matrix.os, 'ubuntu')) || (inputs.systemes == 'mac' && startsWith(matrix.os, 'macos')) }}
     runs-on: ${{ matrix.os }}
     # Rien a ecrire sur GitHub : un script de dependance ne doit pas pouvoir
     # se servir du jeton de la construction.
