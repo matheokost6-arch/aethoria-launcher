@@ -7,7 +7,10 @@ const crypto = require('crypto');
 const { pipeline } = require('stream/promises');
 const { Readable } = require('stream');
 
-const MAX_RETRIES = 3;
+// GitHub renvoie parfois une erreur passagere (500, 503) sur un fichier :
+// sans insistance, toute l'installation du joueur echouerait pour si peu.
+// 6 essais, jusqu'a 12 secondes d'attente au total.
+const MAX_RETRIES = 6;
 const DEFAULT_CONCURRENCY = 12;
 
 // Vitesse choisie par le joueur : fraction du parallelisme prevu par chaque
@@ -59,7 +62,7 @@ async function fetchWithRetry(url, init = {}, retries = MAX_RETRIES) {
       lastError = err;
       if (attempt < retries) {
         // Backoff exponentiel : 400ms, 800ms, 1600ms...
-        await new Promise((r) => setTimeout(r, 400 * 2 ** (attempt - 1)));
+        await new Promise((r) => setTimeout(r, Math.min(400 * 2 ** (attempt - 1), 4000)));
       }
     }
   }

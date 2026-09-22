@@ -16,7 +16,9 @@ function defaultRoot() {
     return path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), '.aethoria');
   }
   if (process.platform === 'darwin') {
-    return path.join(os.homedir(), 'Library', 'Application Support', 'aethoria');
+    // "aethoria" seul se confondrait avec le dossier de donnees du launcher
+    // ("Aethoria") : sous macOS, majuscules et minuscules sont equivalentes.
+    return path.join(os.homedir(), 'Library', 'Application Support', 'aethoria-jeu');
   }
   return path.join(os.homedir(), '.aethoria');
 }

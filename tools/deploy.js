@@ -431,9 +431,19 @@ async function lancerMacEtLinux(sauter) {
     return;
   }
 
-  const fichiers = fs.readdirSync(dossier, { recursive: true, withFileTypes: true })
+  // Liste fermee : un artefact modifie ne doit pas pouvoir publier autre chose
+  // aux joueurs, en particulier les fichiers de mise a jour automatique.
+  const ATTENDUS = [
+    'Aethoria-mac-x64.dmg', 'Aethoria-mac-arm64.dmg',
+    'Aethoria-mac-x64.zip', 'Aethoria-mac-arm64.zip', 'latest-mac.yml',
+    'Aethoria-linux-x64.AppImage', 'Aethoria-linux-x64.deb', 'latest-linux.yml',
+  ];
+  const trouves = fs.readdirSync(dossier, { recursive: true, withFileTypes: true })
     .filter((entree) => entree.isFile())
     .map((entree) => path.join(entree.parentPath || entree.path, entree.name));
+  const refuses = trouves.filter((f) => !ATTENDUS.includes(path.basename(f)));
+  for (const f of refuses) info(`ignoré (inattendu) : ${path.basename(f)}`);
+  const fichiers = trouves.filter((f) => ATTENDUS.includes(path.basename(f)));
   if (!fichiers.length) {
     info('aucun fichier construit : voir la construction sur GitHub.');
     return;

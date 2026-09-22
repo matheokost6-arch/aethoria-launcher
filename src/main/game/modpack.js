@@ -39,10 +39,22 @@ function isInsideRoot(full) {
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
 }
 
+/**
+ * Dossiers que le modpack a le droit d'ecrire. Les mondes, les options, les
+ * captures et les donnees du launcher n'en font pas partie : meme un manifest
+ * malveillant ne peut ni les remplacer ni les supprimer.
+ */
+const DOSSIERS_AUTORISES = ['mods', 'config', 'defaultconfigs', 'resourcepacks', 'shaderpacks', 'kubejs', 'scripts'];
+
+function estAutorise(relative) {
+  const premier = String(relative).split(/[/\\]/)[0];
+  return DOSSIERS_AUTORISES.includes(premier);
+}
+
 function safeJoin(relative) {
   const normalized = path.normalize(String(relative)).replace(/^([/\\])+/, '');
   const full = path.resolve(paths.root, normalized);
-  if (!isInsideRoot(full)) {
+  if (!isInsideRoot(full) || !estAutorise(normalized)) {
     throw new Error(`Chemin de fichier refusé dans le manifest : ${relative}`);
   }
   return full;
@@ -137,6 +149,9 @@ async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } 
 
   for (const relative of previous) {
     if (current.has(relative)) continue;
+    // Meme filtre qu'a l'installation : un ancien journal ne doit pas servir a
+    // faire supprimer une sauvegarde ou les reglages du joueur.
+    if (!estAutorise(relative)) continue;
     const full = path.resolve(paths.root, relative);
     if (full === paths.root || !isInsideRoot(full) || !fs.existsSync(full)) continue;
     await fsp.rm(full, { force: true });
@@ -175,6 +190,7 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
     // Seul le dossier mods peut etre vide : un manifest ne doit jamais effacer
     // les mondes, options ou captures du joueur.
     cleanDirs: (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods'),
+    // (voir DOSSIERS_AUTORISES : le manifest ne sort jamais de ces dossiers)
     onStatus,
   });
 

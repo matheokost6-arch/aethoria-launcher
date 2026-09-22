@@ -83,6 +83,19 @@ function createTray() {
 }
 
 /** Fichier .desktop : le format commun aux bureaux Linux (raccourcis et demarrage). */
+/** Copie l'icone hors de l'application : un .desktop ne sait pas lire dedans. */
+function iconeInstallee() {
+  try {
+    const dossier = path.join(app.getPath('home'), '.local', 'share', 'icons');
+    const dest = path.join(dossier, 'aethoria.png');
+    fs.mkdirSync(dossier, { recursive: true });
+    fs.copyFileSync(ICON, dest);
+    return dest;
+  } catch {
+    return ICON;
+  }
+}
+
 function desktopEntry({ play = false } = {}) {
   const exec = process.env.APPIMAGE || process.execPath;
   return [
@@ -91,7 +104,7 @@ function desktopEntry({ play = false } = {}) {
     `Name=${play ? 'Jouer à Aethoria' : 'Aethoria'}`,
     `Comment=${play ? 'Ouvre Aethoria et lance directement le jeu' : 'Launcher du serveur Aethoria'}`,
     `Exec="${exec}"${play ? ' --play' : ' --hidden'}`,
-    `Icon=${ICON}`,
+    `Icon=${iconeInstallee()}`,
     'Terminal=false',
     'Categories=Game;',
     '',
@@ -216,7 +229,9 @@ function createWindow() {
   appliquerMenu();
   mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
   mainWindow.once('ready-to-show', () => {
-    if (!startHidden) mainWindow.show();
+    // Sans zone de notification (GNOME par exemple), une fenetre cachee serait
+    // introuvable : on l'affiche quand meme.
+    if (!startHidden || !tray) mainWindow.show();
   });
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 
@@ -669,8 +684,10 @@ app.whenReady().then(() => {
   }
 
   registerIpc();
-  createWindow();
+  // La zone de notification d'abord : la fenetre en a besoin pour savoir si
+  // elle peut demarrer cachee sans devenir introuvable.
   createTray();
+  createWindow();
   // Apres le chargement de l'interface, pour qu'elle puisse annoncer le resultat.
   mainWindow.webContents.once('did-finish-load', () => weeklyClean().catch(() => {}));
   setupAutoUpdater();

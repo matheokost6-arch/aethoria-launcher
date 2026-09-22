@@ -29,10 +29,16 @@ jobs:
             nom: mac-intel
 
     runs-on: ${{ matrix.os }}
+    # Rien a ecrire sur GitHub : un script de dependance ne doit pas pouvoir
+    # se servir du jeton de la construction.
+    permissions:
+      contents: read
     timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:

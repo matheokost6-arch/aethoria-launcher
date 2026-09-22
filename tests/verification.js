@@ -77,7 +77,15 @@ app.whenReady().then(async () => {
     await new Promise((r) => (win.webContents.isLoading() ? win.webContents.once('did-finish-load', r) : r()));
     await attendre(4000);
     const js = (code) => win.webContents.executeJavaScript(code);
-    const capture = async (nom) => fs.writeFileSync(path.join(SORTIE, `${nom}.png`), (await win.webContents.capturePage()).toPNG());
+    // La capture echoue sur une machine sans carte graphique : elle ne doit
+    // pas faire echouer le test lui-meme.
+    const capture = async (nom) => {
+      try {
+        fs.writeFileSync(path.join(SORTIE, `${nom}.png`), (await win.webContents.capturePage()).toPNG());
+      } catch (err) {
+        noter(`(capture "${nom}" impossible : ${err.message})`);
+      }
+    };
 
     // 1. Ouverture
     const vue = await js(`!document.getElementById('view-main').hidden ? 'accueil'

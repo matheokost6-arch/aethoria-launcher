@@ -12,7 +12,10 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const { app, desktopCapturer, screen } = require('electron');
 
-const [nom, executable, ...args] = process.argv.slice(process.argv.indexOf(__filename) + 1);
+// Les arguments utiles suivent le nom du script : les options d'Electron
+// (--no-sandbox par exemple) le precedent et ne nous concernent pas.
+const depart = process.argv.findIndex((a) => a.replace(/\\/g, '/').endsWith('tests/app-compilee.js'));
+const [nom, executable, ...args] = process.argv.slice(depart + 1);
 const SORTIE = path.join(__dirname, '..', 'verification');
 fs.mkdirSync(SORTIE, { recursive: true });
 

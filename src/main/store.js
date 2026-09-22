@@ -24,9 +24,11 @@ function fichierPseudo() {
 }
 
 function lireRegistre() {
+  // Un contenu abime ne doit pas rendre le launcher inutilisable : on l'ignore.
+  const valide = (pseudo) => (PSEUDO.test(String(pseudo || '')) ? pseudo : null);
   if (process.platform !== 'win32') {
     try {
-      return fs.readFileSync(fichierPseudo(), 'utf8').trim() || null;
+      return valide(fs.readFileSync(fichierPseudo(), 'utf8').trim());
     } catch {
       return null; // jamais enregistre sur cette machine
     }
@@ -37,7 +39,7 @@ function lireRegistre() {
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'ignore'],
     });
-    return sortie.match(/Pseudo\s+REG_SZ\s+(\S+)/)?.[1] || null;
+    return valide(sortie.match(/Pseudo\s+REG_SZ\s+(\S+)/)?.[1]);
   } catch {
     return null; // cle absente
   }

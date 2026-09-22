@@ -117,16 +117,24 @@ async function downloadRuntime(component, { onProgress, onStatus } = {}) {
     throw new Error('Le manifest de Java téléchargé est altéré.');
   }
   const manifest = JSON.parse(raw.toString('utf8'));
+
+  // Le manifest vient de Mojang, mais rien n'oblige a lui faire confiance pour
+  // ecrire ou pointer hors du dossier de Java.
+  const dansLeDossier = (chemin) => {
+    const relatif = path.relative(home, path.resolve(home, chemin));
+    return relatif !== '' && !relatif.startsWith('..') && !path.isAbsolute(relatif);
+  };
   const tasks = [];
   const links = [];
   const executables = [];
 
   for (const [relative, file] of Object.entries(manifest.files || {})) {
+    if (!dansLeDossier(relative)) continue;
     const dest = path.join(home, relative);
     if (file.type === 'directory') {
       await fsp.mkdir(dest, { recursive: true });
     } else if (file.type === 'link') {
-      links.push({ dest, target: file.target });
+      if (dansLeDossier(path.join(path.dirname(relative), file.target))) links.push({ dest, target: file.target });
     } else if (file.downloads?.raw) {
       tasks.push({
         name: relative,
