@@ -12,6 +12,12 @@ name: Verification multiplateforme
 
 on:
   workflow_dispatch:
+    inputs:
+      systemes:
+        description: Machines a verifier
+        type: choice
+        default: tous
+        options: [tous, linux, mac]
 
 jobs:
   verifier:
@@ -28,6 +34,7 @@ jobs:
           - os: macos-15-intel
             nom: mac-intel
 
+    if: ${{ inputs.systemes == 'tous' || (inputs.systemes == 'linux' && startsWith(matrix.os, 'ubuntu')) || (inputs.systemes == 'mac' && startsWith(matrix.os, 'macos')) }}
     runs-on: ${{ matrix.os }}
     # Rien a ecrire sur GitHub : un script de dependance ne doit pas pouvoir
     # se servir du jeton de la construction.
@@ -93,12 +100,12 @@ jobs:
           # 1. Le paquet .deb, comme un joueur sous Debian ou Ubuntu.
           sudo apt-get install -y ./dist/Aethoria-linux-amd64.deb
           ls -l /opt/Aethoria/chrome-sandbox
-          npx electron tests/app-compilee.js deb /opt/Aethoria/aethoria || true
+          npx electron --no-sandbox tests/app-compilee.js deb /opt/Aethoria/aethoria || true
           # 2. L'AppImage lancee directement, sans aucune option.
-          npx electron tests/app-compilee.js appimage "$PWD/dist/Aethoria-linux-x86_64.AppImage" || true
+          npx electron --no-sandbox tests/app-compilee.js appimage "$PWD/dist/Aethoria-linux-x86_64.AppImage" || true
           # 3. L'archive .tar.gz, decompressee a la main.
           mkdir -p /tmp/aethoria-targz && tar -xzf dist/Aethoria-linux-x64.tar.gz -C /tmp/aethoria-targz
-          npx electron tests/app-compilee.js targz "$(ls -d /tmp/aethoria-targz/*/aethoria | head -1)" || true
+          npx electron --no-sandbox tests/app-compilee.js targz "$(ls -d /tmp/aethoria-targz/*/aethoria | head -1)" || true
 
       - name: Le paquet .rpm dans un vrai Fedora
         if: always() && runner.os == 'Linux'

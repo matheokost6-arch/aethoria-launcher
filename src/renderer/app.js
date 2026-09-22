@@ -869,6 +869,13 @@ function wireGameEvents() {
   api.game.onExit(onGameExit);
   api.game.onStep(({ step }) => renderSteps(step));
 
+  // Le jeu ne peut pas s'afficher : on l'explique tout de suite, sinon le
+  // joueur attend devant "Minecraft démarre..." sans rien comprendre.
+  api.game.onProblem(({ titre, detail }) => {
+    setLaunchLine(`<strong>${escapeHtml(titre)}</strong> — ${escapeHtml(detail)}`, 'error');
+    toast(`${titre}\n${detail}`, 'error', 15000);
+  });
+
   api.game.onModpackChanges(({ modsAdded, modsRemoved }) => {
     const names = (list) => `${list.slice(0, 5).join(', ')}${list.length > 5 ? '…' : ''}`;
     const lines = ['Le modpack a changé depuis ta dernière partie'];

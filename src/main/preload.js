@@ -115,6 +115,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     onFirstRun: (cb) => subscribe('game:firstRun', cb),
     onReady: (cb) => subscribe('game:ready', cb),
     onStep: (cb) => subscribe('game:step', cb),
+    onProblem: (cb) => subscribe('game:problem', cb),
     onModpackChanges: (cb) => subscribe('game:modpackChanges', cb),
     onAutoPreset: (cb) => subscribe('game:autoPreset', cb),
     onExit: (cb) => subscribe('game:exit', cb),

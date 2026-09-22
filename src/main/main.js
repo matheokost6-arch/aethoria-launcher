@@ -526,6 +526,7 @@ function registerIpc() {
   // --- Jeu ---
   const gameHooks = {
     onStep: (step) => send('game:step', { step }),
+    onProblem: (probleme) => send('game:problem', probleme),
     onModpackChanges: (changes) => send('game:modpackChanges', changes),
     onStatus: (message) => {
       setTaskbarProgress(2);

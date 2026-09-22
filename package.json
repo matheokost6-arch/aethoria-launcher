@@ -24,7 +24,7 @@
     "electron-builder": "^26.15.3"
   },
   "dependencies": {
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "electron-updater": "^6.8.9"
   }
 }

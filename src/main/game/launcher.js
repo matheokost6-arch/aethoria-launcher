@@ -266,7 +266,7 @@ async function launch(options) {
 }
 
 async function prepareAndStart({
-  prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady, onStep, onModpackChanges,
+  prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady, onStep, onModpackChanges, onProblem,
 }) {
 
   const settings = store.getSettings();
@@ -359,6 +359,7 @@ async function prepareAndStart({
 
   const tail = [];
   let ready = false;
+  let problemeSignale = false;
   const pushLine = (line) => {
     if (!line.trim()) return;
     tail.push(line);
@@ -368,6 +369,17 @@ async function prepareAndStart({
     if (!ready && /Sound engine started/i.test(line)) {
       ready = true;
       onReady?.();
+    }
+    // Sans fenetre, Forge reste bloque sur une boite de dialogue invisible :
+    // le joueur verrait "Minecraft démarre..." sans fin.
+    if (!problemeSignale && /Failed to initialize graphics window|Failed to find a valid GLFW profile|Failed to create window|GLFW error/i.test(line)) {
+      problemeSignale = true;
+      onProblem?.({
+        titre: 'Minecraft n’arrive pas à ouvrir sa fenêtre',
+        detail: process.platform === 'darwin'
+          ? 'Ton Mac ou sa version de macOS ne gère pas OpenGL 3.2, nécessaire à Minecraft. Mets à jour macOS si possible.'
+          : 'Ta carte graphique ou ses pilotes ne gèrent pas OpenGL 3.2. Mets à jour les pilotes graphiques, puis réessaie.',
+      });
     }
   };
   child.stdout.on('data', (b) => b.toString().split(/\r?\n/).forEach(pushLine));
