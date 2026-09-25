@@ -89,6 +89,12 @@ linux:
   synopsis: Launcher du serveur Minecraft Aethoria
   maintainer: Aethoria <aethoria-mc@users.noreply.github.com>
   executableName: aethoria
+  # Lanceur fourni a cote du programme : il demarre correctement meme quand les
+  # droits du bac a sable de Chromium ne peuvent pas etre poses (archive .tar.gz
+  # sur Ubuntu 24.04 et suivantes).
+  extraFiles:
+    - from: build/linux/lancer-aethoria.sh
+      to: lancer-aethoria.sh
 
 # Noms sans numero de version : les liens de telechargement restent valables
 # d'une version a l'autre. Chaque format garde le nom d'architecture qui lui est

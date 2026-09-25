@@ -97,7 +97,8 @@ jobs:
           npx electron --no-sandbox tests/app-compilee.js appimage "$PWD/dist/Aethoria-linux-x86_64.AppImage" || true
           # 3. L'archive .tar.gz, decompressee a la main.
           mkdir -p /tmp/aethoria-targz && tar -xzf dist/Aethoria-linux-x64.tar.gz -C /tmp/aethoria-targz
-          npx electron --no-sandbox tests/app-compilee.js targz "$(ls -d /tmp/aethoria-targz/*/aethoria | head -1)" || true
+          chmod +x /tmp/aethoria-targz/*/lancer-aethoria.sh
+          npx electron --no-sandbox tests/app-compilee.js targz "$(ls -d /tmp/aethoria-targz/*/lancer-aethoria.sh | head -1)" || true
 
       - name: Le paquet .rpm dans un vrai Fedora
         if: always() && runner.os == 'Linux'
