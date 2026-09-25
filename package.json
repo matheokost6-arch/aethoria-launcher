@@ -1,6 +1,6 @@
 {
   "name": "aethoria-launcher",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Launcher officiel du serveur Minecraft Aethoria",
   "main": "src/main/main.js",
   "author": "Aethoria",

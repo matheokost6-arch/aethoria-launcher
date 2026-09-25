@@ -110,8 +110,12 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
   //
   // Deux mods peuvent dependre de la meme bibliotheque : on dedoublonne par
   // chemin, sinon elle serait telechargee deux fois au meme endroit.
+  //
+  // Une bibliotheque peut aussi faire partie du modpack de base : elle est
+  // alors deja installee, et la compter une seconde fois ferait croire au
+  // joueur qu'il reste un fichier a telecharger.
   const optionnels = [];
-  const vus = new Set();
+  const vus = new Set(entries.map((entry) => entry.path || (entry.name && `mods/${entry.name}`)).filter(Boolean));
   for (const mod of actifs) {
     for (const element of [mod, ...(mod.requires || [])]) {
       if (vus.has(element.path)) continue;
