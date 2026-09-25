@@ -306,6 +306,47 @@ function publierManifest() {
   }
 }
 
+/**
+ * Page de telechargement (GitHub Pages) : elle reconnait le systeme du
+ * visiteur et lui envoie le bon fichier. C'est le lien donne aux joueurs.
+ */
+function publierSite() {
+  const dossier = path.resolve('site');
+  if (!fs.existsSync(dossier)) return;
+
+  for (const nom of fs.readdirSync(dossier)) {
+    const contenu = fs.readFileSync(path.join(dossier, nom));
+    const chemin = `docs/${nom}`;
+    let sha = null;
+    const actuel = ghSilencieux(['api', `repos/${DIST}/contents/${chemin}`]);
+    if (actuel.status === 0) {
+      const donnees = JSON.parse(actuel.stdout);
+      sha = donnees.sha;
+      // GitHub renvoie le contenu en base64 pour les fichiers de taille modeste.
+      if (Buffer.from(donnees.content || '', 'base64').equals(contenu)) continue;
+    }
+    const tmp = path.join(os.tmpdir(), `aethoria-site-${Date.now()}.json`);
+    fs.writeFileSync(tmp, JSON.stringify({
+      message: 'Page de telechargement',
+      content: contenu.toString('base64'),
+      branch: config.github.branch,
+      ...(sha ? { sha } : {}),
+    }));
+    try {
+      gh(['api', `repos/${DIST}/contents/${chemin}`, '-X', 'PUT', '--input', tmp]);
+      info(`page mise a jour : ${nom}`);
+    } finally {
+      fs.rmSync(tmp, { force: true });
+    }
+  }
+
+  // GitHub Pages doit etre actif pour que la page soit servie.
+  if (ghSilencieux(['api', `repos/${DIST}/pages`]).status !== 0) {
+    ghSilencieux(['api', `repos/${DIST}/pages`, '-X', 'POST', '-f', 'source[branch]=main', '-f', 'source[path]=/docs']);
+    info('page de telechargement activee.');
+  }
+}
+
 /* ------------------------------------------------------------------ *
  *  5. Installateur
  * ------------------------------------------------------------------ */
@@ -443,7 +484,7 @@ async function lancerMacEtLinux(sauter) {
   const ATTENDUS = [
     'Aethoria-mac-x64.dmg', 'Aethoria-mac-arm64.dmg',
     'Aethoria-mac-x64.zip', 'Aethoria-mac-arm64.zip', 'latest-mac.yml',
-    'Aethoria-linux-x86_64.AppImage', 'Aethoria-linux-arm_aarch64.AppImage',
+    'Aethoria-linux-x86_64.AppImage', 'Aethoria-linux-arm64.AppImage',
     'Aethoria-linux-amd64.deb', 'Aethoria-linux-arm64.deb',
     'Aethoria-linux-x86_64.rpm',
     'Aethoria-linux-x64.tar.gz', 'Aethoria-linux-arm64.tar.gz',
@@ -541,9 +582,11 @@ async function verifierAcces(manifest) {
   }
 
   console.log('\nTout est en ligne et accessible.');
-  console.log(`\nLien a donner aux joueurs :`);
-  console.log(`  https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe   (Windows)`);
-  console.log(`  https://github.com/${DIST}/releases/latest                              (tous les systemes)`);
+  console.log(`\nLien a donner aux joueurs, valable sur tous les systemes :`);
+  console.log(`  ${config.downloadPage}`);
+  console.log(`\nAutres liens :`);
+  console.log(`  ${config.releasesPage}   (choisir son fichier)`);
+  console.log(`  https://github.com/${DIST}/releases/latest/download/Aethoria-Setup.exe   (Windows, direct)`);
 }
 
 /* ------------------------------------------------------------------ *
@@ -571,6 +614,7 @@ async function main() {
   else { etape += 1; console.log(`\n[${etape}/8] Mods du modpack\n      --skip-pack : ignore.`); }
 
   publierManifest();
+  publierSite();
   publierLauncher(args['skip-build']);
   enregistrerCode(args.message);
   // Apres le push : GitHub ne lance que les workflows deja en ligne.

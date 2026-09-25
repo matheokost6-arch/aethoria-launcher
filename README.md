@@ -16,7 +16,7 @@ Lien à donner aux joueurs, tous systèmes confondus :
 | Fedora, RHEL, openSUSE | `Aethoria-linux-x86_64.rpm` | `sudo dnf install ./Aethoria-linux-x86_64.rpm` |
 | Toute autre distribution | `Aethoria-linux-x86_64.AppImage` | `chmod +x`, puis double-clic. Demande `libfuse2` |
 | Sans installation | `Aethoria-linux-x64.tar.gz` | à décompresser, puis lancer `./lancer-aethoria.sh` |
-| Linux sur ARM | fichiers `arm64` / `arm_aarch64` | Java doit être installé : `sudo apt install openjdk-17-jre` |
+| Linux sur ARM | fichiers `arm64` | Java doit être installé : `sudo apt install openjdk-17-jre` |
 
 Les mises à jour automatiques fonctionnent sous Windows, macOS et avec
 l'AppImage. Avec un `.deb`, un `.rpm` ou le `.tar.gz`, il faut retélécharger.

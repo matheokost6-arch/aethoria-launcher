@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Télécharger Aethoria</title>
+<meta name="description" content="Le launcher du serveur Minecraft Aethoria : Windows, macOS et Linux.">
+<style>
+  :root {
+    color-scheme: dark;
+    --rouge: #d02a31;
+    --rouge-clair: #e8434a;
+    --texte: #f3f1ed;
+    --doux: #a8a49d;
+    --faible: #6f6c67;
+    --trait: rgba(255, 255, 255, 0.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 40px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: radial-gradient(1200px 600px at 50% -10%, #241014 0%, #0b0d13 55%, #07080c 100%);
+    color: var(--texte);
+    font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif;
+    text-align: center;
+  }
+  img { max-width: 100%; }
+  .logo { width: 320px; margin-bottom: 4px; filter: drop-shadow(0 10px 30px rgba(208, 42, 49, 0.35)); }
+  h1 { margin: 0 0 6px; font-size: 26px; font-weight: 700; }
+  .sous-titre { margin: 0 0 28px; color: var(--doux); }
+  .carte {
+    width: min(560px, 100%);
+    padding: 26px 24px;
+    border: 1px solid var(--trait);
+    border-radius: 16px;
+    background: rgba(18, 19, 24, 0.85);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+  .systeme { margin: 0 0 4px; font-size: 14px; color: var(--doux); }
+  .systeme strong { color: var(--texte); }
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin: 14px 0 10px;
+    padding: 16px 20px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(180deg, var(--rouge-clair), var(--rouge));
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .bouton:hover { filter: brightness(1.08); }
+  .etat { min-height: 22px; margin: 0; font-size: 13.5px; color: var(--doux); }
+  .etat.pret { color: #7fe0a0; }
+  details { margin-top: 22px; text-align: left; }
+  summary { color: var(--doux); font-size: 14px; cursor: pointer; }
+  summary:hover { color: var(--texte); }
+  .liste { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .liste a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--trait);
+    border-radius: 10px;
+    color: var(--texte);
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .liste a:hover { border-color: var(--rouge); }
+  .liste span { color: var(--doux); font-size: 12.5px; }
+  .note { margin: 22px auto 0; max-width: 560px; color: var(--faible); font-size: 12.5px; text-align: left; }
+  .note strong { color: var(--doux); }
+  footer { margin-top: 28px; color: var(--faible); font-size: 12.5px; }
+  footer a { color: var(--doux); }
+  @media (max-width: 480px) { .logo { width: 240px; } }
+</style>
+</head>
+<body>
+
+<img class="logo" src="logo.png" alt="Aethoria">
+<h1>Le launcher d’Aethoria</h1>
+<p class="sous-titre">Serveur Minecraft médiéval · modpack installé automatiquement</p>
+
+<main class="carte">
+  <p class="systeme" id="systeme">Détection de ton système…</p>
+  <a class="bouton" id="telecharger" href="https://github.com/aethoria-mc/aethoria/releases/latest">Télécharger</a>
+  <p class="etat" id="etat"></p>
+
+  <details id="autres">
+    <summary>Une autre version, ou un autre système</summary>
+    <ul class="liste" id="liste"></ul>
+  </details>
+</main>
+
+<p class="note" id="aide"></p>
+
+<footer>
+  Serveur <strong>aethoria.omgcraft.fr</strong> ·
+  <a href="https://github.com/aethoria-mc/aethoria/releases/latest">Toutes les versions</a>
+</footer>
+
+<script>
+  var BASE = 'https://github.com/aethoria-mc/aethoria/releases/latest/download/';
+
+  var FICHIERS = [
+    { id: 'win', nom: 'Aethoria-Setup.exe', libelle: 'Windows 10 ou 11', detail: 'installateur, mises à jour automatiques' },
+    { id: 'mac-arm', nom: 'Aethoria-mac-arm64.dmg', libelle: 'macOS · puce Apple', detail: 'M1, M2, M3, M4 — macOS 11 ou plus' },
+    { id: 'mac-intel', nom: 'Aethoria-mac-x64.dmg', libelle: 'macOS · processeur Intel', detail: 'macOS 11 ou plus' },
+    { id: 'deb', nom: 'Aethoria-linux-amd64.deb', libelle: 'Debian, Ubuntu, Mint, Pop!_OS', detail: 'sudo apt install ./Aethoria-linux-amd64.deb' },
+    { id: 'rpm', nom: 'Aethoria-linux-x86_64.rpm', libelle: 'Fedora, RHEL, openSUSE', detail: 'sudo dnf install ./Aethoria-linux-x86_64.rpm' },
+    { id: 'appimage', nom: 'Aethoria-linux-x86_64.AppImage', libelle: 'Toute autre distribution Linux', detail: 'chmod +x, puis double-clic' },
+    { id: 'targz', nom: 'Aethoria-linux-x64.tar.gz', libelle: 'Linux sans installation', detail: 'à décompresser, puis lancer ./lancer-aethoria.sh' },
+    { id: 'deb-arm', nom: 'Aethoria-linux-arm64.deb', libelle: 'Linux ARM · Debian, Ubuntu', detail: 'Raspberry Pi — Java à installer soi-même' },
+    { id: 'appimage-arm', nom: 'Aethoria-linux-arm64.AppImage', libelle: 'Linux ARM · autres distributions', detail: 'Java à installer soi-même' }
+  ];
+
+  var AIDES = {
+    mac: '<strong>macOS :</strong> l’application n’est pas signée (certificat Apple payant). Au premier lancement, macOS la bloque : ouvre <strong>Réglages Système → Confidentialité et sécurité</strong>, puis clique sur <strong>« Ouvrir quand même »</strong>.',
+    linux: '<strong>Linux :</strong> le <strong>.deb</strong> et le <strong>.rpm</strong> sont les plus simples. L’AppImage a besoin de <strong>libfuse2</strong> sur certaines distributions.',
+    win: '<strong>Windows :</strong> le programme n’est pas signé (certificat payant). SmartScreen peut afficher un avertissement : clique sur <strong>Informations complémentaires</strong>, puis <strong>Exécuter quand même</strong>.'
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fichierPar = function (id) {
+    for (var i = 0; i < FICHIERS.length; i += 1) if (FICHIERS[i].id === id) return FICHIERS[i];
+    return null;
+  };
+
+  /** Un Mac à puce Apple se reconnaît au nom de sa carte graphique. */
+  function macApple() {
+    try {
+      var toile = document.createElement('canvas');
+      var gl = toile.getContext('webgl') || toile.getContext('experimental-webgl');
+      var info = gl && gl.getExtension('WEBGL_debug_renderer_info');
+      var nom = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+      return /Apple (M\d|GPU)/i.test(nom);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function deviner(indices) {
+    var ua = navigator.userAgent || '';
+    var plateforme = (indices && indices.platform) || navigator.platform || '';
+    var arm = /arm|aarch64/i.test((indices && indices.architecture) || '');
+
+    if (/Win/i.test(plateforme) || /Windows/i.test(ua)) return { id: 'win', famille: 'win' };
+    if (/Mac/i.test(plateforme) || /Mac OS X/i.test(ua)) {
+      if (/iPhone|iPad/i.test(ua)) return { id: null, famille: 'mobile' };
+      return { id: (arm || macApple()) ? 'mac-arm' : 'mac-intel', famille: 'mac' };
+    }
+    if (/Android/i.test(ua)) return { id: null, famille: 'mobile' };
+    if (/Linux|X11/i.test(plateforme) || /Linux/i.test(ua)) {
+      return { id: arm ? 'deb-arm' : 'deb', famille: 'linux' };
+    }
+    return { id: null, famille: 'inconnu' };
+  }
+
+  function remplirListe() {
+    var html = '';
+    for (var i = 0; i < FICHIERS.length; i += 1) {
+      var f = FICHIERS[i];
+      html += '<li><a href="' + BASE + f.nom + '">' + f.libelle
+        + ' <span>' + f.nom + ' · ' + f.detail + '</span></a></li>';
+    }
+    $('liste').innerHTML = html;
+  }
+
+  function afficher(choix) {
+    remplirListe();
+    var fichier = choix.id ? fichierPar(choix.id) : null;
+    $('aide').innerHTML = AIDES[choix.famille] || '';
+
+    if (!fichier) {
+      $('systeme').textContent = choix.famille === 'mobile'
+        ? 'Aethoria est un jeu pour ordinateur : ouvre cette page sur ton PC ou ton Mac.'
+        : 'Système non reconnu : choisis ton fichier ci-dessous.';
+      $('telecharger').textContent = 'Voir toutes les versions';
+      $('autres').open = true;
+      return;
+    }
+
+    $('systeme').innerHTML = 'Ton système : <strong>' + fichier.libelle + '</strong>';
+    $('telecharger').textContent = 'Télécharger pour ' + fichier.libelle.split(' · ')[0];
+    $('telecharger').href = BASE + fichier.nom;
+    $('telecharger').setAttribute('download', '');
+
+    // Le téléchargement part tout seul ; le bouton reste là si le navigateur le bloque.
+    var etat = $('etat');
+    etat.textContent = 'Le téléchargement démarre…';
+    setTimeout(function () {
+      window.location.href = BASE + fichier.nom;
+      etat.textContent = 'Téléchargement lancé : ' + fichier.nom;
+      etat.className = 'etat pret';
+    }, 900);
+  }
+
+  if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+    navigator.userAgentData.getHighEntropyValues(['architecture', 'platform'])
+      .then(function (indices) { afficher(deviner(indices)); })
+      .catch(function () { afficher(deviner(null)); });
+  } else {
+    afficher(deviner(null));
+  }
+</script>
+
+</body>
+</html>

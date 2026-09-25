@@ -28,8 +28,16 @@ module.exports = {
     return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest/download/Aethoria-Setup.exe`;
   },
 
-  /** Page qui liste Windows, macOS et Linux : le lien a donner a un ami. */
+  /**
+   * Le lien a donner a tout le monde : cette page reconnait le systeme du
+   * visiteur et lance le bon telechargement toute seule.
+   */
   get downloadPage() {
+    return `https://${this.github.distOwner}.github.io/${this.github.dist}/`;
+  },
+
+  /** Toutes les versions, pour qui veut choisir son fichier. */
+  get releasesPage() {
     return `https://github.com/${this.github.distOwner}/${this.github.dist}/releases/latest`;
   },
 
