@@ -5,6 +5,14 @@
  * Une version absente de cette liste ne déclenche aucune fenêtre.
  */
 const CHANGELOG = {
+  '1.7.4': {
+    title: 'Ta tête dans le launcher',
+    items: [
+      ['Ton skin', 'Le launcher affiche ta vraie tête, celle de ton skin, à côté de ton pseudo et dans ton profil.'],
+      ['Changement de skin', 'Change de skin en jeu : le launcher le voit dès que tu reviens.'],
+      ['Un seul lien', 'Une page unique donne le bon fichier selon ton système : Windows, Mac ou Linux.'],
+    ],
+  },
   '1.7.0': {
     title: 'Aethoria sur Mac et Linux',
     items: [

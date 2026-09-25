@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     get: () => call('account:get'),
     valider: (pseudo) => call('account:valider', pseudo),
     connecter: (pseudo) => call('account:connecter', pseudo),
+    skin: (force) => call('account:skin', force),
   },
 
   stats: {

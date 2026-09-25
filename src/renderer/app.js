@@ -15,6 +15,7 @@ const state = {
   info: null,         // app:info, complété par modpack:info
   settings: null,
   account: null,
+  tete: null,         // tête du joueur, découpée dans son skin
   system: null,       // machine du joueur, pour le rapport de plantage
   game: 'idle',       // idle | launching | running
   lastExit: null,
@@ -213,6 +214,7 @@ function applyAccount(account) {
   }
   $('account-name').textContent = account.name;
   $('account-avatar').src = account.avatarUrl || 'assets/icon.png';
+  afficherTete();
   showView('main');
   loadModpackInfo();
   refreshPlaytime();
@@ -805,6 +807,8 @@ function startBreakReminder() {
 }
 
 function onGameExit(result) {
+  // Le joueur a pu changer de skin pendant la partie.
+  afficherTete({ force: true });
   clearInterval(state.breakTimer);
   setGameState('idle');
   state.lastExit = result;
@@ -1316,9 +1320,43 @@ function renderSessions(history) {
     : '<li class="help">Tes parties apparaîtront ici.</li>';
 }
 
+/**
+ * Tete du joueur, decoupee dans son skin : le carre de 8 sur 8 en (8, 8), avec
+ * le calque "chapeau" en (40, 8) par-dessus. Pas de lissage : un skin est un
+ * dessin en gros pixels, qui doit le rester.
+ */
+function decouperTete(skin) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      const toile = document.createElement('canvas');
+      toile.width = 64;
+      toile.height = 64;
+      const dessin = toile.getContext('2d');
+      dessin.imageSmoothingEnabled = false;
+      dessin.drawImage(image, 8, 8, 8, 8, 0, 0, 64, 64);
+      dessin.drawImage(image, 40, 8, 8, 8, 0, 0, 64, 64);
+      resolve(toile.toDataURL('image/png'));
+    };
+    image.onerror = () => resolve(null);
+    image.src = skin;
+  });
+}
+
+/** Va chercher le skin du joueur et l'affiche, si le launcher en trouve un. */
+async function afficherTete({ force = false } = {}) {
+  const skin = await api.account.skin(force).catch(() => null);
+  if (!skin?.dataUrl) return;
+  const tete = await decouperTete(skin.dataUrl);
+  if (!tete) return;
+  state.tete = tete;
+  $('account-avatar').src = tete;
+  $('profile-avatar').src = tete;
+}
+
 async function openProfile() {
   $('profile-name').textContent = state.account.name;
-  $('profile-avatar').src = state.account.avatarUrl || 'assets/icon.png';
+  $('profile-avatar').src = state.tete || state.account.avatarUrl || 'assets/icon.png';
   renderFriends();
   openDrawer('drawer-profile');
 

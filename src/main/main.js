@@ -18,6 +18,7 @@ const checkup = require('./game/checkup');
 const gameOptions = require('./game/options');
 const shaders = require('./game/shaders');
 const crashes = require('./game/crashes');
+const skin = require('./game/skin');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const pkg = require('../../package.json');
@@ -404,6 +405,8 @@ function registerIpc() {
 
   // --- Compte ---
   handle('account:get', () => auth.getAccount());
+  // Le skin sert a afficher la tete du joueur : "force" le relit apres une partie.
+  handle('account:skin', (force) => skin.get(auth.getAccount() || {}, { force: force === true }));
   handle('account:valider', (pseudo) => auth.validerPseudo(pseudo));
   handle('account:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
 
