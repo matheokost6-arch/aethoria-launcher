@@ -567,17 +567,27 @@ async function verifierAcces(manifest) {
     await tester('mises a jour', `https://github.com/${DIST}/releases/latest/download/latest.yml`),
   ];
 
-  // Trois mods pris au hasard : verifier les 71 serait long, et une URL fausse
-  // l'est generalement pour toutes.
-  const echantillon = manifest.files
-    .map((f) => f)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
-  for (const fichier of echantillon) {
-    controles.push(await tester(`mod ${path.basename(fichier.path).slice(0, 16)}`, fichier.url));
-  }
+  // TOUS les fichiers du modpack, pas un echantillon : un seul nom de fichier
+  // mal forme suffit a faire echouer l'installation de chaque joueur, et cela
+  // ne se voit pas autrement.
+  const manquants = [];
+  const fichiers = [...manifest.files];
+  const verifierUn = async () => {
+    for (let fichier = fichiers.pop(); fichier; fichier = fichiers.pop()) {
+      try {
+        const reponse = await fetch(fichier.url, { method: 'HEAD', redirect: 'follow' });
+        if (!reponse.ok) manquants.push(`HTTP ${reponse.status} · ${fichier.path}`);
+      } catch (err) {
+        manquants.push(`${err.message} · ${fichier.path}`);
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: 8 }, verifierUn));
+  const total = manifest.files.length;
+  info(`${manquants.length ? 'ECHEC' : 'ok   '} ${'fichiers du modpack'.padEnd(22)} ${total - manquants.length}/${total} telechargeables`);
+  for (const manquant of manquants.slice(0, 10)) info(`      ${manquant}`);
 
-  if (controles.includes(false)) {
+  if (controles.includes(false) || manquants.length) {
     echec('des fichiers ne sont pas accessibles publiquement. Le launcher des joueurs ne pourra pas les telecharger.');
   }
 

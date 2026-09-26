@@ -73,7 +73,11 @@ async function walk(dir, base = dir) {
  * premier coup, y compris pour les mods dont le nom contient des espaces.
  */
 function assetName(relative) {
-  return relative.split('/').join('_').replace(/[^A-Za-z0-9._-]/g, '.');
+  // GitHub remplace CHAQUE SUITE de caracteres interdits par un seul point :
+  // "Serveur (test)" devient "Serveur.test.", et non "Serveur..test.". Sans ce
+  // detail, l'URL du manifest ne correspond pas au fichier mis en ligne, et le
+  // joueur recoit une erreur 404 au milieu de son installation.
+  return relative.split('/').join('_').replace(/[^A-Za-z0-9._-]+/g, '.');
 }
 
 async function main() {

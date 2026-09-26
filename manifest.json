@@ -933,13 +933,6 @@
       "keepExisting": true
     },
     {
-      "path": "config/jei/world/server/Minecraft Server (aethoria_omgcraft_fr)/lookupHistory.ini",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.0.0/config_jei_world_server_Minecraft.Server..aethoria_omgcraft_fr._lookupHistory.ini",
-      "sha1": "80b36e47be2adf5af093883383cb7d2d4a787570",
-      "size": 215,
-      "keepExisting": true
-    },
-    {
       "path": "config/konkrete/locals/de_de.local",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.0.0/config_konkrete_locals_de_de.local",
       "sha1": "02adaf2602f1ba03a9352db3d10a6fac3a02aea5",
