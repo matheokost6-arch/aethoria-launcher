@@ -221,6 +221,8 @@ function envoyerMods(manifest, packTag) {
     info(`creation de la release ${packTag}...`);
     gh(['release', 'create', packTag, '--repo', DIST,
       '--title', `Modpack ${manifest.modpackVersion}`,
+      // jamais « derniere version » : /releases/latest doit rester l'installateur du launcher
+      '--latest=false',
       '--notes', 'Fichiers du modpack Aethoria, utilises par le launcher.']);
   }
 
