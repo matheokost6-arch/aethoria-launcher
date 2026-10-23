@@ -6,7 +6,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const paths = require('./paths');
 const config = require('../../shared/config');
-const { downloadFile } = require('./downloader');
+const { downloadFile, secureFetch } = require('./downloader');
 const { javaBinary } = require('./java');
 
 const INSTALL_TIMEOUT_MS = 15 * 60 * 1000;
@@ -118,7 +118,7 @@ function runInstaller(javaHome, jar, onLog) {
  * (deobfuscation, patch du client) que Forge met a jour a chaque version, ce
  * qu'une reimplementation maison casserait a chaque nouvelle branche.
  */
-async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersion } = {}) {
+async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersion, forgeInstallerSha1 } = {}) {
   const existing = findInstalledForge(mcVersion, forgeVersion);
   if (existing) return existing;
 
@@ -127,9 +127,14 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
 
   onStatus?.(`Téléchargement de Forge ${coords.full}...`);
   try {
-    // L'installateur est execute : son empreinte publiee par Forge est exigee.
-    const res = await fetch(`${coords.url}.sha1`);
-    const expected = res.ok ? (await res.text()).trim().slice(0, 40) : '';
+    // L'installateur est execute : son empreinte est exigee. Celle du manifest
+    // (forgeInstallerSha1) prime, car le manifest est controle par Aethoria ;
+    // a defaut, on prend celle publiee par Forge.
+    let expected = String(forgeInstallerSha1 || '').toLowerCase();
+    if (!expected) {
+      const res = await secureFetch(`${coords.url}.sha1`);
+      expected = res.ok ? (await res.text()).trim().slice(0, 40) : '';
+    }
     if (!/^[0-9a-f]{40}$/i.test(expected)) throw new Error('empreinte de l’installateur introuvable');
     await downloadFile(coords.url, coords.jar, { sha1: expected });
   } catch (err) {

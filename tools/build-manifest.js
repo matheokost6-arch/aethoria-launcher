@@ -20,6 +20,7 @@
  *   --out <fichier> Manifest a ecrire             (defaut : manifest.json)
  *   --owner <nom>   Compte GitHub                 (defaut : lu dans src/shared/config.js)
  *   --repo <nom>    Depot GitHub                  (defaut : lu dans src/shared/config.js)
+ *   --min-launcher <v>  Version minimale du launcher autorisee a jouer (ex. 1.8.0)
  */
 
 const fs = require('fs');
@@ -45,10 +46,18 @@ function parseArgs(argv) {
   return args;
 }
 
-async function sha1(file) {
-  const hash = crypto.createHash('sha1');
+async function empreinte(file, algorithme) {
+  const hash = crypto.createHash(algorithme);
   await pipeline(fs.createReadStream(file), hash);
   return hash.digest('hex');
+}
+
+/** Empreinte SHA1 de l'installateur Forge, lue sur le depot officiel (le launcher l'exige). */
+async function sha1InstallateurForge(mc, forge, complet = `${mc}-${forge}`) {
+  const url = `${config.endpoints.forgeMaven}/net/minecraftforge/forge/${complet}/forge-${complet}-installer.jar.sha1`;
+  const res = await fetch(url);
+  const texte = res.ok ? (await res.text()).trim().slice(0, 40) : '';
+  return /^[0-9a-f]{40}$/i.test(texte) ? texte.toLowerCase() : null;
 }
 
 /** Liste recursivement les fichiers d'un dossier, en chemins relatifs POSIX. */
@@ -124,7 +133,8 @@ async function main() {
     files.push({
       path: relative,
       url: `${baseUrl}/${assetName(relative)}`,
-      sha1: await sha1(full),
+      sha1: await empreinte(full, 'sha1'),
+      sha256: await empreinte(full, 'sha256'),
       size: stat.size,
       // Les reglages des mods sont des valeurs de depart : le jeu les reecrit et
       // le joueur les modifie. Imposes a chaque lancement, ils effaceraient ses
@@ -162,6 +172,18 @@ async function main() {
     deleteExtraIn: previous.deleteExtraIn || ['mods'],
     files,
   };
+  // L'ancienne signature ne vaut plus rien : le manifest vient de changer.
+  delete manifest.signature;
+  if (args['min-launcher'] && args['min-launcher'] !== true) manifest.minLauncherVersion = args['min-launcher'];
+  // Empreinte de l'installateur Forge : lue sur le depot officiel au moment de
+  // la publication, puis figee dans le manifest (le launcher la verifie).
+  if (manifest.forgeVersion !== previous.forgeVersion || !manifest.forgeInstallerSha1) {
+    try {
+      manifest.forgeInstallerSha1 = await sha1InstallateurForge(manifest.minecraftVersion, manifest.forgeVersion, manifest.forgeFullVersion) || undefined;
+    } catch {
+      console.warn('Empreinte de Forge non lue (Internet ?) : le launcher utilisera celle du depot Forge.');
+    }
+  }
 
   await fsp.writeFile(outFile, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 

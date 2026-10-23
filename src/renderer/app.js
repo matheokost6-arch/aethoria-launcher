@@ -888,6 +888,19 @@ function wireGameEvents() {
     toast(lines.join('\n'), 'info', 12000);
   });
 
+  // Des fichiers qui ne font pas partie du jeu officiel ont été rangés à part.
+  api.game.onQuarantine(({ files }) => {
+    const names = `${files.slice(0, 5).join(', ')}${files.length > 5 ? '…' : ''}`;
+    toast(
+      `${plural(files.length, 'fichier')} ${files.length > 1 ? 'ont été retirés' : 'a été retiré'} du dossier des mods : ${names}
+`
+      + 'Ils ne font pas partie du jeu officiel, et le serveur ne les accepte pas. '
+      + 'Tu les retrouves dans le dossier « quarantaine » du jeu.',
+      'error',
+      20000,
+    );
+  });
+
   api.game.onAutoPreset(({ preset }) => {
     state.settings.graphicsPreset = preset;
     const label = { performance: 'Performance', balanced: 'Équilibré', quality: 'Qualité' }[preset];
@@ -1953,6 +1966,9 @@ function wireUpdater() {
         break;
       case 'ready':
         show(`Version ${status.version} prête`, 'Redémarre pour l’installer.', { install: true });
+        break;
+      case 'outdated':
+        show('Launcher trop ancien', 'Mets-le à jour pour pouvoir jouer. Le téléchargement démarre tout seul.', { manual: true });
         break;
       default:
         // Passé sous silence, un échec laisserait le joueur sur une version

@@ -5,6 +5,7 @@ const fsp = require('fs/promises');
 const path = require('path');
 const { app } = require('electron');
 const paths = require('./paths');
+const { secureFetch } = require('./downloader');
 
 /**
  * Skin du joueur, pour afficher sa tete dans le launcher.
@@ -40,7 +41,7 @@ function enImage(octets) {
 }
 
 async function demander(url) {
-  const reponse = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  const reponse = await secureFetch(url, { signal: AbortSignal.timeout(8000) });
   if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
   return reponse;
 }

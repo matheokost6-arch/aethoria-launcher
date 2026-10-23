@@ -55,6 +55,11 @@ module.exports = {
       : this.downloadPage;
   },
 
+  // Cle publique (base64) qui signe le manifest : voir tools/sign-manifest.js.
+  // Vide = signature non exigee. Une fois renseignee, tout manifest non signe,
+  // y compris la copie gardee sur le disque du joueur, est refuse.
+  manifestPublicKey: '',
+
   get manifestUrl() {
     return `https://raw.githubusercontent.com/${this.github.distOwner}/${this.github.dist}/${this.github.branch}/manifest.json`;
   },

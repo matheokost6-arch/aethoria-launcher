@@ -17,9 +17,12 @@
     "build:admin": "electron-builder --projectDir admin --publish never",
     "build:mac": "electron-builder --mac --publish never",
     "build:linux": "electron-builder --linux --publish never",
-    "deploy:mac-linux": "node tools/deploy.js --only-mac-linux"
+    "deploy:mac-linux": "node tools/deploy.js --only-mac-linux",
+    "test:securite": "node tests/integrite.js",
+    "verifier:fusibles": "node tools/verifier-fusibles.js dist/win-unpacked/Aethoria.exe"
   },
   "devDependencies": {
+    "@electron/fuses": "^1.8.0",
     "electron": "^44.2.0",
     "electron-builder": "^26.15.3"
   },

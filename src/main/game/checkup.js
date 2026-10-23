@@ -6,6 +6,7 @@ const path = require('path');
 const config = require('../../shared/config');
 const paths = require('./paths');
 const serverStatus = require('./serverStatus');
+const { secureFetch } = require('./downloader');
 
 /**
  * Test de connexion et de la machine, lance depuis les reglages. Chaque
@@ -29,7 +30,7 @@ async function check(label, fn) {
 
 async function reach(url) {
   const start = Date.now();
-  const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
+  const res = await secureFetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
   if (!res.ok) throw new Error(`Réponse ${res.status}`);
   return { detail: `Joignable (${Date.now() - start} ms)` };
 }
