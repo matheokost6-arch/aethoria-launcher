@@ -18,6 +18,19 @@ files:
   - build/icon.png
   - '!**/*.map'
   - '!**/.git/**'
+  # Jamais dans le paquet public : l'outil d'administration (RCON), les outils
+  # de publication, les tests et les sources du mod.
+  - '!admin/**'
+  - '!tools/**'
+  - '!tests/**'
+  - '!mod/**'
+  - '!manifest.json'
+  - '!.env*'
+  - '!**/*.pem'
+  - '!**/*.key'
+
+# Tout est dans l'archive app.asar, dont l'empreinte est controlee au demarrage.
+asar: true
 
 win:
   target:
@@ -119,3 +132,14 @@ publish:
   releaseType: release
 
 compression: maximum
+
+# Fusibles Electron : interrupteurs graves dans l'executable, qu'on ne peut plus
+# changer apres la construction sans casser le programme.
+electronFuses:
+  runAsNode: false                           # l'exe ne sert pas d'interpreteur Node
+  enableNodeOptionsEnvironmentVariable: false  # pas de NODE_OPTIONS pour injecter du code
+  enableNodeCliInspectArguments: false       # pas de --inspect pour le deboguer
+  enableEmbeddedAsarIntegrityValidation: true  # refuse un app.asar modifie
+  onlyLoadAppFromAsar: true                  # ne charge pas de dossier app/ pose a cote
+  enableCookieEncryption: true
+  grantFileProtocolExtraPrivileges: false    # l'interface passe par app://, pas file://

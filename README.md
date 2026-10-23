@@ -287,3 +287,14 @@ tools/
 | Forge ne s'installe pas | *Réglages → Réparer*, puis relancer. |
 | Rejet pour mods manquants | Le manifest n'a pas été republié après un changement de mods. |
 | Écran SmartScreen à l'installation | *Informations complémentaires → Exécuter quand même* (exe non signé). |
+
+
+## Sécurité du launcher
+
+- **Interface** : fenêtre isolée (sandbox, `contextIsolation`, pas de Node), servie par `app://`, CSP stricte, aucune permission, outils de développement coupés dans la version installée.
+- **Fusibles Electron** (`electronFuses` dans `electron-builder.yml`) : contrôle avec `npm run verifier:fusibles` après `electron-builder --win --dir`.
+- **Fichiers du jeu** : chaque fichier du manifest est vérifié par empreinte (sha1, et sha256 si présent) avant d'être utilisé. Tout fichier du dossier `mods` absent du manifest est déplacé dans `quarantaine/` et le joueur est prévenu. Contrôle final avant chaque lancement, même hors ligne.
+- **Téléchargements** : https uniquement, serveurs d'une liste fixe (`HOTES_AUTORISES` dans `downloader.js`), redirections vérifiées une à une.
+- **Signature du manifest** (facultative mais conseillée) : `node tools/sign-manifest.js --keygen <fichier>` crée la paire de clés, la clé publique va dans `manifestPublicKey` (`src/shared/config.js`), la clé privée reste hors du dépôt et `AETHORIA_SIGN_KEY` la désigne pour `npm run deploy`.
+- **Launcher trop ancien** : `node tools/build-manifest.js --min-launcher 1.8.0` ajoute `minLauncherVersion` au manifest.
+- Tests hors ligne : `npm run test:securite`.

@@ -5,7 +5,8 @@ const fsp = require('fs/promises');
 const path = require('path');
 const paths = require('./paths');
 const config = require('../../shared/config');
-const { downloadAll, getJson, isValid } = require('./downloader');
+const { downloadAll, getJson, isValid, verifierUrl } = require('./downloader');
+const { verifierManifest } = require('./signature');
 
 // Journal des fichiers installes par le launcher, hors des dossiers nettoyes
 // integralement : un fichier retire du manifest y est retrouve et supprime.
@@ -70,13 +71,24 @@ async function fetchManifest({ onStatus } = {}) {
   try {
     onStatus?.('Récupération du modpack Aethoria...');
     const manifest = await getJson(`${config.manifestUrl}?t=${Date.now()}`);
+    // Un manifest dont la signature est fausse est traite comme injoignable.
+    verifierManifest(manifest);
     await fsp.mkdir(paths.root, { recursive: true });
     await fsp.writeFile(cacheFile, JSON.stringify(manifest, null, 2), 'utf8');
     return { manifest, offline: false };
   } catch (err) {
     if (fs.existsSync(cacheFile)) {
       onStatus?.('Manifest injoignable, utilisation de la dernière version connue.');
-      return { manifest: JSON.parse(await fsp.readFile(cacheFile, 'utf8')), offline: true, error: err };
+      // La copie gardee sur le disque appartient au joueur : elle est reverifiee
+      // comme le manifest d'origine, sinon on pourrait la modifier a la main.
+      try {
+        const copie = JSON.parse(await fsp.readFile(cacheFile, 'utf8'));
+        verifierManifest(copie);
+        return { manifest: copie, offline: true, error: err };
+      } catch {
+        // copie abimee ou modifiee : on la jette et on repart du secours
+        await fsp.rm(cacheFile, { force: true });
+      }
     }
     onStatus?.('Manifest injoignable, utilisation de la configuration de secours.');
     return {
@@ -86,6 +98,7 @@ async function fetchManifest({ onStatus } = {}) {
         files: [],
       },
       offline: true,
+      secours: true, // aucune liste fiable : les mods ne peuvent pas etre verifies
       error: err,
     };
   }
@@ -128,12 +141,19 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
     .filter((entry) => !entry.optional || optionalEnabled.includes(entry.path || entry.name))
     .map((entry) => {
       const relative = entry.path || path.posix.join('mods', entry.name);
+      // Aucun fichier n'est installe sans empreinte a verifier, ni depuis un
+      // serveur que le launcher ne connait pas.
+      if (!entry.sha1 && !entry.hash && !entry.sha256) {
+        throw new Error(`Le fichier "${relative}" n'a pas d'empreinte dans le manifest.`);
+      }
+      if (entry.url) verifierUrl(entry.url);
       return {
         name: entry.name || path.basename(relative),
         relative: relative.split('\\').join('/'),
         dest: safeJoin(relative),
         url: /^https:\/\//.test(entry.url) ? entry.url : null,
         sha1: entry.sha1 || entry.hash,
+        sha256: entry.sha256,
         size: entry.size,
         keepExisting: entry.keepExisting === true,
       };
@@ -141,15 +161,46 @@ function normalizeFiles(manifest, { optionalEnabled = [] } = {}) {
 }
 
 /**
- * Supprime les fichiers qui ne font plus partie du modpack. Les mods sont
- * imposes par le serveur : tout fichier du dossier mods absent du manifest est
- * retire, qu'il vienne d'une ancienne version du pack ou d'un ajout du joueur.
- * Tout le monde joue ainsi avec exactement la meme liste.
+ * Dossier de quarantaine : les fichiers etrangers au modpack y sont deplaces,
+ * jamais supprimes, pour que le joueur puisse les recuperer. Les 5 derniers
+ * lots sont gardes.
  */
-async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } = {}) {
+const quarantaineDir = () => path.join(paths.root, 'quarantaine');
+
+async function mettreEnQuarantaine(entrees) {
+  if (!entrees.length) return null;
+  const lot = path.join(quarantaineDir(), new Date().toISOString().replace(/[:.]/g, '-'));
+  await fsp.mkdir(lot, { recursive: true });
+  for (const { relative, full } of entrees) {
+    const dest = path.join(lot, relative.split('/').join('_'));
+    try {
+      await fsp.rename(full, dest);
+    } catch {
+      // autre disque ou fichier verrouille : copie puis suppression
+      await fsp.cp(full, dest, { recursive: true });
+      await fsp.rm(full, { recursive: true, force: true });
+    }
+  }
+  const lots = (await fsp.readdir(quarantaineDir())).sort();
+  for (const ancien of lots.slice(0, -5)) await fsp.rm(path.join(quarantaineDir(), ancien), { recursive: true, force: true });
+  return lot;
+}
+
+/**
+ * Retire les fichiers qui ne font plus partie du modpack. Les mods sont imposes
+ * par le serveur : tout ce qui se trouve dans le dossier mods sans figurer dans
+ * le manifest est mis en quarantaine, qu'il vienne d'une ancienne version du
+ * pack ou d'un ajout du joueur. Tout le monde joue ainsi avec la meme liste.
+ *
+ * Deux cas sont retires sans bruit, car ils ne sont pas une triche : un fichier
+ * qu'un ancien lancement avait installe (journal) et un mod optionnel decoche.
+ * Tout le reste est signale au joueur.
+ */
+async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], optionalPaths = new Set(), onStatus } = {}) {
   const previous = await readLedger();
   const current = new Set(currentRelatives);
   const removed = [];
+  const quarantined = [];
 
   for (const relative of previous) {
     if (current.has(relative)) continue;
@@ -162,21 +213,65 @@ async function pruneRemovedFiles(currentRelatives, { cleanDirs = [], onStatus } 
     removed.push(relative);
   }
 
+  const aMettreDeCote = [];
   for (const dir of cleanDirs) {
     const full = safeJoin(dir);
     if (!fs.existsSync(full)) continue;
     for (const entry of await fsp.readdir(full)) {
       const relative = path.posix.join(dir.split('\\').join('/'), entry);
       if (current.has(relative)) continue;
-      await fsp.rm(path.join(full, entry), { force: true, recursive: true });
-      removed.push(relative);
+      if (optionalPaths.has(relative)) {
+        await fsp.rm(path.join(full, entry), { force: true, recursive: true });
+        removed.push(relative);
+      } else {
+        aMettreDeCote.push({ relative, full: path.join(full, entry) });
+      }
     }
+  }
+  if (aMettreDeCote.length) {
+    await mettreEnQuarantaine(aMettreDeCote);
+    quarantined.push(...aMettreDeCote.map((e) => path.posix.basename(e.relative)));
   }
 
   if (removed.length) {
     onStatus?.(`${removed.length} fichier(s) obsolète(s) supprimé(s).`);
   }
-  return removed;
+  if (quarantined.length) {
+    onStatus?.(`${quarantined.length} fichier(s) étranger(s) mis de côté.`);
+  }
+  return { removed, quarantined };
+}
+
+/** Chemins de tous les mods optionnels du catalogue (coches ou non). */
+function optionalPathsOf(manifest) {
+  return new Set((manifest.optionalMods || [])
+    .flatMap((mod) => [mod, ...(mod.requires || [])])
+    .map((entry) => entry.path)
+    .filter(Boolean));
+}
+
+/** Dossiers que le manifest nettoie : seul mods peut l'etre. */
+const dossiersNettoyes = (manifest) => (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods');
+
+/**
+ * Controle final, sans rien telecharger : le dossier mods ne contient que des
+ * fichiers du manifest (le reste part en quarantaine) et chacun a la bonne
+ * empreinte. Sert hors ligne, et juste avant de demarrer le jeu.
+ */
+async function verifyInstalled(manifest, { optionalEnabled = [], onStatus } = {}) {
+  const files = normalizeFiles(manifest, { optionalEnabled });
+  const { quarantined } = await pruneRemovedFiles(files.map((f) => f.relative), {
+    cleanDirs: dossiersNettoyes(manifest),
+    optionalPaths: optionalPathsOf(manifest),
+    onStatus,
+  });
+
+  const abimes = [];
+  for (const file of files) {
+    if (file.keepExisting) continue; // reglages du joueur : non imposes
+    if (!(await isValid(file.dest, { sha1: file.sha1, sha256: file.sha256, size: file.size }))) abimes.push(file.name);
+  }
+  return { quarantined, abimes };
 }
 
 /** Telecharge et met a jour tous les fichiers du modpack. */
@@ -190,11 +285,12 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
   // Ils restent dans la liste des fichiers voulus : un ancien journal qui les
   // contenait encore ne doit pas les faire effacer.
   const managed = files.filter((f) => !f.keepExisting);
-  const removed = await pruneRemovedFiles(files.map((f) => f.relative), {
+  const { removed, quarantined } = await pruneRemovedFiles(files.map((f) => f.relative), {
     // Seul le dossier mods peut etre vide : un manifest ne doit jamais effacer
     // les mondes, options ou captures du joueur.
-    cleanDirs: (manifest.deleteExtraIn || ['mods']).filter((dir) => dir === 'mods'),
     // (voir DOSSIERS_AUTORISES : le manifest ne sort jamais de ces dossiers)
+    cleanDirs: dossiersNettoyes(manifest),
+    optionalPaths: optionalPathsOf(manifest),
     onStatus,
   });
 
@@ -204,8 +300,8 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
       throw new Error(`Le fichier "${file.relative}" du manifest n'a pas d'URL.`);
     }
     if (file.keepExisting && fs.existsSync(file.dest)) continue;
-    if (await isValid(file.dest, { sha1: file.sha1, size: file.size })) continue;
-    tasks.push({ name: file.name, dest: file.dest, url: file.url, sha1: file.sha1, size: file.size });
+    if (await isValid(file.dest, { sha1: file.sha1, sha256: file.sha256, size: file.size })) continue;
+    tasks.push({ name: file.name, dest: file.dest, url: file.url, sha1: file.sha1, sha256: file.sha256, size: file.size });
   }
 
   if (tasks.length) {
@@ -217,7 +313,9 @@ async function sync(manifest, { optionalEnabled = [], onProgress, onStatus } = {
 
   const current = managed.map((f) => f.relative);
   await writeLedger(current);
-  return { installed: tasks.length, removed: removed.length, total: files.length, ...modChanges(manifest, previous, current) };
+  return {
+    installed: tasks.length, removed: removed.length, quarantined, total: files.length, ...modChanges(manifest, previous, current),
+  };
 }
 
 const modName = (relative) => path.posix.basename(relative).replace(/\.jar$/i, '');
@@ -287,4 +385,4 @@ function listOptionalMods(manifest, enabled = []) {
   }));
 }
 
-module.exports = { fetchManifest, sync, pendingDownload, listOptionalMods, listServerMods };
+module.exports = { fetchManifest, sync, verifyInstalled, pendingDownload, listOptionalMods, listServerMods };

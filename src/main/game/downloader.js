@@ -12,6 +12,68 @@ const { Readable } = require('stream');
 // 6 essais, jusqu'a 12 secondes d'attente au total.
 const MAX_RETRIES = 6;
 const DEFAULT_CONCURRENCY = 12;
+const MAX_REDIRECTS = 5;
+
+// Seuls ces serveurs ont le droit de fournir un fichier au launcher, y compris
+// apres une redirection. GitHub renvoie les telechargements vers ses propres
+// serveurs de fichiers : ils sont donc listes aussi. Tout le reste est refuse,
+// meme si le manifest ou une reponse reseau le demande.
+const HOTES_AUTORISES = new Set([
+  'github.com',
+  'raw.githubusercontent.com',
+  'objects.githubusercontent.com',
+  'release-assets.githubusercontent.com',
+  'github-releases.githubusercontent.com',
+  'cdn.modrinth.com',
+  'api.modrinth.com',
+  'launchermeta.mojang.com',
+  'launcher.mojang.com',
+  'piston-meta.mojang.com',
+  'piston-data.mojang.com',
+  'resources.download.minecraft.net',
+  'libraries.minecraft.net',
+  'api.mojang.com',
+  'sessionserver.mojang.com',
+  'textures.minecraft.net',
+  'maven.minecraftforge.net',
+  'files.minecraftforge.net',
+]);
+
+/** Refuse tout ce qui n'est pas en https ou ne vient pas d'un serveur de la liste. */
+function verifierUrl(url) {
+  let adresse;
+  try {
+    adresse = new URL(url);
+  } catch {
+    throw new Error('Adresse de téléchargement invalide.');
+  }
+  if (adresse.protocol !== 'https:' || adresse.username || adresse.password) {
+    throw new Error(`Téléchargement refusé (adresse non sécurisée) : ${adresse.host}`);
+  }
+  if (!HOTES_AUTORISES.has(adresse.hostname.toLowerCase())) {
+    throw new Error(`Téléchargement refusé (serveur non autorisé) : ${adresse.hostname}`);
+  }
+  return adresse;
+}
+
+/**
+ * fetch qui suit lui-meme les redirections : chaque etape doit etre en https et
+ * rester chez un serveur autorise, sinon un lien detourne pourrait envoyer le
+ * launcher chercher un fichier n'importe ou.
+ */
+async function secureFetch(url, init = {}) {
+  let courante = verifierUrl(url).href;
+  for (let saut = 0; saut <= MAX_REDIRECTS; saut += 1) {
+    const res = await fetch(courante, { ...init, redirect: 'manual' });
+    if (res.status >= 300 && res.status < 400 && res.headers.get('location')) {
+      res.body?.cancel().catch(() => {});
+      courante = verifierUrl(new URL(res.headers.get('location'), courante)).href;
+      continue;
+    }
+    return res;
+  }
+  throw new Error('Trop de redirections.');
+}
 
 // Vitesse choisie par le joueur : fraction du parallelisme prevu par chaque
 // appel. "Econome" laisse de la bande passante au reste de la maison.
@@ -22,10 +84,10 @@ function setSpeed(level) {
   speedFactor = SPEED_FACTORS[level] ?? 1;
 }
 
-/** SHA1 d'un fichier, ou null s'il n'existe pas. */
-async function sha1(file) {
+/** Empreinte d'un fichier (sha1 ou sha256), ou null s'il n'existe pas. */
+async function empreinte(file, algorithme) {
   try {
-    const hash = crypto.createHash('sha1');
+    const hash = crypto.createHash(algorithme);
     await pipeline(fs.createReadStream(file), hash);
     return hash.digest('hex');
   } catch {
@@ -33,12 +95,25 @@ async function sha1(file) {
   }
 }
 
+const sha1 = (file) => empreinte(file, 'sha1');
+const sha256 = (file) => empreinte(file, 'sha256');
+
+/**
+ * Compare le fichier a l'empreinte attendue. Si le manifest donne un sha256, il
+ * est exige en plus du sha1 : les deux doivent correspondre.
+ */
+async function correspond(file, { sha1: attendu1, sha256: attendu256 }) {
+  if (attendu1 && (await sha1(file)) !== String(attendu1).toLowerCase()) return false;
+  if (attendu256 && (await sha256(file)) !== String(attendu256).toLowerCase()) return false;
+  return true;
+}
+
 /**
  * Un fichier est considere valide si son SHA1 correspond. Quand le manifest ne
  * fournit pas de hash (cas de certains artefacts Forge) on se rabat sur la
  * taille, et a defaut sur la simple existence du fichier.
  */
-async function isValid(file, { sha1: expected, size } = {}) {
+async function isValid(file, { sha1: expected, sha256: expected256, size } = {}) {
   let stat;
   try {
     stat = await fsp.stat(file);
@@ -46,7 +121,7 @@ async function isValid(file, { sha1: expected, size } = {}) {
     return false;
   }
   if (!stat.isFile() || stat.size === 0) return false;
-  if (expected) return (await sha1(file)) === expected.toLowerCase();
+  if (expected || expected256) return correspond(file, { sha1: expected, sha256: expected256 });
   if (size) return stat.size === size;
   return true;
 }
@@ -55,7 +130,7 @@ async function fetchWithRetry(url, init = {}, retries = MAX_RETRIES) {
   let lastError;
   for (let attempt = 1; attempt <= retries; attempt += 1) {
     try {
-      const res = await fetch(url, init);
+      const res = await secureFetch(url, init);
       if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText} sur ${url}`);
       return res;
     } catch (err) {
@@ -87,7 +162,7 @@ async function downloadFile(url, dest, expect = {}, onChunk) {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt += 1) {
     try {
-      const res = await fetch(url);
+      const res = await secureFetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status} sur ${url}`);
 
       const out = fs.createWriteStream(part);
@@ -95,11 +170,9 @@ async function downloadFile(url, dest, expect = {}, onChunk) {
       if (onChunk) source.on('data', (chunk) => onChunk(chunk.length));
       await pipeline(source, out);
 
-      if (expect.sha1) {
-        const actual = await sha1(part);
-        if (actual !== expect.sha1.toLowerCase()) {
-          throw new Error(`Empreinte SHA1 incorrecte pour ${path.basename(dest)}`);
-        }
+      // Le fichier n'est utilise qu'une fois son empreinte verifiee.
+      if ((expect.sha1 || expect.sha256) && !(await correspond(part, expect))) {
+        throw new Error(`Empreinte incorrecte pour ${path.basename(dest)} : fichier refusé`);
       }
       await fsp.rename(part, dest);
       return { skipped: false, dest };
@@ -176,7 +249,7 @@ async function downloadAll(tasks, { concurrency: requested = DEFAULT_CONCURRENCY
       const task = pending.shift();
       let counted = 0;
       try {
-        const result = await downloadFile(task.url, task.dest, { sha1: task.sha1, size: task.size }, (n) => {
+        const result = await downloadFile(task.url, task.dest, { sha1: task.sha1, sha256: task.sha256, size: task.size }, (n) => {
           counted += n;
           bytes += n;
           report(task.name);
@@ -208,4 +281,6 @@ async function downloadAll(tasks, { concurrency: requested = DEFAULT_CONCURRENCY
   return { done, total };
 }
 
-module.exports = { sha1, isValid, downloadFile, downloadAll, getJson, setSpeed };
+module.exports = {
+  sha1, sha256, isValid, downloadFile, downloadAll, getJson, setSpeed, secureFetch, verifierUrl,
+};

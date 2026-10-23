@@ -3,8 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { pathToFileURL } = require('url');
-const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray, clipboard } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, Menu, Notification, Tray, clipboard, protocol, session } = require('electron');
 const config = require('../shared/config');
 const paths = require('./game/paths');
 const store = require('./store');
@@ -19,11 +18,13 @@ const gameOptions = require('./game/options');
 const shaders = require('./game/shaders');
 const crashes = require('./game/crashes');
 const skin = require('./game/skin');
+const check = require('./validate');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const pkg = require('../../package.json');
 
-const isDev = process.argv.includes('--dev');
+// Le mode --dev (outils de developpement) n'existe pas dans la version installee.
+const isDev = !app.isPackaged && process.argv.includes('--dev');
 // Lance avec Windows : le launcher demarre discretement pres de l'horloge.
 const startHidden = process.argv.includes('--hidden');
 // Raccourci "Jouer a Aethoria" : le jeu demarre des l'ouverture.
@@ -31,8 +32,64 @@ const startPlaying = process.argv.includes('--play');
 
 // Une seule instance : deux launchers ouverts sur le meme dossier de jeu se
 // marcheraient dessus pendant les telechargements.
-if (!app.requestSingleInstanceLock()) {
+const instanceUnique = app.requestSingleInstanceLock();
+if (!instanceUnique) {
   app.quit();
+}
+
+// Toutes les pages et tous les processus de rendu tournent dans le bac a sable
+// de Chromium, sans acces a Node.
+app.enableSandbox();
+
+// L'interface est servie par un protocole a elle (app://), pas par file:// :
+// elle n'a ainsi aucun des privileges speciaux des fichiers locaux, et le
+// processus principal choisit exactement ce qui peut etre lu.
+const SCHEME = 'app';
+const RENDERER_DIR = path.join(__dirname, '..', 'renderer');
+const RENDERER_URL = `${SCHEME}://interface/index.html`;
+protocol.registerSchemesAsPrivileged([
+  { scheme: SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true } },
+]);
+
+const CONTENT_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+};
+
+// Meme politique que la balise <meta> de index.html, rappelee en en-tete.
+const CSP = "default-src 'self'; img-src 'self' data: https://crafatar.com; style-src 'self'; style-src-attr 'unsafe-inline'; "
+  + "script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; "
+  + "frame-ancestors 'none'; connect-src 'none'";
+
+/** Sert un fichier de src/renderer, et rien d'autre. */
+async function servirInterface(request) {
+  const url = new URL(request.url);
+  if (url.hostname !== 'interface') return new Response('Refusé', { status: 403 });
+  let relatif;
+  try {
+    relatif = decodeURIComponent(url.pathname).replace(/^\/+/, '') || 'index.html';
+  } catch {
+    return new Response('Refusé', { status: 400 });
+  }
+  const fichier = path.resolve(RENDERER_DIR, relatif);
+  const dansLeDossier = path.relative(RENDERER_DIR, fichier);
+  const type = CONTENT_TYPES[path.extname(fichier).toLowerCase()];
+  if (!type || dansLeDossier.startsWith('..') || path.isAbsolute(dansLeDossier)) {
+    return new Response('Refusé', { status: 403 });
+  }
+  try {
+    return new Response(await fs.promises.readFile(fichier), {
+      headers: { 'Content-Type': type, 'Content-Security-Policy': CSP },
+    });
+  } catch {
+    return new Response('Introuvable', { status: 404 });
+  }
 }
 
 let mainWindow = null;
@@ -209,6 +266,29 @@ function appliquerMenu() {
   ]));
 }
 
+/**
+ * Reglages de la session : aucune permission (camera, micro, position...),
+ * et la page ne peut charger que ses propres fichiers, des images encodees et
+ * les tetes de joueurs.
+ */
+function securiserSession() {
+  const ses = session.defaultSession;
+  ses.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
+  ses.setPermissionCheckHandler(() => false);
+  ses.setDevicePermissionHandler(() => false);
+  ses.webRequest.onBeforeRequest((details, callback) => {
+    let autorise = false;
+    try {
+      const { protocol: schema, hostname } = new URL(details.url);
+      autorise = schema === `${SCHEME}:` || schema === 'data:' || schema === 'devtools:'
+        || (schema === 'https:' && hostname === 'crafatar.com' && details.resourceType === 'image');
+    } catch {
+      autorise = false;
+    }
+    callback({ cancel: !autorise });
+  });
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -223,12 +303,21 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      nodeIntegrationInWorker: false,
+      nodeIntegrationInSubFrames: false,
       sandbox: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      experimentalFeatures: false,
+      webviewTag: false,
+      navigateOnDragDrop: false,
+      // Pas d'outils de developpement (F12, Ctrl+Maj+I) chez les joueurs.
+      devTools: !app.isPackaged,
     },
   });
 
   appliquerMenu();
-  mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+  mainWindow.loadURL(RENDERER_URL);
   mainWindow.once('ready-to-show', () => {
     // Sans zone de notification (GNOME par exemple), une fenetre cachee serait
     // introuvable : on l'affiche quand meme.
@@ -241,16 +330,19 @@ function createWindow() {
   // Seuls les liens https partent dans le navigateur : un autre protocole
   // (ms-msdt:, search-ms:, file:...) pourrait lancer un programme.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (isWebLink(url)) shell.openExternal(url);
+    ouvrirLien(url);
     return { action: 'deny' };
   });
   // La fenetre n'affiche jamais que l'interface du launcher : un fichier ou un
   // lien glisse dessus ne doit pas remplacer la page et profiter de son pont.
   mainWindow.webContents.on('will-navigate', (event, url) => {
     event.preventDefault();
-    if (isWebLink(url)) shell.openExternal(url);
+    ouvrirLien(url);
   });
+  mainWindow.webContents.on('will-redirect', (event) => event.preventDefault());
   mainWindow.webContents.on('will-attach-webview', (event) => event.preventDefault());
+  // Si un outil de developpement s'ouvrait malgre tout, il est referme.
+  if (app.isPackaged) mainWindow.webContents.on('devtools-opened', () => mainWindow.webContents.closeDevTools());
 
   mainWindow.on('closed', () => { mainWindow = null; });
 }
@@ -269,7 +361,18 @@ function setupAutoUpdater() {
   }
 
   updater = autoUpdater;
+  // Le flux est fixe ici, dans le code : il ne depend pas du fichier
+  // app-update.yml. Seules les versions publiees sur le depot public
+  // d'Aethoria sont acceptees, et jamais une version plus ancienne.
+  autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: config.github.distOwner,
+    repo: config.github.dist,
+  });
   autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.allowDowngrade = false;
+  autoUpdater.allowPrerelease = false;
   autoUpdater.on('update-available', (info) => send('updater:status', { state: 'available', version: info.version }));
   autoUpdater.on('download-progress', (p) => send('updater:status', { state: 'downloading', percent: p.percent }));
   autoUpdater.on('update-downloaded', (info) => send('updater:status', { state: 'ready', version: info.version }));
@@ -278,16 +381,15 @@ function setupAutoUpdater() {
     message: String(err.message || err),
   }));
 
-  ipcMain.handle('updater:install', () => {
-    autoUpdater.quitAndInstall();
-  });
-
-  autoUpdater.checkForUpdates().catch((err) => {
+  const verifier = () => autoUpdater.checkForUpdates().catch((err) => {
     send('updater:status', {
       state: 'error',
       message: String(err?.message || 'Vérification des mises à jour impossible.'),
     });
   });
+  verifier();
+  // Un launcher laisse ouvert toute la journee cherche de nouveau.
+  setInterval(verifier, 6 * 60 * 60 * 1000).unref();
 }
 
 /* ------------------------------------------------------------------ *
@@ -295,20 +397,25 @@ function setupAutoUpdater() {
  * ------------------------------------------------------------------ */
 
 /** Enveloppe un handler pour renvoyer { ok, data } ou { ok:false, error }. */
-const RENDERER_URL = pathToFileURL(path.join(__dirname, '..', 'renderer', 'index.html')).href;
+/** Ouvre un lien dans le navigateur du joueur, seulement s'il est https et sur un site de la liste. */
+function ouvrirLien(url) {
+  const lien = check.lienAutorise(url);
+  if (!lien) return false;
+  shell.openExternal(lien);
+  return true;
+}
 
-const isWebLink = (url) => {
-  try {
-    return new URL(url).protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
+/** Seule la page principale du launcher peut appeler le processus principal. */
+function appelAutorise(event) {
+  const frame = event.senderFrame;
+  return Boolean(frame && mainWindow && !mainWindow.isDestroyed()
+    && frame === mainWindow.webContents.mainFrame
+    && frame.url.split(/[?#]/)[0] === RENDERER_URL);
+}
 
 function handle(channel, fn) {
   ipcMain.handle(channel, async (event, ...args) => {
-    // Seule l'interface du launcher peut appeler le processus principal.
-    if (event.senderFrame?.url.split(/[?#]/)[0] !== RENDERER_URL) return { ok: false, error: 'Appel refusé.' };
+    if (!appelAutorise(event)) return { ok: false, error: 'Appel refusé.' };
     try {
       return { ok: true, data: await fn(...args) };
     } catch (err) {
@@ -317,15 +424,28 @@ function handle(channel, fn) {
   });
 }
 
+/** Message sans reponse (fenetre) : meme controle de l'appelant. */
+function surMessage(channel, fn) {
+  ipcMain.on(channel, (event, ...args) => {
+    if (appelAutorise(event)) fn(...args);
+  });
+}
+
+/** Affiche la barre de mise a jour et lance la recherche, car le launcher ne peut plus jouer. */
+function signalerLauncherTropVieux(minimum) {
+  send('updater:status', { state: 'outdated', minimum });
+  updater?.checkForUpdates().catch(() => {});
+}
+
 function registerIpc() {
   // --- Fenetre ---
-  ipcMain.on('window:minimize', () => mainWindow?.minimize());
-  ipcMain.on('window:close', () => mainWindow?.close());
-  ipcMain.on('window:restore', () => showWindow());
+  surMessage('window:minimize', () => mainWindow?.minimize());
+  surMessage('window:close', () => mainWindow?.close());
+  surMessage('window:restore', () => showWindow());
   // Sans zone de notification (certains bureaux Linux), une fenetre cachee
   // serait introuvable : on la reduit dans la barre des taches a la place.
-  ipcMain.on('window:hide', () => (tray ? mainWindow?.hide() : mainWindow?.minimize()));
-  ipcMain.on('window:setZoom', (_event, factor) => {
+  surMessage('window:hide', () => (tray ? mainWindow?.hide() : mainWindow?.minimize()));
+  surMessage('window:setZoom', (factor) => {
     if (!mainWindow) return;
     const zoom = [0.9, 1, 1.1, 1.25].includes(factor) ? factor : 1;
     mainWindow.webContents.setZoomFactor(zoom);
@@ -379,11 +499,14 @@ function registerIpc() {
     return file;
   });
 
-  handle('app:notify', ({ title, body }) => notify(String(title), String(body)));
+  handle('app:notify', (message) => notify(
+    check.texte(message?.title, { max: 120, nom: 'titre' }),
+    check.texte(message?.body, { max: 400, nom: 'texte' }),
+  ));
 
   // Copie cote processus principal : navigator.clipboard echoue quand la
   // fenetre n'a pas le focus, ce qui arrive juste apres un plantage du jeu.
-  handle('app:copyText', (text) => clipboard.writeText(String(text)));
+  handle('app:copyText', (text) => clipboard.writeText(check.texte(text, { max: 30000, nom: 'texte' })));
 
   // Joint au rapport de plantage : la plupart des plantages dependent de la machine.
   handle('app:system', async () => {
@@ -407,17 +530,32 @@ function registerIpc() {
   handle('account:get', () => auth.getAccount());
   // Le skin sert a afficher la tete du joueur : "force" le relit apres une partie.
   handle('account:skin', (force) => skin.get(auth.getAccount() || {}, { force: force === true }));
-  handle('account:valider', (pseudo) => auth.validerPseudo(pseudo));
-  handle('account:connecter', (pseudo) => auth.connecterAvecPseudo(pseudo));
+  handle('account:valider', (pseudo) => auth.validerPseudo(check.pseudo(pseudo)));
+  handle('account:connecter', (pseudo) => auth.connecterAvecPseudo(check.pseudo(pseudo)));
 
   // --- Parametres ---
+  const dossiersChoisis = new Set();
+  const javasChoisis = new Set();
   handle('settings:get', () => ({
     ...store.getSettings(),
     systemRamMb: store.getSystemRamMb(),
     recommendedRamMb: store.getRecommendedRamMb(),
   }));
   handle('settings:save', (patch) => {
-    if (patch && ('gameRoot' in patch || 'javaPath' in patch || 'jvmArgs' in patch) && launcher.isRunning()) {
+    if (!patch || typeof patch !== 'object' || Array.isArray(patch)) throw new Error('Réglages refusés.');
+    // Seuls les vrais reglages passent : pas de champ inventé dans settings.json.
+    const connus = Object.keys(store.getSettings());
+    const inconnu = Object.keys(patch).find((cle) => !connus.includes(cle));
+    if (inconnu) throw new Error(`Réglage inconnu : ${inconnu}`);
+    // Un dossier de jeu ou un Java ne peut venir que d'une fenetre de choix du
+    // systeme (ou etre deja enregistre) : jamais d'un chemin ecrit par la page.
+    const actuel = store.getSettings();
+    for (const [cle, choisis] of [['gameRoot', dossiersChoisis], ['javaPath', javasChoisis]]) {
+      if (cle in patch && patch[cle] !== null && patch[cle] !== actuel[cle] && !choisis.has(patch[cle])) {
+        throw new Error('Choisis cet emplacement avec le bouton « Parcourir ».');
+      }
+    }
+    if (('gameRoot' in patch || 'javaPath' in patch || 'jvmArgs' in patch) && launcher.isRunning()) {
       throw new Error('Attends la fin du téléchargement ou de la partie pour modifier ce réglage.');
     }
     const next = store.saveSettings(patch);
@@ -437,7 +575,9 @@ function registerIpc() {
     // entier...) recoit un sous-dossier dedie.
     const entries = fs.readdirSync(chosen).filter((name) => !/^desktop\.ini$/i.test(name));
     const managed = fs.existsSync(path.join(chosen, '.aethoria-managed.json'));
-    return entries.length && !managed ? path.join(chosen, 'Aethoria') : chosen;
+    const retenu = entries.length && !managed ? path.join(chosen, 'Aethoria') : chosen;
+    dossiersChoisis.add(retenu);
+    return retenu;
   });
   handle('settings:pickJava', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
@@ -447,10 +587,17 @@ function registerIpc() {
         ? [{ name: 'Exécutable Java', extensions: ['exe'] }]
         : [{ name: 'Exécutable Java', extensions: ['*'] }],
     });
-    return result.canceled ? null : result.filePaths[0];
+    if (result.canceled) return null;
+    javasChoisis.add(result.filePaths[0]);
+    return result.filePaths[0];
   });
 
   // --- Dossiers ---
+  handle('updater:install', () => {
+    if (!updater) throw new Error('Aucune mise à jour à installer.');
+    updater.quitAndInstall();
+  });
+
   handle('shell:openGameFolder', async () => {
     paths.ensureAll();
     await shell.openPath(paths.root);
@@ -462,10 +609,10 @@ function registerIpc() {
     return paths.logs;
   });
   handle('screenshots:list', () => screenshots.list());
-  handle('screenshots:open', (name) => screenshots.open(name));
+  handle('screenshots:open', (name) => screenshots.open(check.nomDeFichier(name)));
   handle('screenshots:folder', () => screenshots.openFolder());
-  handle('screenshots:copy', (name) => screenshots.copy(name));
-  handle('screenshots:trash', (name) => screenshots.trash(name));
+  handle('screenshots:copy', (name) => screenshots.copy(check.nomDeFichier(name)));
+  handle('screenshots:trash', (name) => screenshots.trash(check.nomDeFichier(name)));
 
   handle('checkup:run', () => checkup.run(store.getSettings(), store.getSystemRamMb()));
 
@@ -476,15 +623,18 @@ function registerIpc() {
   });
 
   handle('shell:openExternal', (url) => {
-    if (!isWebLink(url)) throw new Error('Lien refusé.');
-    return shell.openExternal(url);
+    if (!ouvrirLien(url)) throw new Error('Ce lien n’est pas autorisé.');
   });
 
   // --- Modpack ---
   handle('modpack:info', async () => {
     const { manifest, offline } = await modpack.fetchManifest();
+    const launcherTropVieux = launcher.launcherTropVieux(manifest);
+    if (launcherTropVieux) signalerLauncherTropVieux(manifest.minLauncherVersion);
     return {
       offline,
+      launcherTropVieux,
+      minLauncherVersion: manifest.minLauncherVersion || null,
       modpackVersion: manifest.modpackVersion || null,
       minecraftVersion: manifest.minecraftVersion || config.fallback.minecraftVersion,
       forgeVersion: manifest.forgeVersion || config.fallback.forgeVersion,
@@ -511,6 +661,7 @@ function registerIpc() {
   });
 
   handle('modpack:setOptionalMods', async (ids) => {
+    ids = check.listeIdentifiants(ids);
     const { manifest } = await modpack.fetchManifest();
     // On ne retient que des identifiants reellement proposes : l'interface ne
     // doit pas pouvoir faire installer un fichier absent du catalogue.
@@ -522,7 +673,7 @@ function registerIpc() {
 
   // --- Etat du serveur ---
   handle('server:status', async (override) => {
-    const target = { ...config.server, ...(override || {}) };
+    const target = { ...config.server, ...check.serveur(override) };
     return serverStatus.ping(target.host, target.port);
   });
 
@@ -541,6 +692,10 @@ function registerIpc() {
     },
     onLog: (line) => send('game:log', { line }),
     onFirstRun: () => send('game:firstRun', {}),
+    // Des fichiers etrangers au jeu ont ete ranges a part : le joueur est prevenu.
+    onQuarantine: ({ files }) => send('game:quarantine', { files }),
+    // Launcher trop ancien : on cherche tout de suite la mise a jour.
+    onOutdated: ({ minimum }) => signalerLauncherTropVieux(minimum),
     onReady: () => {
       setTaskbarProgress(-1);
       notify('Aethoria est prêt', 'Minecraft est lancé. Bon jeu !');
@@ -583,22 +738,25 @@ function registerIpc() {
   };
   handle('options:preset', (name) => {
     refuseIfRunning();
-    return gameOptions.applyPreset(name);
+    return gameOptions.applyPreset(check.identifiant(name));
   });
   // --- Shaders (Oculus) : Oculus reecrit sa configuration en quittant ---
   handle('shaders:list', () => shaders.list());
   handle('shaders:install', async (slug) => {
+    slug = check.identifiant(slug);
     refuseIfRunning();
     await shaders.install(slug);
     return shaders.list();
   });
   handle('shaders:activate', async (slug) => {
+    if (slug !== null) slug = check.identifiant(slug);
     refuseIfRunning();
     await shaders.activate(slug);
     if (slug) store.saveSettings({ shaderActivated: true });
     return shaders.list();
   });
   handle('shaders:remove', async (slug) => {
+    slug = check.identifiant(slug);
     refuseIfRunning();
     await shaders.remove(slug);
     return shaders.list();
@@ -606,8 +764,8 @@ function registerIpc() {
 
   // --- Plantages et mods du serveur ---
   handle('crashes:list', () => crashes.list());
-  handle('crashes:open', (name) => crashes.open(name));
-  handle('crashes:copy', async (name) => clipboard.writeText(await crashes.read(name)));
+  handle('crashes:open', (name) => crashes.open(check.nomDeFichier(name)));
+  handle('crashes:copy', async (name) => clipboard.writeText(await crashes.read(check.nomDeFichier(name))));
   handle('modpack:serverMods', async () => modpack.listServerMods((await modpack.fetchManifest()).manifest));
   handle('screenshots:backgrounds', () => screenshots.backgrounds());
 
@@ -619,7 +777,7 @@ function registerIpc() {
   handle('options:backups', () => gameOptions.listBackups());
   handle('options:restore', (name) => {
     refuseIfRunning();
-    return gameOptions.restore(name);
+    return gameOptions.restore(check.nomDeFichier(name));
   });
   handle('options:reset', async () => {
     refuseIfRunning();
@@ -676,6 +834,11 @@ app.on('second-instance', (_event, argv) => {
 });
 
 app.whenReady().then(() => {
+  // Deuxieme exemplaire : il se ferme, la fenetre deja ouverte reprend la main.
+  if (!instanceUnique) return;
+  protocol.handle(SCHEME, servirInterface);
+  securiserSession();
+
   // Sans identifiant d'application, Windows n'affiche pas les notifications.
   app.setAppUserModelId('fr.aethoria.launcher');
 

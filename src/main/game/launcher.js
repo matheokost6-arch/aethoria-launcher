@@ -49,6 +49,19 @@ function flattenArguments(list, vars, features) {
   return out;
 }
 
+/**
+ * Le launcher est-il assez recent pour le modpack ? Le manifest peut exiger une
+ * version minimale (minLauncherVersion) : un vieux launcher n'a pas les
+ * controles de securite des versions suivantes.
+ */
+function launcherTropVieux(manifest) {
+  const minimum = manifest?.minLauncherVersion;
+  return Boolean(minimum) && !versionAtLeast(pkg.version, minimum);
+}
+
+const MESSAGE_TROP_VIEUX = 'Ton launcher est trop ancien pour jouer sur Aethoria. '
+  + 'Mets-le à jour avec le bouton en bas à droite, puis relance-le.';
+
 /** Compare deux versions Minecraft ("1.20.1" >= "1.20"). */
 function versionAtLeast(version, target) {
   const parse = (v) => String(v).split('.').map((n) => parseInt(n, 10) || 0);
@@ -267,6 +280,7 @@ async function launch(options) {
 
 async function prepareAndStart({
   prepareOnly = false, onStatus, onProgress, onLog, onExit, onFirstRun, onReady, onStep, onModpackChanges, onProblem,
+  onQuarantine, onOutdated,
 }) {
 
   const settings = store.getSettings();
@@ -291,7 +305,16 @@ async function prepareAndStart({
 
   step(1);
   const { manifest, offline } = await modpack.fetchManifest({ onStatus: status });
-  if (offline) status('Mode hors ligne : le modpack ne sera pas vérifié.');
+  if (launcherTropVieux(manifest)) {
+    onOutdated?.({ minimum: manifest.minLauncherVersion });
+    throw new Error(MESSAGE_TROP_VIEUX);
+  }
+  // Sans liste fiable (premiere installation sans Internet, ou copie abimee),
+  // impossible de savoir quels mods sont autorises : on ne lance pas.
+  if (manifest.secours) {
+    throw new Error('Impossible de vérifier les mods d’Aethoria. Connecte-toi à Internet puis réessaie.');
+  }
+  if (offline) status('Mode hors ligne : les fichiers sont vérifiés avec la dernière liste connue.');
 
   const mcVersion = manifest.minecraftVersion || config.fallback.minecraftVersion;
   const forgeVersion = manifest.forgeVersion || config.fallback.forgeVersion;
@@ -307,6 +330,7 @@ async function prepareAndStart({
   const versionId = await forge.install(mcVersion, forgeVersion, javaHome, {
     onStatus: status,
     fullVersion: manifest.forgeFullVersion,
+    forgeInstallerSha1: manifest.forgeInstallerSha1,
   });
 
   status('Vérification des fichiers du jeu...');
@@ -321,6 +345,18 @@ async function prepareAndStart({
       onProgress,
     });
     if (changes.modsAdded.length || changes.modsRemoved.length) onModpackChanges?.(changes);
+    if (changes.quarantined.length) onQuarantine?.({ files: changes.quarantined });
+  }
+
+  // Dernier controle, hors ligne comme en ligne : rien d'etranger dans mods et
+  // chaque fichier a la bonne empreinte. Le jeu ne demarre pas sans cela.
+  status('Contrôle final des mods...');
+  const controle = await modpack.verifyInstalled(manifest, { optionalEnabled: settings.optionalMods || [], onStatus: status });
+  if (controle.quarantined.length) onQuarantine?.({ files: controle.quarantined });
+  if (controle.abimes.length) {
+    throw new Error(offline
+      ? `Des fichiers du jeu sont abîmés (${controle.abimes.slice(0, 3).join(', ')}). Connecte-toi à Internet pour les réparer.`
+      : `Des fichiers du jeu sont abîmés (${controle.abimes.slice(0, 3).join(', ')}). Utilise « Réparer l’installation » dans les réglages.`);
   }
 
   // "Vérifier les fichiers" : tout est controle et retelecharge si besoin,
@@ -352,6 +388,7 @@ async function prepareAndStart({
     cwd: paths.root,
     detached: true,
     windowsHide: true,
+    env: environnementPropre(),
   });
   running = child;
   stopRequested = false;
@@ -421,6 +458,18 @@ async function prepareAndStart({
   if (!running) throw new Error('Le processus Minecraft s’est arrêté immédiatement. Consulte les journaux.');
 
   return { pid: child.pid, versionId };
+}
+
+/**
+ * Variables d'environnement qui font charger du code dans Java (agents,
+ * options cachees) : elles ne sont pas transmises au jeu.
+ */
+function environnementPropre() {
+  const env = { ...process.env };
+  for (const nom of Object.keys(env)) {
+    if (/^(JAVA_TOOL_OPTIONS|_JAVA_OPTIONS|JDK_JAVA_OPTIONS|CLASSPATH|JAVA_OPTS)$/i.test(nom)) delete env[nom];
+  }
+  return env;
 }
 
 /** Journalise la commande complete : indispensable pour diagnostiquer a distance. */
@@ -504,4 +553,4 @@ async function repair({ onStatus } = {}) {
   return true;
 }
 
-module.exports = { launch, isRunning, focusGame, stop, repair };
+module.exports = { launch, isRunning, focusGame, stop, repair, launcherTropVieux };

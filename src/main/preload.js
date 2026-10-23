@@ -6,7 +6,7 @@ const { contextBridge, ipcRenderer } = require('electron');
  * Pont entre le renderer et le processus principal.
  *
  * Le renderer n'a aucun acces a Node : il ne peut appeler que les canaux
- * enumeres ici. Chaque invocation renvoie directement la donnee utile, ou lance
+ * enumeres ici (ipcRenderer lui-meme n'est jamais expose). Chaque invocation renvoie directement la donnee utile, ou lance
  * une Error avec le message renvoye par le processus principal — ce qui permet
  * d'ecrire du try/catch classique cote interface.
  */
@@ -118,6 +118,7 @@ contextBridge.exposeInMainWorld('aethoria', {
     onStep: (cb) => subscribe('game:step', cb),
     onProblem: (cb) => subscribe('game:problem', cb),
     onModpackChanges: (cb) => subscribe('game:modpackChanges', cb),
+    onQuarantine: (cb) => subscribe('game:quarantine', cb),
     onAutoPreset: (cb) => subscribe('game:autoPreset', cb),
     onExit: (cb) => subscribe('game:exit', cb),
   },
@@ -138,7 +139,7 @@ contextBridge.exposeInMainWorld('aethoria', {
 
   updater: {
     onStatus: (cb) => subscribe('updater:status', cb),
-    install: () => ipcRenderer.invoke('updater:install'),
+    install: () => call('updater:install'),
     check: () => call('updater:check'),
   },
 });

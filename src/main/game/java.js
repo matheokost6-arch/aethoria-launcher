@@ -9,7 +9,7 @@ const { execFile, execFileSync } = require('child_process');
 const { promisify } = require('util');
 const paths = require('./paths');
 const config = require('../../shared/config');
-const { downloadAll, getJson } = require('./downloader');
+const { downloadAll, getJson, secureFetch } = require('./downloader');
 
 const execFileAsync = promisify(execFile);
 
@@ -117,10 +117,11 @@ async function downloadRuntime(component, { onProgress, onStatus } = {}) {
 
   // Le manifest liste les empreintes de chaque fichier de Java : il doit lui-meme
   // correspondre a l'empreinte publiee par Mojang.
-  const res = await fetch(entry.manifest.url);
+  const res = await secureFetch(entry.manifest.url);
   if (!res.ok) throw new Error(`Téléchargement de Java impossible (HTTP ${res.status}).`);
   const raw = Buffer.from(await res.arrayBuffer());
-  if (entry.manifest.sha1 && crypto.createHash('sha1').update(raw).digest('hex') !== entry.manifest.sha1) {
+  // Sans empreinte publiee, on ne peut pas savoir si la liste est authentique : refus.
+  if (!entry.manifest.sha1 || crypto.createHash('sha1').update(raw).digest('hex') !== entry.manifest.sha1) {
     throw new Error('Le manifest de Java téléchargé est altéré.');
   }
   const manifest = JSON.parse(raw.toString('utf8'));

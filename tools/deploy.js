@@ -275,6 +275,14 @@ function envoyerMods(manifest, packTag) {
 function publierManifest() {
   titre('Publication du manifest');
 
+  // Signature avec la cle privee du proprietaire (AETHORIA_SIGN_KEY) : sans
+  // elle, un launcher qui exige la signature refuserait le manifest.
+  try {
+    info(require('./sign-manifest').signerFichier('manifest.json') ? 'manifest signe.' : 'signature non activee (manifestPublicKey vide).');
+  } catch (err) {
+    echec(err.message);
+  }
+
   const contenu = fs.readFileSync('manifest.json');
   const base64 = contenu.toString('base64');
 

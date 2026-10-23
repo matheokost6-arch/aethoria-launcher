@@ -209,8 +209,10 @@ const store = {
     // Le racine d'un disque serait videe de ses mods et versions : refusee.
     if (next.gameRoot && path.parse(next.gameRoot).root === next.gameRoot) next.gameRoot = null;
     next.javaPath = cleanPath(next.javaPath);
-    if (next.javaPath && !/^javaw?(\.exe)?$/i.test(path.basename(next.javaPath)) && fs.existsSync(next.javaPath) && fs.statSync(next.javaPath).isFile()) {
-      next.javaPath = null; // un executable qui n'est pas Java
+    // Un executable qui n'est pas Java (ou un dossier "home" de Java) est refuse.
+    if (next.javaPath && !/^javaw?(\.exe)?$/i.test(path.basename(next.javaPath))
+      && !(fs.existsSync(next.javaPath) && fs.statSync(next.javaPath).isDirectory())) {
+      next.javaPath = null;
     }
     next.jvmArgs = cleanJvmArgs(next.jvmArgs);
     next.autoJoinServer = Boolean(next.autoJoinServer);
