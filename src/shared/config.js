@@ -71,7 +71,7 @@ module.exports = {
 
   // Un lien vide masque son bouton.
   links: {
-    discord: 'https://discord.gg/Z6du2srwW',
+    discord: 'https://discord.gg/TmGmvRJDGc',
     trailer: 'https://www.youtube.com/watch?v=WW6Dqu7jxkQ',
   },
 

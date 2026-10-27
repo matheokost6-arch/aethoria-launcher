@@ -2,33 +2,43 @@
  *  Aethoria Launcher
  * ------------------------------------------------------------------ */
 
+/* Polices du site (intégrées localement : la CSP interdit le CDN). */
+@font-face { font-family: "Cinzel"; src: url("assets/fonts/cinzel.woff2") format("woff2"); font-weight: 500 700; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/inter.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: "IM Fell English"; src: url("assets/fonts/imfell.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: "IM Fell English"; src: url("assets/fonts/imfell-italic.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: swap; }
+
+/* Palette alignée sur le site aethoria-rp.fr : inks sombres chauds, rouge « blood »,
+ * bronze, texte parchemin, liserés bronze. */
 :root {
-  --bg: #0b0c0f;
-  --surface: rgba(17, 18, 23, 0.72);
-  --surface-solid: #131419;
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
+  --bg: #0b0b0f;
+  --surface: rgba(29, 26, 23, 0.72);
+  --surface-solid: #151311;
+  --surface-hover: rgba(212, 178, 122, 0.08);
+  --line: rgba(176, 141, 87, 0.22);
+  --line-strong: rgba(176, 141, 87, 0.42);
 
-  --text: #f3f1ed;
-  --muted: #a8a49d;
-  --faint: #6f6c67;
+  --text: #e6dfd0;
+  --muted: #aaa190;
+  --faint: #7d7466;
 
-  --red: #d02a31;
-  --red-bright: #e8434a;
-  --red-dark: #9c1b21;
-  --red-rgb: 208, 42, 49;
+  --red: #a3231f;
+  --red-bright: #c63a2f;
+  --red-dark: #8b1a1a;
+  --red-rgb: 163, 35, 31;
   --red-soft: rgba(var(--red-rgb), 0.16);
-  --gold: #e6b85c;
-  --green: #4ade80;
+  --gold: #b08d57;
+  --gold-bright: #d4b27a;
+  --green: #6fe08a;
 
   --radius: 12px;
   --radius-large: 18px;
   --blur: blur(18px) saturate(1.2);
-  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
 
-  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Cinzel", Georgia, "Times New Roman", serif;
+  --font-lore: "IM Fell English", "Cormorant Garamond", Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -192,11 +202,12 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 
 .section-title {
   margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--gold-bright);
 }
 
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
@@ -341,9 +352,11 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
 
 .hero__tagline {
   margin: 14px 0 18px;
+  font-family: var(--font-lore);
+  font-style: italic;
   color: var(--muted);
-  font-size: 13px;
-  letter-spacing: 0.04em;
+  font-size: 16px;
+  letter-spacing: 0.01em;
 }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }

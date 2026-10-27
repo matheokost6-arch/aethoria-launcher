@@ -7,7 +7,7 @@
     "port": 25565
   },
   "links": {
-    "discord": "https://discord.gg/Z6du2srwW",
+    "discord": "https://discord.gg/TmGmvRJDGc",
     "trailer": "https://www.youtube.com/watch?v=WW6Dqu7jxkQ"
   },
   "news": [
@@ -1723,5 +1723,5 @@
     "title": "Protège ton pseudo",
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
   },
-  "signature": "1va96aNFyUevq7jFGtliWSCXw6/cu7fOIei4gJfcvpXw2GnvGwIOSMtCGpxmr03GgTcrCTwwm7fvs/X1AqXiBA=="
+  "signature": "6EyghBIZaQIx6IAcK8p4ujhNiqYmS6+Si+x7Dn6e9SAEpfRRC4HPPUHXYAD3lumrQ8yAxVUe2Ll1gOnohj1ECA=="
 }
