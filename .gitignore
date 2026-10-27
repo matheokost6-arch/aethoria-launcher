@@ -20,3 +20,4 @@ verification/
 # Cles de signature du manifest : jamais dans le depot.
 *.pem
 cle-signature*
+_anciens-fonds-backup/

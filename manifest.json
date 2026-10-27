@@ -1722,5 +1722,6 @@
   "authNotice": {
     "title": "Protège ton pseudo",
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
-  }
+  },
+  "signature": "1va96aNFyUevq7jFGtliWSCXw6/cu7fOIei4gJfcvpXw2GnvGwIOSMtCGpxmr03GgTcrCTwwm7fvs/X1AqXiBA=="
 }

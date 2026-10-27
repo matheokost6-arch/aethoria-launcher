@@ -6,6 +6,7 @@ const os = require('os');
 const { execFileSync } = require('child_process');
 const paths = require('./game/paths');
 const config = require('../shared/config');
+const lock = require('./auth/lock');
 
 /** Persistance en JSON des preferences, du pseudo et du temps de jeu. */
 
@@ -23,40 +24,102 @@ function fichierPseudo() {
   return path.join(base, 'pseudo');
 }
 
-function lireRegistre() {
-  // Un contenu abime ne doit pas rendre le launcher inutilisable : on l'ignore.
-  const valide = (pseudo) => (PSEUDO.test(String(pseudo || '')) ? pseudo : null);
-  if (process.platform !== 'win32') {
-    try {
-      return valide(fs.readFileSync(fichierPseudo(), 'utf8').trim());
-    } catch {
-      return null; // jamais enregistre sur cette machine
-    }
-  }
+/** Copie scellée de secours, dans les données du launcher. Sert à réparer le
+ *  registre si sa valeur a été éditée à la main. */
+function fichierSecours() {
   try {
-    const sortie = execFileSync('reg', ['query', REGISTRE, '/v', 'Pseudo'], {
-      encoding: 'utf8',
-      windowsHide: true,
-      stdio: ['ignore', 'pipe', 'ignore'],
-    });
-    return valide(sortie.match(/Pseudo\s+REG_SZ\s+(\S+)/)?.[1]);
+    return path.join(paths.userData, 'pseudo.lock');
   } catch {
-    return null; // cle absente
+    return null;
   }
 }
 
+const estPseudo = (p) => (PSEUDO.test(String(p || '')) ? String(p) : null);
+
+/** Lit la source principale : {pseudo, sig}. */
+function lirePrincipal() {
+  if (process.platform !== 'win32') {
+    try {
+      const [p, s] = fs.readFileSync(fichierPseudo(), 'utf8').split('\n');
+      return { pseudo: estPseudo((p || '').trim()), sig: (s || '').trim() || null };
+    } catch {
+      return { pseudo: null, sig: null };
+    }
+  }
+  const lireValeur = (nom) => {
+    try {
+      const sortie = execFileSync('reg', ['query', REGISTRE, '/v', nom], {
+        encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'],
+      });
+      return sortie.match(new RegExp(`${nom}\\s+REG_SZ\\s+(\\S+)`))?.[1] || null;
+    } catch {
+      return null;
+    }
+  };
+  return { pseudo: estPseudo(lireValeur('Pseudo')), sig: lireValeur('Sig') };
+}
+
+function lireSecours() {
+  const file = fichierSecours();
+  if (!file) return null;
+  try {
+    const d = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return lock.sceauValide(d.pseudo, d.sig) ? estPseudo(d.pseudo) : null;
+  } catch {
+    return null;
+  }
+}
+
+function lireRegistre() {
+  const principal = lirePrincipal();
+
+  // Cas normal : valeur scellée et intacte.
+  if (principal.pseudo && principal.sig && lock.sceauValide(principal.pseudo, principal.sig)) {
+    return principal.pseudo;
+  }
+
+  // Valeur éditée à la main (ou sceau faux) : on répare depuis la copie de secours.
+  const secours = lireSecours();
+  if (secours) {
+    ecrireRegistre(secours); // réécrit le registre avec la bonne valeur scellée
+    return secours;
+  }
+
+  // Migration douce : ancien launcher (pseudo sans sceau) dont le compte local
+  // confirme la légitimité → on scelle cette valeur une fois.
+  if (principal.pseudo && !principal.sig) {
+    const compte = readJson(paths.accountsFile, {}).account;
+    if (compte && compte.name === principal.pseudo) {
+      ecrireRegistre(principal.pseudo);
+      return principal.pseudo;
+    }
+  }
+
+  return null; // jamais enregistré, ou édité sans copie de secours valide
+}
+
 function ecrireRegistre(pseudo) {
+  if (!estPseudo(pseudo)) return;
+  const sig = lock.sceau(pseudo);
+  // Copie de secours scellée (sert à réparer une édition manuelle du registre).
+  try {
+    const file = fichierSecours();
+    if (file) {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, JSON.stringify({ pseudo, sig }), 'utf8');
+    }
+  } catch { /* la source principale reste la référence */ }
   try {
     if (process.platform !== 'win32') {
       const file = fichierPseudo();
       fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, `${pseudo}\n`, 'utf8');
+      fs.writeFileSync(file, `${pseudo}\n${sig}\n`, 'utf8');
       return;
     }
-    execFileSync('reg', ['add', REGISTRE, '/v', 'Pseudo', '/t', 'REG_SZ', '/d', pseudo, '/f'], {
-      windowsHide: true,
-      stdio: 'ignore',
-    });
+    execFileSync('reg', ['add', REGISTRE, '/v', 'Pseudo', '/t', 'REG_SZ', '/d', pseudo, '/f'],
+      { windowsHide: true, stdio: 'ignore' });
+    execFileSync('reg', ['add', REGISTRE, '/v', 'Sig', '/t', 'REG_SZ', '/d', sig, '/f'],
+      { windowsHide: true, stdio: 'ignore' });
   } catch {
     // Filet de securite seulement : le fichier du compte reste la reference.
   }
