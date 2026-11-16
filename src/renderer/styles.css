@@ -11,24 +11,24 @@
 /* Palette alignée sur le site aethoria-rp.fr : inks sombres chauds, rouge « blood »,
  * bronze, texte parchemin, liserés bronze. */
 :root {
-  --bg: #0b0b0f;
-  --surface: rgba(29, 26, 23, 0.72);
-  --surface-solid: #151311;
-  --surface-hover: rgba(212, 178, 122, 0.08);
-  --line: rgba(176, 141, 87, 0.22);
-  --line-strong: rgba(176, 141, 87, 0.42);
+  --bg: #1a120b;
+  --surface: rgba(48, 33, 20, 0.84);
+  --surface-solid: #2a1c11;
+  --surface-hover: rgba(226, 190, 120, 0.14);
+  --line: rgba(201, 160, 82, 0.38);
+  --line-strong: rgba(214, 173, 92, 0.6);
 
-  --text: #e6dfd0;
-  --muted: #aaa190;
-  --faint: #7d7466;
+  --text: #f3e7cc;
+  --muted: #cdbb98;
+  --faint: #9d8b6a;
 
   --red: #a3231f;
   --red-bright: #c63a2f;
   --red-dark: #8b1a1a;
   --red-rgb: 163, 35, 31;
   --red-soft: rgba(var(--red-rgb), 0.16);
-  --gold: #b08d57;
-  --gold-bright: #d4b27a;
+  --gold: #c9a052;
+  --gold-bright: #e6c375;
   --green: #6fe08a;
 
   --radius: 12px;
@@ -1100,3 +1100,93 @@ body.high-contrast .backdrop__shade { background: rgba(0, 0, 0, 0.82); }
 .profile__share { margin-left: auto; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+
+/* ------------------------------------------------------------------ *
+ *  THÈME MÉDIÉVAL : bois sombre, parchemin, filets d'or et de bronze
+ * ------------------------------------------------------------------ */
+
+.backdrop__shade {
+  background:
+    radial-gradient(ellipse at center, rgba(26, 16, 8, 0) 40%, rgba(14, 8, 3, 0.7) 100%),
+    linear-gradient(90deg, rgba(30, 19, 10, 0.9) 0%, rgba(30, 19, 10, 0.62) 42%, rgba(30, 19, 10, 0.3) 100%),
+    linear-gradient(0deg, rgba(24, 15, 8, 0.95) 0%, rgba(24, 15, 8, 0) 45%);
+}
+.login { background: rgba(30, 19, 10, 0.4); }
+
+/* Panneaux en bois veiné, cadre doré à double filet */
+.login__card, .playbar, .modal__panel, .drawer__panel, .toast, .tour__card {
+  background:
+    repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.07) 0 2px, rgba(255, 220, 160, 0.025) 2px 5px),
+    linear-gradient(180deg, rgba(62, 42, 25, 0.93), rgba(40, 27, 16, 0.95));
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 0 3px rgba(26, 16, 8, 0.85),
+    inset 0 0 0 4px rgba(201, 160, 82, 0.45),
+    inset 0 0 40px rgba(0, 0, 0, 0.35),
+    0 18px 50px rgba(0, 0, 0, 0.6);
+}
+.drawer__panel { border-radius: 0; border-width: 0 0 0 2px; }
+.rail {
+  background: linear-gradient(90deg, #2b1d11, #3a2918);
+  border-right: 2px solid var(--gold);
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.5);
+}
+.rail__btn.is-active { background: rgba(201, 160, 82, 0.2); color: var(--gold-bright); box-shadow: inset 0 0 0 1px var(--gold); }
+
+/* Titres : serif, dorés */
+.drawer__head h2, .modal__title, .hero__tagline, .group-title { font-family: var(--font-display); color: var(--gold-bright); }
+.section-title { border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.modal__eyebrow { color: var(--gold); }
+
+/* Boutons : plaque de bronze / sceau de cire */
+.btn { border-radius: 6px; font-family: var(--font-display); letter-spacing: 0.04em; }
+.btn--primary {
+  background: linear-gradient(180deg, #e0b765, #b88a3a 55%, #8d6524);
+  color: #2a1a09;
+  border: 1px solid #5c3f13;
+  text-shadow: 0 1px 0 rgba(255, 235, 190, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 240, 200, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.btn--primary:not(:disabled):hover { background: linear-gradient(180deg, #f0cb7d, #c99a45 55%, #9c722b); }
+.btn--ghost { border: 1px solid var(--gold); background: rgba(20, 12, 5, 0.35); }
+.btn--ghost:hover { background: var(--surface-hover); border-color: var(--gold-bright); }
+.btn--danger { border-color: rgba(190, 70, 55, 0.7); color: #f0a090; }
+
+/* Bouton Jouer : grand sceau rouge sang bordé d'or */
+.play {
+  border-radius: 8px;
+  border: 2px solid var(--gold-bright);
+  background: linear-gradient(180deg, #b8302a, #8b1a1a 55%, #5e0f0f);
+  color: #fbe9c0;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 0 2px rgba(40, 8, 8, 0.7), inset 0 1px 0 rgba(255, 210, 170, 0.3), 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+.play:not(:disabled):hover { box-shadow: inset 0 0 0 2px rgba(40, 8, 8, 0.7), 0 0 24px rgba(230, 195, 117, 0.45), 0 14px 36px rgba(0, 0, 0, 0.6); }
+
+/* Champs : encre sur parchemin */
+.input {
+  background: linear-gradient(180deg, #e9d9b2, #dcc891);
+  color: #2e1f0e;
+  border: 1px solid #6b4a1c;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 5px rgba(80, 50, 15, 0.35);
+}
+.input::placeholder { color: #8a7650; }
+.input[readonly] { color: #5d4a2a; }
+.input:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(230, 195, 117, 0.35), inset 0 2px 5px rgba(80, 50, 15, 0.35); }
+select.input option { color: #2e1f0e; background: #e9d9b2; }
+
+/* Barres de progression : pierre grise, remplissage or/bronze */
+.progress__track { height: 10px; border-radius: 3px; background: linear-gradient(180deg, #3c3a37, #5a5752); border: 1px solid #1c1a18; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6); }
+.progress__fill { border-radius: 2px; background: linear-gradient(180deg, #f0cb7d, #c99a45 55%, #8d6524); box-shadow: 0 0 8px rgba(230, 195, 117, 0.4); }
+
+.chip, .badge, .news__item, .option, .bg-choice, .shot { border-color: var(--line); }
+.news__item, .option { background: rgba(20, 12, 5, 0.3); }
+.account__avatar { background: #3a2918; border: 1px solid var(--gold); border-radius: 4px; }
+.launch__line.is-error { color: #ffb0a0; }
+
+:focus-visible { outline-color: var(--gold-bright); }
+::-webkit-scrollbar-thumb { background: rgba(201, 160, 82, 0.4); }
+.titlebar__btn--close:hover { background: #8b1a1a; }

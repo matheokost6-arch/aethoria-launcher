@@ -65,7 +65,7 @@ module.exports = {
   },
 
   server: {
-    host: 'aethoria.omgcraft.fr',
+    host: 'play.aethoria-rp.fr',
     port: 25565,
   },
 

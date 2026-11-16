@@ -35,6 +35,7 @@
       "path": "config/MouseTweaks.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_MouseTweaks.cfg",
       "sha1": "651b3e4db2d430dc1da3566b2984b264061a6794",
+      "sha256": "4069ce1a439d8c37453c1b1e9f2037e0942674c7e48723a39b37eab245792ad4",
       "size": 135,
       "keepExisting": true
     },
@@ -42,6 +43,7 @@
       "path": "config/ambientsounds-client.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_ambientsounds-client.json",
       "sha1": "e29bba5ead5073bd4f0149c3c6738084d8d8e307",
+      "sha256": "c98f572839ace55b0792042fa4b984311e7d876abdaccfc8a4694f5bebad766c",
       "size": 4198,
       "keepExisting": true
     },
@@ -49,6 +51,7 @@
       "path": "config/appleskin-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_appleskin-client.toml",
       "sha1": "01ddb88e420140c33e4cfc0c105edd6e40a5f2c7",
+      "sha256": "e6609ffbea927ee6390b1317bb6f3abb3f31ee591ca5c1d5e748f5e625fefea1",
       "size": 1361,
       "keepExisting": true
     },
@@ -56,6 +59,7 @@
       "path": "config/astikorcartsredux-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_astikorcartsredux-client.toml",
       "sha1": "1413624b66bef4f606f0dd749db9854a0098c3b4",
+      "sha256": "157229abeff72272f3d9e40904f1b5b780672c21361d3052d24f9853f0a85366",
       "size": 553,
       "keepExisting": true
     },
@@ -63,6 +67,7 @@
       "path": "config/astikorcartsredux-common.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_astikorcartsredux-common.toml",
       "sha1": "0578d257acd756051960fe6f3f7548155b75a3c9",
+      "sha256": "8413771f8bf30dedae75541322b7a444dc181d27eb7820e81061a3ff4fe9edae",
       "size": 4537,
       "keepExisting": true
     },
@@ -70,6 +75,7 @@
       "path": "config/betsyross-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_betsyross-client.toml",
       "sha1": "3669d2b08a33201b2cd4045cf5f0422b35773035",
+      "sha256": "dfb2fb19a7925cd3033a38941e13d1153e5f64f8ba13b7ea4fb4379630634656",
       "size": 137,
       "keepExisting": true
     },
@@ -77,6 +83,7 @@
       "path": "config/bettercombat/client.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_bettercombat_client.json5",
       "sha1": "06b1511550962b3bfe7cb155493ececd77c4d599",
+      "sha256": "e8064b014f9e01c27b63877f98410dd166f79b562aabb0d8fc365aeef2616902",
       "size": 520,
       "keepExisting": true
     },
@@ -84,6 +91,7 @@
       "path": "config/bettercombat/fallback_compatibility.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_bettercombat_fallback_compatibility.json",
       "sha1": "8efde77c49f6cd7c4035ee3f554c25f63532335a",
+      "sha256": "754feb4474a3f4d9fe6bd08f38c248fd5a796ed51f38d7d5704680250f3a34ca",
       "size": 2995,
       "keepExisting": true
     },
@@ -91,6 +99,7 @@
       "path": "config/bettercombat/server.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_bettercombat_server.json5",
       "sha1": "9fc3c1b5cb15328d634a72ce4d4b879f9c59c0fd",
+      "sha256": "8a3ca0cbeb543de63d478c7aaf065c0244a8b5d4face1c0a0124d1d3a1790c12",
       "size": 5169,
       "keepExisting": true
     },
@@ -98,6 +107,7 @@
       "path": "config/bettermobcombat/server.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_bettermobcombat_server.json5",
       "sha1": "7a1a62d3e52d9b90246bd04afec073e312ae0ec9",
+      "sha256": "fa89bc39ee43668a4255c74734c567dfae7bf78f77c9f10eb7372db201db71ef",
       "size": 6492,
       "keepExisting": true
     },
@@ -105,6 +115,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/README.txt",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_README.txt",
       "sha1": "998d0a2c45faef31d2d493e3de7e16cf59ed77b6",
+      "sha256": "c22c726ab59321bf3a3b2803b24836e8f549e8a2fc2f4b86ba4f6e064d9419bf",
       "size": 5377,
       "keepExisting": true
     },
@@ -112,6 +123,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/burn_mappings/overrides.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_burn_mappings_overrides.json",
       "sha1": "47958420d13d77bfb55cdd4ba2bc3c5f7a62d167",
+      "sha256": "160d4dfa8a6a06ddb38e898148550ebc8e6135b9240f951d1dbac90abf28aef5",
       "size": 699,
       "keepExisting": true
     },
@@ -119,6 +131,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/bamboo_blocks.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_bamboo_blocks.json",
       "sha1": "f19c434ce70f940202c1de79f468db4c53dc3c83",
+      "sha256": "f4ac7f51f53eb78f9d0c51f7e59ab771b90932f94716dc4f6c7a6e9baf84d2fd",
       "size": 103,
       "keepExisting": true
     },
@@ -126,6 +139,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_burnt_dirt.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_burnt_dirt.json",
       "sha1": "f1e598adddde1c911ef185b917752b86390a0b6b",
+      "sha256": "97424b45a8937bc9d5857c55bd14c18b96ad001eab3663f8a427f48567d36e3b",
       "size": 175,
       "keepExisting": true
     },
@@ -133,6 +147,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_burnt_farmland.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_burnt_farmland.json",
       "sha1": "c925c16b038924cf31906dd9c8a03af4007e7db9",
+      "sha256": "d8472fa6b320a0bb60fb708f69521c87aed252bdcb358da8e378a9be3c36aefa",
       "size": 191,
       "keepExisting": true
     },
@@ -140,6 +155,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_fine_leaves.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_fine_leaves.json",
       "sha1": "8eb9848be8ef0953eee32c25ad23cce5189c4f77",
+      "sha256": "18c1787add69d27bcc71addc67e6bbd35ecea634fe63b7f704334c75246aa2fe",
       "size": 186,
       "keepExisting": true
     },
@@ -147,6 +163,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_hollow_log.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_hollow_log.json",
       "sha1": "017cbd5f7aeb4c4f3bef77f3acf3f9bf597a30cf",
+      "sha256": "f557c2e7bb2f506e7172a3517b544cb0e0652d6bfef355319e07628963aa197a",
       "size": 196,
       "keepExisting": true
     },
@@ -154,6 +171,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_large_leaves.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_large_leaves.json",
       "sha1": "1e405d21697fb3f0ec8374e8f3b62ed410c1df42",
+      "sha256": "bee59cc882f268ff7accce9adef1fbb3d428b39be81c72333a2751114044ca42",
       "size": 192,
       "keepExisting": true
     },
@@ -161,6 +179,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_medium_leaves.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_medium_leaves.json",
       "sha1": "711f8645c96b6d0a1badf09c5a99a8ca149f728f",
+      "sha256": "703240c49b0aa02e70d77a0c1928e89eaf4717ca1e3a9285d30ab2d63a598b5a",
       "size": 267,
       "keepExisting": true
     },
@@ -168,6 +187,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_small_log.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_small_log.json",
       "sha1": "3fd8d2ce105f1e25d802e2e5464caa5b909f7a93",
+      "sha256": "e363289dc2ec4304c32330d93c1ae0094f561cbbb6751078710c4cf14a4d7842",
       "size": 188,
       "keepExisting": true
     },
@@ -175,6 +195,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_branch.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_branch.json",
       "sha1": "fa9e93c316e88b17ef4a27c89536e5ba247094de",
+      "sha256": "6cb703aafc8652c3eb81020d6e7e21793cc83c87d3f44d653951d964da7f310b",
       "size": 182,
       "keepExisting": true
     },
@@ -182,6 +203,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_button.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_button.json",
       "sha1": "5d43c013c95204eb0f16dcf8b98cc652df7ed8d0",
+      "sha256": "70995c62d0f2f32ff0aa2f4d278cceb74c97ae1e198c4e059131baa8f43c5471",
       "size": 267,
       "keepExisting": true
     },
@@ -189,6 +211,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_carpet.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_carpet.json",
       "sha1": "de71cd91010cc5105ffed29241ffa31d397f23b1",
+      "sha256": "6c4d20f7b53e02f7107eb29db2c14306a68d7a17a989800377a704be44419421",
       "size": 184,
       "keepExisting": true
     },
@@ -196,6 +219,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_crops.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_crops.json",
       "sha1": "48cf364f4cf254a03aa31af554f10cd5499ca72a",
+      "sha256": "1989a772722853ab51c5f7462a957d2477cd04268951464990058cc34e37871e",
       "size": 180,
       "keepExisting": true
     },
@@ -203,6 +227,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_door.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_door.json",
       "sha1": "9699fef0a6f0d7d06f375bd4a675decf6b01a658",
+      "sha256": "d1b077cb7669bf3e9c47f5c7b762745cb3aeb994baf688e7be61740dda883549",
       "size": 261,
       "keepExisting": true
     },
@@ -210,6 +235,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_envelope.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_envelope.json",
       "sha1": "62caaec5c1f072a1666ba74392115abf29f245bb",
+      "sha256": "7341681dc6d99e00e3246fcf932679c86c50dbd72a011f831361bb675b9ffec7",
       "size": 192,
       "keepExisting": true
     },
@@ -217,6 +243,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_fence_gates.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_fence_gates.json",
       "sha1": "fa74b2f9babe9fbaa64539b8195ae69e53fc1400",
+      "sha256": "09b3eba2e95e98d4d09c3939196f13312f0db6da84b5eabb6af7382f97c151df",
       "size": 279,
       "keepExisting": true
     },
@@ -224,6 +251,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_fences.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_fences.json",
       "sha1": "d761c68944db2b78f003454024ae858b66e3a896",
+      "sha256": "01a9149740c24f858780623f0f74ee44b050908e09825751340e7f88227dcd9a",
       "size": 264,
       "keepExisting": true
     },
@@ -231,6 +259,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_fern.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_fern.json",
       "sha1": "3c93568bfc8d3f22a3baa0f135dc4867eb38d867",
+      "sha256": "165582e82c7a586fae04b567f279ac9d4ff504320af5bfe3c1b83f09df9e3124",
       "size": 183,
       "keepExisting": true
     },
@@ -238,6 +267,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_grass.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_grass.json",
       "sha1": "a9dec40612ecc3b22dbdc34cd46501e2855d2cf0",
+      "sha256": "d846f87863d4cf098d55c003d6c2f64788daa085d585f6058536e503c7fdc652",
       "size": 189,
       "keepExisting": true
     },
@@ -245,6 +275,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_log.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_log.json",
       "sha1": "56d1e66058d8bef298065cf10ecdda96f4eb518a",
+      "sha256": "b17e7d7cedfcb9f6ee0fea928600e9ec6f805fed73643de68c20ad61b690bee0",
       "size": 258,
       "keepExisting": true
     },
@@ -252,6 +283,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_log_slow.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_log_slow.json",
       "sha1": "e02285942dedcc389541d7001b75e79b60c8c250",
+      "sha256": "351d76bd71bd793ecaea0c147a5242b0f04e4d630295e1834138a2220ddf1ae4",
       "size": 183,
       "keepExisting": true
     },
@@ -259,6 +291,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_moss.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_moss.json",
       "sha1": "7c9a370430855053fabb34bb745759408b987d01",
+      "sha256": "1757d0626592d0bc91623e10de87bd1d236d2db39e80705fd2efd216b1afa793",
       "size": 267,
       "keepExisting": true
     },
@@ -266,6 +299,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_moss_carpet.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_moss_carpet.json",
       "sha1": "230acc6c735ec64a87affd1ea05d4c95e17ab530",
+      "sha256": "9c5ddbe1cf20abb98bf0d399f5c07d164c109b4952afe32f81c0d5355cbd5d59",
       "size": 266,
       "keepExisting": true
     },
@@ -273,6 +307,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_planks.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_planks.json",
       "sha1": "1e24a51d6ddecb2e3beac3fb04fdd220bcbeeb76",
+      "sha256": "2b8c162de6ce38d47ea7ab7e28b40e30a8af798800066e397fabaf2cd770c2f1",
       "size": 267,
       "keepExisting": true
     },
@@ -280,6 +315,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_pressure_plate.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_pressure_plate.json",
       "sha1": "40afdb3f575633e4a66276d36c91b865202cead1",
+      "sha256": "99b67b3aee6e5ff2bc07e179fccde7088a46d362f60e1dc846f03eace6a0de07",
       "size": 291,
       "keepExisting": true
     },
@@ -287,6 +323,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_root.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_root.json",
       "sha1": "e970c352a5034ac1e67038c909aeec484f56737e",
+      "sha256": "0b173f2210d396c68c52b693bcab4c2f274c67a794bfe0e8bbe1bdf1a5563bf2",
       "size": 185,
       "keepExisting": true
     },
@@ -294,6 +331,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_sail.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_sail.json",
       "sha1": "f78c52274c5b3f7b8bd50537328084d887affc4c",
+      "sha256": "d1ab419d9608bd67c96dec1d25cefa93f5d70d625dae49877c4961861c7a59d5",
       "size": 183,
       "keepExisting": true
     },
@@ -301,6 +339,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_sail_frame.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_sail_frame.json",
       "sha1": "4a065131b611ef40778bb7410b8edff21532bf66",
+      "sha256": "1443cfdd6acd4fae60aaef3f53779f4b70e013b0502febbdb612da4c9e170f60",
       "size": 185,
       "keepExisting": true
     },
@@ -308,6 +347,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_slabs.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_slabs.json",
       "sha1": "27f5d954a750c5e8e6124c5587bbf40ae6ab5230",
+      "sha256": "58fc073bdbf5e18ad5b915005fe61dc0da9a9108606e61322e844501b7c831da",
       "size": 3698,
       "keepExisting": true
     },
@@ -315,6 +355,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_stairs.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_stairs.json",
       "sha1": "1c1b7b93c84764f70588155f267d978b9aa80344",
+      "sha256": "7afccd0dd79e8e8647e0fec938ac57d8be798442ff506c02d2d961563972aa71",
       "size": 3772,
       "keepExisting": true
     },
@@ -322,6 +363,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_stripped_log.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_stripped_log.json",
       "sha1": "b12ef655eb9e35f6471cc74321c9a4dc6a691d03",
+      "sha256": "c6585e4ba924a2f8f5ee45894c385bd7668479bf3a625d923cbb55f9e69448d3",
       "size": 285,
       "keepExisting": true
     },
@@ -329,6 +371,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_stripped_wood.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_stripped_wood.json",
       "sha1": "4fc0aad1342b7e3723be2d3074293acc65d7c515",
+      "sha256": "79401b9d35e27ceabd5e12f07239ffe0b4937813cc340717cee9a4523d8e0211",
       "size": 288,
       "keepExisting": true
     },
@@ -336,6 +379,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_symmetric_sail.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_symmetric_sail.json",
       "sha1": "290fec78761024b8d9fa95bbb8bebd6876732910",
+      "sha256": "8770eac25da5cb2ef700ecd861ad38d1e5c0047a6fc3df27f08dbd71b171e61e",
       "size": 184,
       "keepExisting": true
     },
@@ -343,6 +387,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_tall_grass.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_tall_grass.json",
       "sha1": "ee5ae6e7437ddd2a7f882bbb0f9ef76b19020c35",
+      "sha256": "8a7a6820c3c01793c3cfa2c2d0165c203af8e00b9e35a48290d59fe5f11f1822",
       "size": 191,
       "keepExisting": true
     },
@@ -350,6 +395,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_trapdoor.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_trapdoor.json",
       "sha1": "aa4c6c387af3248b4667a2ebe2c47e897d7a1b46",
+      "sha256": "bee3d98cd62209208bc49e74189d0e5942d16522972ecfe2ac25b35e9c81313a",
       "size": 273,
       "keepExisting": true
     },
@@ -357,6 +403,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_wood.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_wood.json",
       "sha1": "03eed72664a3971ce61d597aa80c3dc0794327e4",
+      "sha256": "5958fe9ef16210916628bf79a2e5c58a1ca75cc476b4f6c4b91b4db2237411a8",
       "size": 261,
       "keepExisting": true
     },
@@ -364,6 +411,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_smoldering_wool.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_smoldering_wool.json",
       "sha1": "8266a8f20f15ba4a3cf10d9276e9796aa918ddb6",
+      "sha256": "8a353cc8813cdab7ed67dbef43250a83d5a30b93c8d3f78c2f334c246a77ce10",
       "size": 181,
       "keepExisting": true
     },
@@ -371,6 +419,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_vertical_slab.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_vertical_slab.json",
       "sha1": "ce2407b787d0443ff0f7ac443d73052fb82cb4b1",
+      "sha256": "2b67194ea232d6f455a705ec50d9161a7638539538514c7905554e81042665cd",
       "size": 1098,
       "keepExisting": true
     },
@@ -378,6 +427,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/burns_to_wall.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_burns_to_wall.json",
       "sha1": "174a3d50965a64b704dcf4d597508e84b0de8030",
+      "sha256": "786335ad2b32e559834ddbcfe5cc452c5df94ffe7b7bec3aacef41b012cd8815",
       "size": 4609,
       "keepExisting": true
     },
@@ -385,6 +435,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/destroy_in_burn.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_destroy_in_burn.json",
       "sha1": "6963e36edbc85e651254268bbe55c280e85ed228",
+      "sha256": "c094c76a7f1b17efa6f9c90dd75ad627e15856ae2d4f3b8ddc83bd6037e90ff2",
       "size": 194,
       "keepExisting": true
     },
@@ -392,6 +443,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/fire_resistant.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_fire_resistant.json",
       "sha1": "0ecb825e0665e8ed4da9647210b1f974abd747c2",
+      "sha256": "6e0539cf90977cb21137b78e2d5f70144e0a56bcfe6105b19616ab7c463af7ab",
       "size": 186,
       "keepExisting": true
     },
@@ -399,6 +451,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/vanilla_fire_burns_on.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_vanilla_fire_burns_on.json",
       "sha1": "fc3eeae80320fdad4b1b524785c81c795cf0768a",
+      "sha256": "f29d956b35af617a72f995334cb11286ff2dc02309ac52faa82bf6899852dbbb",
       "size": 192,
       "keepExisting": true
     },
@@ -406,6 +459,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/data/burnt/tags/blocks/will_not_burn.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_data_burnt_tags_blocks_will_not_burn.json",
       "sha1": "a8b3f120aed6ac5f019d59a04df6056f71567eae",
+      "sha256": "9cc2863d8185c3a17933820238f5cb1b760b405d02798cf6f981d6c1c0334ea8",
       "size": 192,
       "keepExisting": true
     },
@@ -413,6 +467,7 @@
       "path": "config/burnt/mappings/Burnt Block Mappings 1.20.1/pack.mcmeta",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_Burnt.Block.Mappings.1.20.1_pack.mcmeta",
       "sha1": "d5bdf399db3c72e2d585fc8227264ab832c1b177",
+      "sha256": "aa0257974380b655ce5e81733a3a0447b60a706c4fd7dafbf3647663bd9cb3c8",
       "size": 116,
       "keepExisting": true
     },
@@ -420,6 +475,7 @@
       "path": "config/burnt/mappings/README.txt",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_mappings_README.txt",
       "sha1": "0045e93bd61b8b99c6be5c296786f63a35b4252f",
+      "sha256": "52327717790071de2788aea58ceb9126913833533f236c2cbfba17c98e0440bc",
       "size": 581,
       "keepExisting": true
     },
@@ -427,6 +483,7 @@
       "path": "config/burnt_basic.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_burnt_basic.json",
       "sha1": "a486827e1aeedd241859e3094605e664464ddf34",
+      "sha256": "ea04b7e0ba44b59810a4d59dba420806b267a02e2f874a3e85c46164b7379ada",
       "size": 1390,
       "keepExisting": true
     },
@@ -434,6 +491,7 @@
       "path": "config/coldsweat/client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_client.toml",
       "sha1": "9a25a801e37f33a5d7834bbd9b29d496c9b22d7d",
+      "sha256": "5e4c0abad8059c957cf568627327db159962630511a1513331ed5f8e65559ce3",
       "size": 13189,
       "keepExisting": true
     },
@@ -441,6 +499,7 @@
       "path": "config/coldsweat/disabled_mods.txt",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_disabled_mods.txt",
       "sha1": "883acefb7cef7ec8b6cca9b91676f93142ee1247",
+      "sha256": "ba113e5910eb54f230affbbf638aee153b3d3b0d4d920f6df44d309b57fdc36a",
       "size": 152,
       "keepExisting": true
     },
@@ -448,6 +507,7 @@
       "path": "config/coldsweat/entity.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_entity.toml",
       "sha1": "5af538323a38e02e32f21edca9a3ff6ed34fa719",
+      "sha256": "a21aea9dc3da9a6e559313c65998dbc94887ca34bd50a1d71c64a1f858c63a12",
       "size": 7836,
       "keepExisting": true
     },
@@ -455,6 +515,7 @@
       "path": "config/coldsweat/item.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_item.toml",
       "sha1": "6f017c4537fd5005c0cf66a0e53b53a4cbbeab9d",
+      "sha256": "d22116ddc980adb984e4fcc01235679e6f931c0f8bf917be8eb0f4c46e96d2a4",
       "size": 16506,
       "keepExisting": true
     },
@@ -462,6 +523,7 @@
       "path": "config/coldsweat/main.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_main.toml",
       "sha1": "45cae71a060155f5f6b4a251780c2ae75bb5799f",
+      "sha256": "2faac82575f06cef6cd1116d9d8b8fd71d7483c565d0c3e18bd2d43f37db9208",
       "size": 8312,
       "keepExisting": true
     },
@@ -469,6 +531,7 @@
       "path": "config/coldsweat/world.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_coldsweat_world.toml",
       "sha1": "d33f0398076ff7ab20de034c10f495afe45dd1ac",
+      "sha256": "f35b0ba8eb3b60ef6d770efd88a0e5b9385fe9498897bd36c8337bccccbb2f0f",
       "size": 24536,
       "keepExisting": true
     },
@@ -476,6 +539,7 @@
       "path": "config/easy_npc/dialog_client.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_dialog_client.cfg",
       "sha1": "f0ce516215b551893d2830d175b3bc1190956d37",
+      "sha256": "cddf1ff1e8ed3f7c6834ae55a022a30968ee5d5ce8f956fee1db2348ccaf2af0",
       "size": 280,
       "keepExisting": true
     },
@@ -483,6 +547,7 @@
       "path": "config/easy_npc/dialog_options.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_dialog_options.cfg",
       "sha1": "a1735f3b7c4a0048d7a2f165c9d0a1198e0443c2",
+      "sha256": "cc08334d3dd7f3d730288b9bff4252da63fc11431f40e4f343efc88368e3691e",
       "size": 476,
       "keepExisting": true
     },
@@ -490,6 +555,7 @@
       "path": "config/easy_npc/highlight_client.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_highlight_client.cfg",
       "sha1": "6c18f26243c155f2fdaabd017a3895c0bb48e31f",
+      "sha256": "c9cab8663874293e11b74a0f1349ecf4a8f480fe7c458419a02d5900d0a38edf",
       "size": 193,
       "keepExisting": true
     },
@@ -497,6 +563,7 @@
       "path": "config/easy_npc/name_tag_client.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_name_tag_client.cfg",
       "sha1": "08c4e5a145ad328b8fe9fde3e5cbc6a974b730b7",
+      "sha256": "43e111cc87e02b2d02bac27c0f6d7631dc0458612d6092a782cd135d1a29fce8",
       "size": 466,
       "keepExisting": true
     },
@@ -504,6 +571,7 @@
       "path": "config/easy_npc/npc_base.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_npc_base.cfg",
       "sha1": "bb08ea4e8d3d89aed8c4e4d45840c7143c5efefd",
+      "sha256": "3d7218066bf31c42d73a94ce48238b7cca486aebd2a2ab7c5f924e740318d397",
       "size": 216,
       "keepExisting": true
     },
@@ -511,6 +579,7 @@
       "path": "config/easy_npc/remote_texture.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_remote_texture.cfg",
       "sha1": "961ace8d9fe8040b4aeda9707b0c21cddc28dbe8",
+      "sha256": "a22d79845144f0aea36b8d36d990124c36626249b54644eb7914f3d6179710a4",
       "size": 248,
       "keepExisting": true
     },
@@ -518,6 +587,7 @@
       "path": "config/easy_npc/render_entity_type_support.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_render_entity_type_support.cfg",
       "sha1": "058cefb41894c2523ab18b237e0a57bebbed7b21",
+      "sha256": "ca35257322c33f86f79dff46707b01526f03224eb8a6d4009b64cdbbd3d7415d",
       "size": 34610,
       "keepExisting": true
     },
@@ -525,6 +595,7 @@
       "path": "config/easy_npc/security.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_security.cfg",
       "sha1": "a7d80a00b9282e1a9dcd6c6a9cc64a23e7bf3cb4",
+      "sha256": "6f88e149c912efd2fd5206f775d29122891148e8ff595c7821f2f22da730a2ca",
       "size": 4240,
       "keepExisting": true
     },
@@ -532,6 +603,7 @@
       "path": "config/easy_npc/skin/allay/allay_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_allay_allay_template.png",
       "sha1": "1151704465feb6c1a7bd61f0ff8494e704df3926",
+      "sha256": "5851df322e03f8c7d4ccd5875a7b8f38b692d6484cd9a8a34ca3ba2e51bcde1a",
       "size": 246,
       "keepExisting": true
     },
@@ -539,6 +611,7 @@
       "path": "config/easy_npc/skin/cat/cat_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_cat_cat_template.png",
       "sha1": "f981ae83c4147058677a8cf18e108c6d9a55b157",
+      "sha256": "c9c22851b6ce2a97d731b4e476423abcfc4911acd9e29ae157b8be5b42088364",
       "size": 283,
       "keepExisting": true
     },
@@ -546,6 +619,7 @@
       "path": "config/easy_npc/skin/chicken/chicken_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_chicken_chicken_template.png",
       "sha1": "de1a6a0b5a157df1d58d00f8ce4ba5306272631b",
+      "sha256": "c9a5d1a53f844f32e2d530103540b4a91cfe8d53861c7b70bcae950742c50422",
       "size": 287,
       "keepExisting": true
     },
@@ -553,6 +627,7 @@
       "path": "config/easy_npc/skin/creeper/creeper_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_creeper_creeper_template.png",
       "sha1": "1bd7ae2462edc3b96764f0790162f87961ee6d2e",
+      "sha256": "effaa2db2b00b87505ed4e59549598106a7c63684b69e0c820c308b41eeb2385",
       "size": 255,
       "keepExisting": true
     },
@@ -560,6 +635,7 @@
       "path": "config/easy_npc/skin/ender_man/ender_man_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_ender_man_ender_man_template.png",
       "sha1": "624941707c02dc7b46282c2a411cbded82b77dd1",
+      "sha256": "73579f345c51e7096168cacddf4b3e0a93b6c9880bded532a9d292c5917642a3",
       "size": 276,
       "keepExisting": true
     },
@@ -567,6 +643,7 @@
       "path": "config/easy_npc/skin/fairy/fairy_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_fairy_fairy_template.png",
       "sha1": "dedd04b716203978bcdbcebfb901f0b753f912e7",
+      "sha256": "db071fe581827f3a195df8344909bafb243cbf54c8931dc60a7785285946d1bb",
       "size": 434,
       "keepExisting": true
     },
@@ -574,6 +651,7 @@
       "path": "config/easy_npc/skin/fox/fox_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_fox_fox_template.png",
       "sha1": "6d042f9a9b7969386b634f9aa9320abf389f8f13",
+      "sha256": "8cce109a5322cff97d82ea51c2c50d54d4486e57d48d72f20354d0e2e7aaf9a6",
       "size": 335,
       "keepExisting": true
     },
@@ -581,6 +659,7 @@
       "path": "config/easy_npc/skin/humanoid/humanoid_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_humanoid_humanoid_template.png",
       "sha1": "87c4ab5f89cbefc8680e76aabf68582c66b5698b",
+      "sha256": "b96aee293379a6a60a0e862dc338eb6a14ea31929b4f78d9923eb6b60940106c",
       "size": 360,
       "keepExisting": true
     },
@@ -588,6 +667,7 @@
       "path": "config/easy_npc/skin/humanoid_slim/humanoid_slim_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_humanoid_slim_humanoid_slim_template.png",
       "sha1": "0cffa4769a12c1f8e83a40e0216572e2320e8b12",
+      "sha256": "1c194da6ebe3a991146b0ef04a6000451789887a62bf7ee2d8a49b50b4bec6dd",
       "size": 384,
       "keepExisting": true
     },
@@ -595,6 +675,7 @@
       "path": "config/easy_npc/skin/husk/husk_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_husk_husk_template.png",
       "sha1": "fa8b868467e44763e80eadad2b40532ccd333119",
+      "sha256": "81f7fb65d89044326626462c36bfdc28b45d7fb307543d5b28abfa7a3a031624",
       "size": 531,
       "keepExisting": true
     },
@@ -602,6 +683,7 @@
       "path": "config/easy_npc/skin/illager/illager_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_illager_illager_template.png",
       "sha1": "9c5cf8d7b514c33e6c4d1ae99a0223b2733aff2e",
+      "sha256": "d3a9f1a01c6b711bb3ca70f598f14f3cfde8017542a8a48f93f8489b514dc03c",
       "size": 300,
       "keepExisting": true
     },
@@ -609,6 +691,7 @@
       "path": "config/easy_npc/skin/iron_golem/iron_golem_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_iron_golem_iron_golem_template.png",
       "sha1": "5fbc0225ac05828ab84aca26548e872be296e186",
+      "sha256": "2fadcece746b8a921130968a567296e63d4dbdfd1282e21d71fbd278994a4fe6",
       "size": 451,
       "keepExisting": true
     },
@@ -616,6 +699,7 @@
       "path": "config/easy_npc/skin/orc/orc_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_orc_orc_template.png",
       "sha1": "b494c4efeff9a3e6f3118dbb2e5780975f40b986",
+      "sha256": "1469eab5ffabb32f3b8ed9965de819db03ee6b0bd950885ad88fc5c517eaf817",
       "size": 521,
       "keepExisting": true
     },
@@ -623,6 +707,7 @@
       "path": "config/easy_npc/skin/pig/pig_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_pig_pig_template.png",
       "sha1": "5c3a096c8cad3612f63cdf2f8875a785970de9cb",
+      "sha256": "e1d27259fbaab2ae6924d5fc73ed462215395f08f79ef1518005ee0f73f2a81a",
       "size": 270,
       "keepExisting": true
     },
@@ -630,6 +715,7 @@
       "path": "config/easy_npc/skin/piglin/piglin_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_piglin_piglin_template.png",
       "sha1": "4d412fe70936217cf0c212dcf165c47290a12bc9",
+      "sha256": "9d2dfd8515332c4ac529e51599ee89b8a4c359617a225d15a5147020034870a5",
       "size": 361,
       "keepExisting": true
     },
@@ -637,6 +723,7 @@
       "path": "config/easy_npc/skin/skeleton/skeleton_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_skeleton_skeleton_template.png",
       "sha1": "7046abde4ca1fec60b6825974ba1cff520586c26",
+      "sha256": "aa91f44a9c36bea6c14537e4f73ab69a4b50d4406370577a7a0d63af4783a8c6",
       "size": 259,
       "keepExisting": true
     },
@@ -644,6 +731,7 @@
       "path": "config/easy_npc/skin/spider/spider_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_spider_spider_template.png",
       "sha1": "885cba971843e569bbeced599d59f2c67e8af629",
+      "sha256": "f9f894b50e1ebf1a2ea9cede0e6b8eadb816ef951b4d4ad6a7e55ce85be3bf1e",
       "size": 308,
       "keepExisting": true
     },
@@ -651,6 +739,7 @@
       "path": "config/easy_npc/skin/stray/stray_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_stray_stray_template.png",
       "sha1": "fa8b868467e44763e80eadad2b40532ccd333119",
+      "sha256": "81f7fb65d89044326626462c36bfdc28b45d7fb307543d5b28abfa7a3a031624",
       "size": 531,
       "keepExisting": true
     },
@@ -658,6 +747,7 @@
       "path": "config/easy_npc/skin/vex/vex_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_vex_vex_template.png",
       "sha1": "c2b16be9372168b1e9687b0a3f70ce576787f571",
+      "sha256": "56c665b06aa06dcc111c6a7c09e02729c026350a30c98635df5f54e3d12d4bcf",
       "size": 247,
       "keepExisting": true
     },
@@ -665,6 +755,7 @@
       "path": "config/easy_npc/skin/villager/villager_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_villager_villager_template.png",
       "sha1": "15dba09fac0d202181e73bb319b423498da8abff",
+      "sha256": "ee42acf22b0f8df770510a77e1c0988af96bb4f24e3b82a32b3364be021c760c",
       "size": 357,
       "keepExisting": true
     },
@@ -672,6 +763,7 @@
       "path": "config/easy_npc/skin/villager/villager_without_hat_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_villager_villager_without_hat_template.png",
       "sha1": "0a2bb149580640d4f38e56ba665862a550abc6a7",
+      "sha256": "d24d599378f1fb54f343926c2d39c078c81021cab7da6337f7a688621327cac5",
       "size": 331,
       "keepExisting": true
     },
@@ -679,6 +771,7 @@
       "path": "config/easy_npc/skin/witch/witch_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_witch_witch_template.png",
       "sha1": "e73ef43416ca972aa3438cb2f29128ce86c65d55",
+      "sha256": "ef51d0f6a893c201752ce5b12ee352651928d42497b102ba429d1b8cd25f2722",
       "size": 431,
       "keepExisting": true
     },
@@ -686,6 +779,7 @@
       "path": "config/easy_npc/skin/wolf/wolf_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_wolf_wolf_template.png",
       "sha1": "06f7e51f5c125d869f6fe85b626b9ec14d1039b1",
+      "sha256": "47833f4690766423c63905c6950224b77867e1c30833fd9a7cdcc0d6455d743a",
       "size": 321,
       "keepExisting": true
     },
@@ -693,6 +787,7 @@
       "path": "config/easy_npc/skin/zombie/zombie_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_zombie_zombie_template.png",
       "sha1": "77daf16b4c1284869ab5d7bb3d1e0afb369f7937",
+      "sha256": "e9a38d8b1980d1390575658004f1a8274d57e5f14afaff9a2c7dc06315d01f54",
       "size": 292,
       "keepExisting": true
     },
@@ -700,6 +795,7 @@
       "path": "config/easy_npc/skin/zombie_villager/zombie_villager_template.png",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_skin_zombie_villager_zombie_villager_template.png",
       "sha1": "423c2f3c668b7aff01b292fc7939cdaa61966e35",
+      "sha256": "fdeea612041dc4c5137675bfb656ff570cad4b33fffa995746f1e56290614516",
       "size": 356,
       "keepExisting": true
     },
@@ -707,6 +803,7 @@
       "path": "config/easy_npc/spawner_type.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_spawner_type.cfg",
       "sha1": "3cb8697d3ae4b35a83c7890f4042a9112483fd1e",
+      "sha256": "38557bbef867e8276f2f44708d5827f05827256569eb441c20d50931b4a0a626",
       "size": 1187,
       "keepExisting": true
     },
@@ -714,6 +811,7 @@
       "path": "config/easy_npc/speech_bubble_client.cfg",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_speech_bubble_client.cfg",
       "sha1": "c0b015834450864f7cbe432a42d8a5623b552e67",
+      "sha256": "5f3c3ec42fa3e4352af0ef1de3302eac90f3d43e27cdd23d1267a424f367c19f",
       "size": 875,
       "keepExisting": true
     },
@@ -721,6 +819,7 @@
       "path": "config/easy_npc/user_defined_npcs.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_easy_npc_user_defined_npcs.json",
       "sha1": "eae7bd4b2e953f2acaee4fadcb341371450f593a",
+      "sha256": "03ebf1e09c95de7cae601b38688ba89a153812ff1a6cf08bdad27913e977c016",
       "size": 465,
       "keepExisting": true
     },
@@ -728,6 +827,7 @@
       "path": "config/ekotsk/weapons.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_ekotsk_weapons.json5",
       "sha1": "8dbc695d919bce18df594e412d7c26fdedc80acb",
+      "sha256": "64afdbedb19b7906ba6632c5cac719969cede79ef3afc2e1f2d8b2317cd8f949",
       "size": 141,
       "keepExisting": true
     },
@@ -735,6 +835,7 @@
       "path": "config/embeddium-mixins.properties",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_embeddium-mixins.properties",
       "sha1": "a729ee50d18cf2204ff9fc33bc21641d55185c88",
+      "sha256": "09ff183e061d93b79514bc171bf9118497578757e7a5c45946039487656e2619",
       "size": 269,
       "keepExisting": true
     },
@@ -742,6 +843,7 @@
       "path": "config/embeddium-options.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_embeddium-options.json",
       "sha1": "c46718c2b687959e2f8f7c46ba64eb2b7413a80d",
+      "sha256": "b4b0aaec74cd2c37a2d0d384a4195768d8d7cbc9f86c7d993694e394fa35664d",
       "size": 852,
       "keepExisting": true
     },
@@ -749,6 +851,7 @@
       "path": "config/epichunt.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epichunt.json",
       "sha1": "504ec24662a03f28fb51fdcc7301588eb2ad84e3",
+      "sha256": "bc1ffaf213a80f9a3c07c8fb2b8705684f968807af84c61d51b3dde58094fded",
       "size": 4477,
       "keepExisting": true
     },
@@ -756,6 +859,7 @@
       "path": "config/epicknights/armor.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknights_armor.json5",
       "sha1": "c9b29e24eb45d66074b89ebbcd54f47d42679d9b",
+      "sha256": "0ff17ebd10c2d1b1b21fa8f6e5667eed9c08b226f60805bc586e2bb06f058961",
       "size": 12687,
       "keepExisting": true
     },
@@ -763,6 +867,7 @@
       "path": "config/epicknights/general.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknights_general.json5",
       "sha1": "3352660b9e6b17d04a0b566f6b468fdbebd8f455",
+      "sha256": "d3dec561a9b4985cb6407bc18bc1d8507e5bd7e6e916de32a0bdae0e8b2998ba",
       "size": 1915,
       "keepExisting": true
     },
@@ -770,6 +875,7 @@
       "path": "config/epicknights/mobs_equipment.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknights_mobs_equipment.json5",
       "sha1": "05f856c098bb6c49f360edc0b2b30b3c1592369c",
+      "sha256": "35bf1bc34160e9a890814f08e0e9a69c3d7e21bf6991ace6548ef759e4cd8524",
       "size": 1991,
       "keepExisting": true
     },
@@ -777,6 +883,7 @@
       "path": "config/epicknights/shields.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknights_shields.json5",
       "sha1": "27bd5e72b9108027e199029e342d7122b2ae8f7f",
+      "sha256": "ece9f2ec662c26d829d7439c0138717d9fe83dc606d055b64dab37799f209f3e",
       "size": 1781,
       "keepExisting": true
     },
@@ -784,6 +891,7 @@
       "path": "config/epicknights/weapons.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknights_weapons.json5",
       "sha1": "eb599aac0e79611ce682c0288cbefa4cf8894482",
+      "sha256": "134eca5eafff0ffe0d52cf8774dd02fb247a6e2f6ca617f0acac396c9565ebd6",
       "size": 9918,
       "keepExisting": true
     },
@@ -791,6 +899,7 @@
       "path": "config/epicknightsaddon/armors.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknightsaddon_armors.json5",
       "sha1": "10c0182a40f55d957b25449935a6716f821ce9c1",
+      "sha256": "92e708f989d8b145764f6e3cbf669ba1887735adf3ce0cb065e094ec44708627",
       "size": 67128,
       "keepExisting": true
     },
@@ -798,6 +907,7 @@
       "path": "config/epicknightsaddon/shields.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknightsaddon_shields.json5",
       "sha1": "d66861de0ef6335946629940dfc5ec67a56bc225",
+      "sha256": "ad2d40dfacbc3bc075104a322823f1b9271a9f904ee7621742617c4bd727c2bb",
       "size": 184,
       "keepExisting": true
     },
@@ -805,6 +915,7 @@
       "path": "config/epicknightsaddon/weapons.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_epicknightsaddon_weapons.json5",
       "sha1": "3f57b8a73e2f182130698485be6fb9a93155a136",
+      "sha256": "1bbc9e753cb40440d1d7d3a34996d3d1dab84df4cdf16c659f8b439422a5bb01",
       "size": 20244,
       "keepExisting": true
     },
@@ -812,6 +923,7 @@
       "path": "config/factiontree/factions.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_factions.json",
       "sha1": "8053cd9c9ff76d67dc349556565f7784c0080152",
+      "sha256": "fd7fbab55ddef086ecb480e1ec668dbeb5bf7332e0ca0127383ed58b4001dff3",
       "size": 566,
       "keepExisting": true
     },
@@ -819,6 +931,7 @@
       "path": "config/factiontree/medic_merchant.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_medic_merchant.json",
       "sha1": "44e1fe993a0c35e70189d2b423be99653999141e",
+      "sha256": "8b1d91cfbea50f3c0c0ad2c90bd22ba99f8c6c19bd964f9bb71f9036ee000f4d",
       "size": 1755,
       "keepExisting": true
     },
@@ -826,6 +939,7 @@
       "path": "config/factiontree/merchant.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_merchant.json",
       "sha1": "01ebffcc9f408d18e8a588d14f9fb7bcdd0a69d4",
+      "sha256": "9c4fa7266d7be6be3489c240cc7adf725de4e1e7545befa45ea47dfebb471fa8",
       "size": 2251,
       "keepExisting": true
     },
@@ -833,6 +947,7 @@
       "path": "config/factiontree/smithing.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_smithing.json",
       "sha1": "de64f4e93f06f31cedc9f3090841175ee93e9283",
+      "sha256": "884a1c3e4ccdc5863351eafee21b44362ca5f38685bd6f50d7877f8e28149a56",
       "size": 1850,
       "keepExisting": true
     },
@@ -840,6 +955,7 @@
       "path": "config/factiontree/smithing_catalog.txt",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_smithing_catalog.txt",
       "sha1": "18adc2f47b13c1e11f25bb41bc4ad9a0de001926",
+      "sha256": "355db0e9e09939e1cfbd0184d10dff2a429a727dd48525304b7748a350036d8d",
       "size": 47602,
       "keepExisting": true
     },
@@ -847,6 +963,7 @@
       "path": "config/factiontree/tree.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_factiontree_tree.json",
       "sha1": "d6e7e9d2ae43efc0090f76d67e1d1c0e15334c78",
+      "sha256": "7767f194172ab6a111c5760865075cb40a95c2c0bff3bd4ac37feb48f13c9339",
       "size": 47397,
       "keepExisting": true
     },
@@ -854,6 +971,7 @@
       "path": "config/farmersdelight-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_farmersdelight-client.toml",
       "sha1": "0837b7da65d2d2b5fe8430ecddae8a97379d8c55",
+      "sha256": "940f68676859e852c600974c4776e986453ce7d3b2cf27ac156535e26c160e11",
       "size": 478,
       "keepExisting": true
     },
@@ -861,6 +979,7 @@
       "path": "config/farmersdelight-common.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_farmersdelight-common.toml",
       "sha1": "5f3a0af48b61c6b2935284df7282d6a32fad7414",
+      "sha256": "459c4d9fcf137f0533da3280349f2abe51510497632130cbc23507dd121b1bd8",
       "size": 3930,
       "keepExisting": true
     },
@@ -868,6 +987,7 @@
       "path": "config/fml.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_fml.toml",
       "sha1": "726869383a0dd9368201319b75b902b2e5c8207f",
+      "sha256": "506f0c4c714bf1528d45ab8202f303bde6ba5f9e53778c92a679efbc185afb12",
       "size": 1148,
       "keepExisting": true
     },
@@ -875,6 +995,7 @@
       "path": "config/forge-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_forge-client.toml",
       "sha1": "55e80f51f0c9cf66de1f95c4d775b24dc59627a1",
+      "sha256": "0b1b3c45343435184c9dde3149b38afcdb97953e287686ecda54385f53ebcddc",
       "size": 1628,
       "keepExisting": true
     },
@@ -882,6 +1003,7 @@
       "path": "config/immersive_melodies.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_immersive_melodies.json",
       "sha1": "f32e48a5994da35f8be57e0e1ef516ffa9f18e85",
+      "sha256": "991ee165fcdf3024e6ffda8c453f6d4753f1616934a423f30ba42dd5dc9db6d8",
       "size": 1174,
       "keepExisting": true
     },
@@ -889,6 +1011,7 @@
       "path": "config/immersive_paintings.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_immersive_paintings.json",
       "sha1": "3fda63d6a6fe8e4eafe9872c58fa8695283e3986",
+      "sha256": "65503c4720dd1017227041ee6ce26650a75a123af7331d66c5fac0a2cdace94c",
       "size": 584,
       "keepExisting": true
     },
@@ -896,6 +1019,7 @@
       "path": "config/jei/blacklist.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_blacklist.json",
       "sha1": "7a9c83de081216d9061bffda2d30114104ef6ee3",
+      "sha256": "3ca754fefc49ea02e5203353bc3390e520e6717dd8b148aa07042f0b48a78621",
       "size": 19,
       "keepExisting": true
     },
@@ -903,6 +1027,7 @@
       "path": "config/jei/ingredient-list-mod-sort-order.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_ingredient-list-mod-sort-order.ini",
       "sha1": "fb7ad7d11fa0f1da16837fdb41a9d3566ee43352",
+      "sha256": "ceb88839e2155c8261e36ee7036cb5ec05cf2413be83e1b3896bfc77ded018ee",
       "size": 458,
       "keepExisting": true
     },
@@ -910,6 +1035,7 @@
       "path": "config/jei/ingredient-list-type-sort-order.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_ingredient-list-type-sort-order.ini",
       "sha1": "dc48be3ecfb2cd9c06a53712b3044f8123a6c06e",
+      "sha256": "39b5426fb7faf645a83c210d457352b05f64859d4b9adb58242c113c2c8e6878",
       "size": 74,
       "keepExisting": true
     },
@@ -917,6 +1043,7 @@
       "path": "config/jei/jei-client.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_jei-client.ini",
       "sha1": "eb958e2e22e54a58700abe3fc4f860fcd247b844",
+      "sha256": "3691319148dbb9c0f07e18682bdb911279d36e25708ad644db24fbd5cdd7c516",
       "size": 12984,
       "keepExisting": true
     },
@@ -924,6 +1051,7 @@
       "path": "config/jei/jei-colors.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_jei-colors.ini",
       "sha1": "46f80e4857aa8f8d9b0928e107c4391d54b3b313",
+      "sha256": "755f199a3868224bdccb2a8ffd8f1a4eb2d96140757f444ba31f8d677a66034f",
       "size": 1362,
       "keepExisting": true
     },
@@ -931,6 +1059,7 @@
       "path": "config/jei/jei-debug.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_jei-debug.ini",
       "sha1": "e76a74cd66991a5a40b0a3cd7f1dfad000ff726c",
+      "sha256": "8bb0722d480964720a1500654493b5be225c74f7ff3f94e8658e39db5ab098ad",
       "size": 939,
       "keepExisting": true
     },
@@ -938,6 +1067,7 @@
       "path": "config/jei/jei-mod-id-format.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_jei-mod-id-format.ini",
       "sha1": "2cd7853bd68950b2d61a80dd549ed65be0e0f6cb",
+      "sha256": "6a91c09d1cabc1980d90ab102a03ec58c0551213ab16a459b599d768b334d054",
       "size": 489,
       "keepExisting": true
     },
@@ -945,6 +1075,7 @@
       "path": "config/jei/recipe-category-sort-order.ini",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_jei_recipe-category-sort-order.ini",
       "sha1": "b0f8b5abcc5fc2b60e8e99660dbf05dce71c93e7",
+      "sha256": "b4061540e37f90fc4d66f07bdd474356a608ec9df6778dde200ef9cba1fe27c8",
       "size": 819,
       "keepExisting": true
     },
@@ -952,6 +1083,7 @@
       "path": "config/konkrete/locals/de_de.local",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_konkrete_locals_de_de.local",
       "sha1": "02adaf2602f1ba03a9352db3d10a6fac3a02aea5",
+      "sha256": "79a34cfd15c2d9c06498dc221be79279507d9b57666cd44f8d2c2cf95d3582ef",
       "size": 369,
       "keepExisting": true
     },
@@ -959,6 +1091,7 @@
       "path": "config/konkrete/locals/en_us.local",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_konkrete_locals_en_us.local",
       "sha1": "42badc338e767559db38a67bd3e8020a92000e56",
+      "sha256": "fdf1864fd049b3f1b9af1f8db6c5125a627be7d06a451c778da3329843d3c39a",
       "size": 426,
       "keepExisting": true
     },
@@ -966,6 +1099,7 @@
       "path": "config/konkrete/locals/pl_pl.local",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_konkrete_locals_pl_pl.local",
       "sha1": "adf2ded54b4952ca83af26a1217e2c5db8ac1429",
+      "sha256": "d38a7776e362e4de6082078d803c1c9358d9d40526edfe4bdfd29c552aef76d8",
       "size": 313,
       "keepExisting": true
     },
@@ -973,6 +1107,7 @@
       "path": "config/konkrete/locals/pt_br.local",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_konkrete_locals_pt_br.local",
       "sha1": "9c324fb4d33106366e6cbb5400c8c34f11539d34",
+      "sha256": "dca55a2792451b31424cd5c24037141ec57cdca51955d062dd908fa9ca6a3e9c",
       "size": 322,
       "keepExisting": true
     },
@@ -980,6 +1115,7 @@
       "path": "config/meadow.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_meadow.toml",
       "sha1": "a0f2560d547320bcf6f2e4bd1a017b4ed1f3492d",
+      "sha256": "48ca34aff5519b090e225b44697bd957461b9668d985d5644723f7b7a8fbd33e",
       "size": 233,
       "keepExisting": true
     },
@@ -987,6 +1123,7 @@
       "path": "config/medieval_boomsticks-common.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_medieval_boomsticks-common.toml",
       "sha1": "f117491aea35b493abed2fe6bcb50bc2414bb811",
+      "sha256": "4f04cb7edb6004a2ce33911de362f98a8afeee226c683714aa36a8c902d94043",
       "size": 2004,
       "keepExisting": true
     },
@@ -994,6 +1131,7 @@
       "path": "config/minecolonies-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_minecolonies-client.toml",
       "sha1": "5767c5fefa44966af19f78a09b95cd3c98e6ac74",
+      "sha256": "fffbc53166dbf31e1557cb3251495aa85e9af8668ae7f43b8f368afeb0ee1e29",
       "size": 1387,
       "keepExisting": true
     },
@@ -1001,6 +1139,7 @@
       "path": "config/minecolonies-common.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_minecolonies-common.toml",
       "sha1": "c79a0f0c2ebbcffce378a7a5e2a1848057b7f683",
+      "sha256": "d08e2f9966fc1e185104f6c566d5f30ff245cb9d6ac7c4c4baad819145e89616",
       "size": 448,
       "keepExisting": true
     },
@@ -1008,6 +1147,7 @@
       "path": "config/mobplayeranimator/client.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_mobplayeranimator_client.json5",
       "sha1": "6c2314f3e28d8dc6d688ace514237d249c54fc60",
+      "sha256": "2717e96df4a5d1829f34ba414c46d9c1be1b066fd8f14d24ae99889a5deb2e57",
       "size": 1616,
       "keepExisting": true
     },
@@ -1015,6 +1155,7 @@
       "path": "config/musketmod.txt",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_musketmod.txt",
       "sha1": "1300f5f708d1d42fa06005accb61409edc6fb064",
+      "sha256": "5eaff93c32b67e5016d4076d42a3bd3175804bce0e06b6c487331aa32ca525bf",
       "size": 2186,
       "keepExisting": true
     },
@@ -1022,6 +1163,7 @@
       "path": "config/quickskin-client.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_quickskin-client.json",
       "sha1": "319322feaef48ba4d04a286939202da03bc693c9",
+      "sha256": "c7a09bd6b306f3b4b61404d9ad69de8f450bd8184a1c88942646749f7e717950",
       "size": 1302,
       "keepExisting": true
     },
@@ -1029,6 +1171,7 @@
       "path": "config/quickskin-server.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_quickskin-server.json",
       "sha1": "ab4a052b9542bb56ef81e4de7796c4fe83958bae",
+      "sha256": "3fe4d409cb36aaf7e3e70676c14af27dd8f6fecc66d6fcbfe114f7cd36619cdb",
       "size": 72,
       "keepExisting": true
     },
@@ -1036,6 +1179,7 @@
       "path": "config/recruits-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_recruits-client.toml",
       "sha1": "9c58fc9319800ee1af80f4043fabeefdcd19407a",
+      "sha256": "6e5524b67f436b78d548bc493c8166b67ce73b52986c70b484ccd5783492debf",
       "size": 2126,
       "keepExisting": true
     },
@@ -1043,6 +1187,7 @@
       "path": "config/replaymod.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_replaymod.json",
       "sha1": "efa6e74ea002205cdee51e6890b93a6230e8268a",
+      "sha256": "4f8f22663906772ea48b2c9b1a3493abf47c43ed4aeb637aa6c20b689ef0ffa1",
       "size": 1813,
       "keepExisting": true
     },
@@ -1050,6 +1195,7 @@
       "path": "config/sereneseasons/fertility.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_sereneseasons_fertility.toml",
       "sha1": "14b9e3be4a982461c991df82f8abf7da46a3ceef",
+      "sha256": "2d2d244c696678957a2077b87a80fcd0132e3e4e39c44313248748e0758702a3",
       "size": 485,
       "keepExisting": true
     },
@@ -1057,6 +1203,7 @@
       "path": "config/sereneseasons/seasons.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_sereneseasons_seasons.toml",
       "sha1": "8c628eec7c49d55f4bed9a7dcd633bb2a62f49bf",
+      "sha256": "b9f4371fe75ae3f418c0720c3a80ce283628e5010119534842cf1775a47ec367",
       "size": 6778,
       "keepExisting": true
     },
@@ -1064,6 +1211,7 @@
       "path": "config/sidebar_buttons.json",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_sidebar_buttons.json",
       "sha1": "3f545ec683be213b684475b39393a01d1faadbcb",
+      "sha256": "d12bcdd59a36b21e0aafaab84c9ef6749d8aeab3e28e814571625a58a5db3a87",
       "size": 192,
       "keepExisting": true
     },
@@ -1071,6 +1219,7 @@
       "path": "config/siege-machines-specs.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_siege-machines-specs.toml",
       "sha1": "f96b2c00ae6c00e46d93c74ff11c60deca634845",
+      "sha256": "8ae97480360bd90e17f7f633eb911000044fcb2627852172682561cf8f1528e3",
       "size": 3240,
       "keepExisting": true
     },
@@ -1078,6 +1227,7 @@
       "path": "config/siegeworks-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_siegeworks-client.toml",
       "sha1": "862900f4cd78c80fd51d906645e790c232a33cdc",
+      "sha256": "ca60834ad3ddb576268e1a751b631ed98b4b4e5c31f8d38dddf959b8d1a42819",
       "size": 102,
       "keepExisting": true
     },
@@ -1085,6 +1235,7 @@
       "path": "config/smallships-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_smallships-client.toml",
       "sha1": "594582b47f227aae4687ac2108877494f0b90db6",
+      "sha256": "2055d621b5cb01a3a0cc7134bb97d8109f56152938131f7c31bf27b28c264f9b",
       "size": 1187,
       "keepExisting": true
     },
@@ -1092,6 +1243,7 @@
       "path": "config/smallships-common.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_smallships-common.toml",
       "sha1": "e82565d47d11a02f1adc27cfdc6b144370767432",
+      "sha256": "0c89c2c56094816dcad1d0693cb52dbb61720797d8b2b0e2d25f9937a464de56",
       "size": 6271,
       "keepExisting": true
     },
@@ -1099,6 +1251,7 @@
       "path": "config/smallships_upgrades.json5",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_smallships_upgrades.json5",
       "sha1": "e4808e66586e5dd679f461d6e70f750051f9dede",
+      "sha256": "871011250e8a22cd587d01e17fc337f558d59d27c5715e2b18e51f6f8058a9e1",
       "size": 417,
       "keepExisting": true
     },
@@ -1106,6 +1259,7 @@
       "path": "config/sodiumdynamiclights-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_sodiumdynamiclights-client.toml",
       "sha1": "6cc0f822d81b95d1c458dfef92ba5a1daae9053b",
+      "sha256": "64d2ce1b1675f17e0807180b9680ef9c97e4b92ac86962b7cbf27f0db4926eb6",
       "size": 659,
       "keepExisting": true
     },
@@ -1113,6 +1267,7 @@
       "path": "config/structurize-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_structurize-client.toml",
       "sha1": "b0b730658427c3e6c34bc2a764f9762a447fa37f",
+      "sha256": "9ea1dc7b7681945d07f7bae2164da372017ff88145e454b7c52a82beec4b7e44",
       "size": 1223,
       "keepExisting": true
     },
@@ -1120,6 +1275,7 @@
       "path": "config/vinery.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_vinery.toml",
       "sha1": "8317aa1c5dced88d7aea87c7c9beee098b768350",
+      "sha256": "fe8acd27cd79406ce57b35ef6c41fe2641faab6ce230e94e17554ca188b77e5f",
       "size": 2933,
       "keepExisting": true
     },
@@ -1127,6 +1283,7 @@
       "path": "config/voicechat-client.toml",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_voicechat-client.toml",
       "sha1": "6a87c562a167f9b5faf95bf1f446422f887ff96a",
+      "sha256": "24a7b91377e08d0d8bc2805793c8150d473241aa816cbaa6fca9d254aa537ca5",
       "size": 94,
       "keepExisting": true
     },
@@ -1134,6 +1291,7 @@
       "path": "config/voicechat/translations.properties",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_voicechat_translations.properties",
       "sha1": "383e00e7dd0d5f00daa2ffcfd24c939d255dc7e3",
+      "sha256": "693643b1d393cbb3ea7f062afc4474fcd66e4036c4f8d7c056434979cbf512d1",
       "size": 1182,
       "keepExisting": true
     },
@@ -1141,6 +1299,7 @@
       "path": "config/voicechat/voicechat-client.properties",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_voicechat_voicechat-client.properties",
       "sha1": "24a91d5a345807d908a89ad1b34fcbc633831eb4",
+      "sha256": "a50f80505daac2db87197fd532da3edc8c8a5044cf12270c28ead8a29293ec8d",
       "size": 5063,
       "keepExisting": true
     },
@@ -1148,6 +1307,7 @@
       "path": "config/voicechat/voicechat-server.properties",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/config_voicechat_voicechat-server.properties",
       "sha1": "4d24b1dea6c3fe109ce7282637d3dc7e73ae4c49",
+      "sha256": "03ea425e453ced0bc5bd983e2094818d5a2f639e9a995cb6458d9c00d77af561",
       "size": 3072,
       "keepExisting": true
     },
@@ -1155,396 +1315,476 @@
       "path": "mods/AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_AmbientSounds_FORGE_v6.3.8_mc1.20.1.jar",
       "sha1": "87ea0cd8ec56763185ee0db09eec7c676969e4da",
+      "sha256": "41688a2ba90e5b07beb0e1844cfd0b21a4294b1073de144ae0a7f519b336a18b",
       "size": 53429226
     },
     {
       "path": "mods/ColdSweat-2.4.3.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_ColdSweat-2.4.3.2.jar",
       "sha1": "7b791285fa8d0a324cfbe41602347e5ecabe3b15",
+      "sha256": "229bb3929f4a73eea9ea7988b66f87ff70eea84955725e0df1e22f62d3c2604a",
       "size": 2726263
     },
     {
       "path": "mods/Controlling-forge-1.20.1-12.0.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_Controlling-forge-1.20.1-12.0.2.jar",
       "sha1": "f6d3cdd3ec68c5590cf5b2e89c38dbf031824bfd",
+      "sha256": "516308a93824119f6a1ebc75425aa21ee8f8de0c331942793a054ba6d9c24944",
       "size": 115280
     },
     {
       "path": "mods/CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_CreativeCore_FORGE_v2.12.39_mc1.20.1.jar",
       "sha1": "aef9a8ebdf0be50b6bd8da8ab4153f5085f71a80",
+      "sha256": "3565ddea132785a044ddfca670610a870c976e52d47a957d0a5f1db78563d046",
       "size": 1144128
     },
     {
       "path": "mods/FarmersDelight-1.20.1-1.3.4.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_FarmersDelight-1.20.1-1.3.4.jar",
       "sha1": "26f615fd35f652021f5b0f1cba68afa7d578fe15",
+      "sha256": "34f03eb671ea1ca579b00c98e4541404cb96d1a292014aed9cc5eb45ad8afbce",
       "size": 3311051
     },
     {
       "path": "mods/GlitchCore-forge-1.20.1-0.0.1.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_GlitchCore-forge-1.20.1-0.0.1.1.jar",
       "sha1": "1a0aaf7c33b9acb26bf75899a43e8941cac1f6e7",
+      "sha256": "e42a8b513da08a910c133caeafad9fc2fcc22fdaaa2eb3e2516e9112a5a0db61",
       "size": 87550
     },
     {
       "path": "mods/MinecoloniesVanillaFoodCompat-1.0.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_MinecoloniesVanillaFoodCompat-1.0.1.jar",
       "sha1": "d8d7b3e59d24cd1e8eb27f996d666eb92a2fcb1f",
+      "sha256": "79b4f959535850b0c13caf91275600d9d69e731b7b15ecf6efad914219513428",
       "size": 15898
     },
     {
       "path": "mods/MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "sha1": "d751153e722a4e014691c83f39f5b07c6ec5333c",
+      "sha256": "6c27d16aa715ac6613a55fc463739e2c7b78279e4e4c4cede299e4a2d4a70f08",
       "size": 76237
     },
     {
       "path": "mods/Quick Skin - Forge - 1.20.1-2.6.2.4.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_Quick.Skin.-.Forge.-.1.20.1-2.6.2.4.jar",
       "sha1": "ace85ce63a791ae84d323d469d0b76003ab32718",
+      "sha256": "59508bb8d87a8bc8f5ad768fce86a12466fab11c512ba434834aa37a45598af9",
       "size": 3793684
     },
     {
       "path": "mods/Searchables-forge-1.20.1-1.0.3.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_Searchables-forge-1.20.1-1.0.3.jar",
       "sha1": "ed5a23ec30c90fd06b3f1d8140614028e1fafaee",
+      "sha256": "c1a76e93886210574d3f298c0461241fb711e52ac22c7a04d3236840f29e6576",
       "size": 77732
     },
     {
       "path": "mods/SiegeSystemFix-1.0.0.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_SiegeSystemFix-1.0.0.jar",
       "sha1": "27252f53af6822f466227bb7d54043583631b8e3",
+      "sha256": "9336abb5f2e5c15f27e01a1635c115066b0b659357e3aabc0f6587ad89b90497",
       "size": 19421
     },
     {
-      "path": "mods/aethoria-1.0.5.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_aethoria-1.0.5.jar",
-      "sha1": "6d6cf1073079fea0203a557cbdbb46351edba1f6",
-      "size": 1547921
+      "path": "mods/aethoria-5.0.0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_aethoria-5.0.0.jar",
+      "sha1": "a9ae15a7f78775d39250bd1282212c37c59475eb",
+      "sha256": "c7c93f4ec585a6dbb83a8437fc977554627cdb0541e1d8d950f8b170a8c03845",
+      "size": 7040050
     },
     {
       "path": "mods/aethoriamenu-1.0.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_aethoriamenu-1.0.1.jar",
       "sha1": "f5a8d58a28b238e959e833983fb976c262549e13",
+      "sha256": "b6fc801566f4001176c7907d6864043ede8453d097f88b8ea3a029777828a02c",
       "size": 10240249
     },
     {
       "path": "mods/appleskin-forge-mc1.20.1-2.5.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_appleskin-forge-mc1.20.1-2.5.1.jar",
       "sha1": "81919356f84eab14258db98924b66c3c38e372b1",
+      "sha256": "e12419e43e3babc810af289403c5cd96bd7f09809b389acc6bb2f122b4b2a426",
       "size": 47428
     },
     {
       "path": "mods/architectury-9.2.14-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_architectury-9.2.14-forge.jar",
       "sha1": "a52918a500ff421180a1cbd1a0cabee712134ec4",
+      "sha256": "218b471d0b8a1f6cda14cfc1beb9eeb0df54304500acc6c5613d9b88ec65d9af",
       "size": 580602
     },
     {
       "path": "mods/astikorcartsredux-1.2.5.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_astikorcartsredux-1.2.5.jar",
       "sha1": "77a95e6f367d286d903ea2bc2aa7145f2ec7108f",
+      "sha256": "3da8eb296f82fc2dda85a0f7d7d10a568e34c2ce8f763574827853edd672e5f6",
       "size": 530548
     },
     {
       "path": "mods/athena-forge-1.20.1-3.1.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_athena-forge-1.20.1-3.1.2.jar",
       "sha1": "2acee24454af859988a691f0506271a465f68f7b",
+      "sha256": "64eec9cffb8847a459536096ac396b135ffb07c7d9d13c6a47d9cd7b251276ab",
       "size": 91808
     },
     {
       "path": "mods/betsyross-2.1.2+mc.1.20.1-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_betsyross-2.1.2.mc.1.20.1-forge.jar",
       "sha1": "fac4bd2acb03ce795a62fa46db0d7aabf9232670",
+      "sha256": "8d48f33361ce8c36d477917a5976be8ddb6d994a973e8ec8a65f020d28dcc644",
       "size": 355085
     },
     {
       "path": "mods/bettercombat-forge-1.8.6+1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_bettercombat-forge-1.8.6.1.20.1.jar",
       "sha1": "70c20cd81a4051b2ad4289ff6522e80b397d7b3d",
+      "sha256": "e147e13732e0fac83aee209487fdeb10a03e52c33e1b1439dbce01a80f3e8dbb",
       "size": 1050118
     },
     {
       "path": "mods/bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_bettermobcombat-recruitsfix-1.20.1-1.3.1.jar",
       "sha1": "bfddda8c3efc11803a33220fdc99003d3d2ae268",
+      "sha256": "75ae201e686c5c1c70e3e5ec16522490bf9d4264c770cbc77ebb83b9a9cd34ba",
       "size": 146704
     },
     {
       "path": "mods/blockui-1.20.1-1.0.193.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_blockui-1.20.1-1.0.193.jar",
       "sha1": "ed432bb0f706358481157553aa4dd5037c780819",
+      "sha256": "0658aea747cfaea37171ea0794e420c4ac40e638b1d7dec50d196086b80a4cb7",
       "size": 391010
     },
     {
       "path": "mods/burnt_basic-1.10.5-forge-1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_burnt_basic-1.10.5-forge-1.20.1.jar",
       "sha1": "da3d7b9501c6171c751cdd0cf48f9a8ce7b9e718",
+      "sha256": "140f311b2edb46421e6257dbf3b75399eec0535e08d60b9a6383037aff383e93",
       "size": 21557307
     },
     {
       "path": "mods/chipped-forge-1.20.1-3.0.7.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_chipped-forge-1.20.1-3.0.7.jar",
       "sha1": "25ee2a0846059d8f21d28b94b7e0229b60cb5499",
+      "sha256": "300e02535342b710fb34409821de9d097b0d8b17f56a57a17d75d05c4c1c5b63",
       "size": 15060263
     },
     {
       "path": "mods/cloth-config-11.1.136-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_cloth-config-11.1.136-forge.jar",
       "sha1": "c65d07748acc57ceb45d53b3964368b84f34d54f",
+      "sha256": "1e895e85cf5b1e1905ef3178ec155c8badfe22a1577b92c09143a5aa1f4ce0f2",
       "size": 1181413
     },
     {
       "path": "mods/corpse-forge-1.20.1-1.0.23.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_corpse-forge-1.20.1-1.0.23.jar",
       "sha1": "843b16ca88bc5c390bb22a2a84437e6bffdd43dd",
+      "sha256": "8d77c5fc8dc981c750a8e66d4665f055457f748f0ce49a303d9bc50347bdbf7c",
       "size": 245644
     },
     {
       "path": "mods/domum_ornamentum-1.20.1-1.0.296-universal.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_domum_ornamentum-1.20.1-1.0.296-universal.jar",
       "sha1": "f0052adb170e5f73f0f5b625c411bc5b99183c00",
+      "sha256": "a5a46c0bcadbcaa36a69b8be32f6eeec0c655b2990f6f6c0c8c61ddb569e809f",
       "size": 1141555
+    },
+    {
+      "path": "mods/easy_npc-forge-1.20.1-7.17.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_easy_npc-forge-1.20.1-7.17.1.jar",
+      "sha1": "0188a67cf45db0ab2190a5e775bb71de7083cd1d",
+      "sha256": "33edf1e6f39133ede31a48b11353c3134b47fc15fd0195bb876da7592dac191c",
+      "size": 2963528
+    },
+    {
+      "path": "mods/easy_npc_config_ui-forge-1.20.1-7.17.1.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_easy_npc_config_ui-forge-1.20.1-7.17.1.jar",
+      "sha1": "1e511fd171afb229660989d6ac4a79963a8ddb39",
+      "sha256": "5e8e0d83a36020343966906dfb5a2196289490cd22ab766d52be909ab076353a",
+      "size": 1100042
     },
     {
       "path": "mods/embeddium-0.3.31+mc1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_embeddium-0.3.31.mc1.20.1.jar",
       "sha1": "bb2fa8f3e493af16af9160d049f96c614a1faf2f",
+      "sha256": "eed3d1325f2acc2fd4e69bb495e5ccb91d962126ac5330f0582ebc2a3daf47fb",
       "size": 1320675
     },
     {
       "path": "mods/epic-knights-1.20.1-forge-10.15.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_epic-knights-1.20.1-forge-10.15.jar",
       "sha1": "8f6019735436fb5a0056916e25f62b363baddafa",
+      "sha256": "5923859b45f6f0f8236f09980f1ead9b48ae9824872a429153d928fd10d5835d",
       "size": 2904252
     },
     {
       "path": "mods/epic-knights-addon-1.20.x-forge-2.6.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_epic-knights-addon-1.20.x-forge-2.6.jar",
       "sha1": "c5d284743d3d59a7ca4cdfdf42e4a01afb10e146",
+      "sha256": "cbaf743ce72199d2007fc9d9199be28d2f805a81a837230cf0d6e8ce828cd193",
       "size": 2012821
     },
     {
       "path": "mods/epichunt-forge-1.4.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_epichunt-forge-1.4.2.jar",
       "sha1": "d0e22581436d096f4d59e2b3822dcf7e4ca15ccf",
+      "sha256": "7a5e1eb00d8ea798e7411972ea23e0aa56529100cf1202e2043673e9f56918c9",
       "size": 4345866
     },
     {
       "path": "mods/geckolib-forge-1.20.1-4.8.4.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_geckolib-forge-1.20.1-4.8.4.jar",
       "sha1": "81982cc287f80ffabb2fd36d22cc95e4255c739d",
+      "sha256": "c04abba4fd354dd8c0e8a732f1f05f4dca893d2e1d962b2ab128bbd411478747",
       "size": 1038209
     },
     {
       "path": "mods/immersive_melodies-0.8.0+1.20.1-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_immersive_melodies-0.8.0.1.20.1-forge.jar",
       "sha1": "02f8ea1f93fe6603671884fd81ffc94c3c914457",
+      "sha256": "bf330d4204723f824e6adddce95e02bed13270095dd6f0e28dbea39da5bfdf9e",
       "size": 5563706
     },
     {
       "path": "mods/immersive_paintings-0.6.13+1.20.1-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_immersive_paintings-0.6.13.1.20.1-forge.jar",
       "sha1": "3f2a668f2235a6a908fde545d140013456b5412f",
+      "sha256": "069d5dffa4060d965899e607fad725c4d80a8086cef64f1d7563259b0a070633",
       "size": 4856103
     },
     {
       "path": "mods/jei-1.20.1-forge-15.56.0.205.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_jei-1.20.1-forge-15.56.0.205.jar",
       "sha1": "7f64b7f8fde7f001ef054dabe3618a8780ba2650",
+      "sha256": "6b251e60a4719c874da89d750af97aa6498f6f4475e3ae79cb1288c7bf0cb65c",
       "size": 1778129
     },
     {
       "path": "mods/konkrete_forge_1.8.0_MC_1.20-1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_konkrete_forge_1.8.0_MC_1.20-1.20.1.jar",
       "sha1": "2019d821bed9071daabed43979433a5473ceee49",
+      "sha256": "e78686b92c3761ec26eb9d3c53efdd3d6ca77981cbd3723995e1163b7103ae0b",
       "size": 625185
     },
     {
       "path": "mods/letsdo-API-forge-1.2.15-forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_letsdo-API-forge-1.2.15-forge.jar",
       "sha1": "a261043a45097d861a13a63ebdbb0ca350e06a63",
+      "sha256": "d08b99df112cfffb46e289635c79d4ac8397223320abd6469b47e202e23fa28c",
       "size": 1440591
     },
     {
       "path": "mods/letsdo-bakery-forge-1.1.15.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_letsdo-bakery-forge-1.1.15.jar",
       "sha1": "c5cd44088089fca03f3291b851dcb0d00018fecb",
+      "sha256": "a20f1b1cba05c2cf9f12b28fa28649af417fb9a4b330641236bb1b71c63b0e09",
       "size": 1539376
     },
     {
       "path": "mods/letsdo-brewery-forge-1.1.9.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_letsdo-brewery-forge-1.1.9.jar",
       "sha1": "50e5181e734dcfc599aa0eaac376ff4e312f63c2",
+      "sha256": "f889cf1258b6365873b83fb3e533e9a58da4ee381377e55d58f13a4b3cfb4840",
       "size": 2228646
     },
     {
       "path": "mods/letsdo-meadow-forge-1.3.25.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_letsdo-meadow-forge-1.3.25.jar",
       "sha1": "da7d934ff35f03279bee6597362f30d2aea7462f",
+      "sha256": "e96a241cc2b991d158bedb6e9239ce77656a9858c76345c7dc7b6eadeaa6ddcf",
       "size": 2676511
     },
     {
       "path": "mods/letsdo-vinery-forge-1.4.41.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_letsdo-vinery-forge-1.4.41.jar",
       "sha1": "68ed3fa9524bef601064f49f60a30423db2f8fdc",
+      "sha256": "5d7e11f6e2218562ce75d60788fdcfc9ccf59e4532757c18bf37759d5fc739ee",
       "size": 2041283
     },
     {
       "path": "mods/mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
       "sha1": "d24bc6e1ba7f04e058db019ae5ca3d10edd9510a",
+      "sha256": "10deb617769e9674a767a3991af4c46afd081b5de42cee326f71ef2700a14313",
       "size": 708634
     },
     {
       "path": "mods/mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_mcw-mcwwindows-2.4.2-mc1.20.1forge.jar",
       "sha1": "214da89b2153d496343bde8626283975e358edbd",
+      "sha256": "7674d829d5a38d91ca68061e087fded92e976e3e461edcf75117e37a257e8f10",
       "size": 1320692
     },
     {
       "path": "mods/melody_forge_1.0.3_MC_1.20.1-1.20.4.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_melody_forge_1.0.3_MC_1.20.1-1.20.4.jar",
       "sha1": "e0942d396a70c09038e6c2e5e1da6505178249b8",
+      "sha256": "933e2a7e79c4594f965f7f7d00b1f28a98ec2a180ad8f9f90310a266fe5cf5d8",
       "size": 37178
     },
     {
       "path": "mods/minecolonies-1.20.1-1.1.1301.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_minecolonies-1.20.1-1.1.1301.jar",
       "sha1": "33c10d6a9a6cb5d1f515a366e2286366eb68069d",
+      "sha256": "8538f46fb32abd638767a021240e4c9a5a1413a820b01caec1113fea2eeb9196",
       "size": 78186865
     },
     {
       "path": "mods/minecolonies_th_advancements-1.0.1-forge-1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_minecolonies_th_advancements-1.0.1-forge-1.20.1.jar",
       "sha1": "7159d5d1c2a34d4b3999fd756248c3ca5306e923",
+      "sha256": "7d8247a05b4a2299268840b079e7f1ccb13ad34ea31eba5f3b0fc3c42045084e",
       "size": 6861
     },
     {
       "path": "mods/mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_mobplayeranimator-forge-1.20.1-1.3.3-all.jar",
       "sha1": "5767ecee24e34efb138403a45de1589e38ddc624",
+      "sha256": "823554808cbca10866742470b534276910a0634cf695edc9c2cf08913b2293c4",
       "size": 223397
     },
     {
       "path": "mods/multipiston-1.20-1.2.43-RELEASE.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_multipiston-1.20-1.2.43-RELEASE.jar",
       "sha1": "1fc108ebf5f9fe34cf0366c7b71adf230400a74c",
+      "sha256": "3102eb9915591296d14e22992d0a7baa526161b6e92058c017425c0bff19efb6",
       "size": 38718
     },
     {
       "path": "mods/musketmod-1.20.1-forge-1.5.4.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_musketmod-1.20.1-forge-1.5.4.jar",
       "sha1": "44ed6aa820e86e9802ad917d4eddda5877982e5a",
+      "sha256": "f5af730e079d9413a4811dbaaa01cab78e82723b62836b0892a4607dbfae5dec",
       "size": 448661
     },
     {
       "path": "mods/oculus-mc1.20.1-1.8.0.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_oculus-mc1.20.1-1.8.0.jar",
       "sha1": "984f774e71790deaec674c7587bd24e0711871b2",
+      "sha256": "0945df0cba0f62b3901dd80c3268e5311b770ece78c78037a45db12ac0425fef",
       "size": 2851119
     },
     {
       "path": "mods/player-animation-lib-forge-1.0.2-rc1+1.20.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_player-animation-lib-forge-1.0.2-rc1.1.20.jar",
       "sha1": "16808f94a41d45d8e986b4e4ea6b02ba57fa058a",
+      "sha256": "90d9965cb9efdbda29fdc5610be3914cf7008bf5c392ff34f7ab25f96a852691",
       "size": 181437
     },
     {
       "path": "mods/recruits-1.20.1-1.15.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_recruits-1.20.1-1.15.2.jar",
       "sha1": "8d2ed3f0ab18c67a1d9394526bcae47b3ec162ab",
+      "sha256": "4b53c1b752e886ba10985aad2df30d668971810230eb77867e07428a21d1af7f",
       "size": 2811101
     },
     {
       "path": "mods/reforgedplaymod-1.20.1-0.3.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_reforgedplaymod-1.20.1-0.3.1.jar",
       "sha1": "37b714750d0e5487b488b29ff1e1623e5bb18ed6",
+      "sha256": "00a1f31b05db4abee5e8523ccc00aff4ec8b96b02c982386d90014276fd4604b",
       "size": 16661938
     },
     {
       "path": "mods/resourcefullib-forge-1.20.1-2.1.29.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_resourcefullib-forge-1.20.1-2.1.29.jar",
       "sha1": "6fc590a7c56a720fec57e290cbb0a106efbb3ffa",
+      "sha256": "b13afb95231d88e1caea5a045967e0fc291b29020b0d26ad39e6f9e9a551fee8",
       "size": 432753
     },
     {
       "path": "mods/rpa-1.6.1-forge-1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_rpa-1.6.1-forge-1.20.1.jar",
       "sha1": "3b8e222a2db8666f039b6b50ec4df11d212c52de",
+      "sha256": "53b40c46beb0c9862d51c2a6b651f337cc44facc058a11cd435f138dba853271",
       "size": 4574333
     },
     {
       "path": "mods/scrollwright-1.20.1-0.2.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_scrollwright-1.20.1-0.2.1.jar",
       "sha1": "8a866341b6f6b6b6b37776dff2ae66a4155b8ac3",
+      "sha256": "12d5f8f77e84946845c2548e043228ef7eab4f6ded2de119fa55a7e997d459da",
       "size": 175741
     },
     {
       "path": "mods/siegeworks-0.7.0-fix.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_siegeworks-0.7.0-fix.2.jar",
       "sha1": "9d8eb2be1a3e7de1647087af0e98edd676de1e0f",
+      "sha256": "69f6e94acd715381bd0435f2d2d84fffde46002487ec0900978d206995085d14",
       "size": 2098580
     },
     {
       "path": "mods/sit-1.20.1-1.3.5.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_sit-1.20.1-1.3.5.jar",
       "sha1": "228fa17d1bbacbc3e49c20e6d9b91050011f6ee2",
+      "sha256": "e036518b740ab399e153241d73919d9650bb9d8ba0d205a32f5995a69468c6bc",
       "size": 14510
     },
     {
       "path": "mods/smallships-2.0.0-forge-1.20.1.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_smallships-2.0.0-forge-1.20.1.jar",
       "sha1": "5d8170937099ecf7a897f19af38300a67dbb4dbc",
+      "sha256": "fa9dbc2332b79d16c97075b19c3e6a23d6b3e3cd8455ab1419f2666d85407add",
       "size": 2697198
     },
     {
       "path": "mods/structurize-1.20.1-1.0.818.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_structurize-1.20.1-1.0.818.jar",
       "sha1": "432c949c9023aedc84f8c40b8b629e2357e506de",
+      "sha256": "42524cf5ebb2152ee07d412e9c9e10e311fee9768d0dabbaedb093304d7bbb9c",
       "size": 1129459
     },
     {
       "path": "mods/twoplayersonehorse-forge-1.20.1-1.0.3.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_twoplayersonehorse-forge-1.20.1-1.0.3.jar",
       "sha1": "95c9c0e3f5e38b756fd7e4d77a9f029d920602ef",
+      "sha256": "05bc3eddff8491f5c5afee8ed1ff470b7d981b11e42d9754192d2359ea0d885b",
       "size": 24342
     },
     {
       "path": "mods/voicechat-forge-1.20.1-2.6.22.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_voicechat-forge-1.20.1-2.6.22.jar",
       "sha1": "cc94c3eecc325ea3066ee3cd8bf57142d1b11762",
+      "sha256": "f171e99fa99f007ef013af5306f6c490fe79a11be7e1b18940147d75ced045b9",
       "size": 4923439
     },
     {
       "path": "mods/zmedievalmusic-1.20.1-2.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_zmedievalmusic-1.20.1-2.2.jar",
       "sha1": "8352744a85f8c6f95e2d9cddb7fed09896c785cb",
+      "sha256": "afe5d3d0b6623fb2df6622a76e8fc93d8ab8b32cd9384ca138dec1944049ac84",
       "size": 304415885
     },
     {
       "path": "resourcepacks/Excalibur_SmallShips_1.1_1.20.1.zip",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/resourcepacks_Excalibur_SmallShips_1.1_1.20.1.zip",
       "sha1": "6dfeeac86d14dd91cb6a3a4deaa3936b2d02b89e",
+      "sha256": "e16780ebbf5abb1cb2039829d696906bae0f2b32d62d589a0e265ab5ac7eafd8",
       "size": 116499
     },
     {
       "path": "resourcepacks/Excalibur_V1.20.zip",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/resourcepacks_Excalibur_V1.20.zip",
       "sha1": "5a49050cd16d898a29d329c21a3006b2381a0dcc",
+      "sha256": "ccf01766c56ad287071c795452ebdb6a33bf35a74f098d5191475cd479292d49",
       "size": 17107369
     },
     {
       "path": "shaderpacks/ComplementaryReimagined_r5.9.1.zip",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/shaderpacks_ComplementaryReimagined_r5.9.1.zip",
       "sha1": "6a4f2107d25466c5c5bf5b3f5c2a982f940c0e91",
+      "sha256": "f2bc85507f8bfed274ede69fc7df3b6af3f35c5c98baea8bec95ebeb5f3eb79b",
       "size": 552945
     },
     {
       "path": "shaderpacks/PotatoShaders_v1.0d.zip",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/shaderpacks_PotatoShaders_v1.0d.zip",
       "sha1": "c60b72db0dc0b1aff486a76bfa4bec2704933c35",
+      "sha256": "55aa21562dbc2860fd466719908437a8bc22ad358a673fb3c119e4bcdf1616af",
       "size": 393109
     }
   ],
@@ -1723,5 +1963,6 @@
     "title": "Protège ton pseudo",
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
   },
-  "signature": "6EyghBIZaQIx6IAcK8p4ujhNiqYmS6+Si+x7Dn6e9SAEpfRRC4HPPUHXYAD3lumrQ8yAxVUe2Ll1gOnohj1ECA=="
+  "forgeInstallerSha1": "66bfea9963bfa60d88bab6b2750e74a958392715",
+  "signature": "eGpSlZDi9yVxWMF/oQLd2VosoPX1gQZ44pvd2afNyDjyoG6WRLqa9RPJqdLZvS6Yu6x+hn+vFmbnfHrzCqseDg=="
 }
