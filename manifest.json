@@ -3,7 +3,7 @@
   "minecraftVersion": "1.20.1",
   "forgeVersion": "47.4.10",
   "server": {
-    "host": "aethoria.omgcraft.fr",
+    "host": "play.aethoria-rp.fr",
     "port": 25565
   },
   "links": {
@@ -1964,5 +1964,5 @@
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
   },
   "forgeInstallerSha1": "66bfea9963bfa60d88bab6b2750e74a958392715",
-  "signature": "eGpSlZDi9yVxWMF/oQLd2VosoPX1gQZ44pvd2afNyDjyoG6WRLqa9RPJqdLZvS6Yu6x+hn+vFmbnfHrzCqseDg=="
+  "signature": "H4mW5yTdNkv+E/aGsoJoqTSbamc61WkxxwqIVjihFf5Ih/KjV9VUwnXtXngAlmgnUgKnbbviLsAEK70d1qy6BA=="
 }

@@ -165,7 +165,7 @@ async function main() {
     modpackVersion: args.tag.replace(/^pack-/, ''),
     minecraftVersion: args.mc || previous.minecraftVersion || config.fallback.minecraftVersion,
     forgeVersion: args.forge || previous.forgeVersion || config.fallback.forgeVersion,
-    server: previous.server || config.server,
+    server: { ...previous.server, ...config.server },
     links: previous.links || config.links,
     authNotice: previous.authNotice || config.authNotice,
     news: previous.news || [],
