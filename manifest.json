@@ -1312,6 +1312,13 @@
       "keepExisting": true
     },
     {
+      "path": "mods/1.20.1-forge-Epic-Knights-Japanese-Armory-1.6.2.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_1.20.1-forge-Epic-Knights-Japanese-Armory-1.6.2.jar",
+      "sha1": "13b3cfef061bf313d1eddad832cdd77562309580",
+      "sha256": "d95ba4a712d9fc3e681e29c912a5ae98d2ff1b6f73a1be57b8aa43312996866b",
+      "size": 343504
+    },
+    {
       "path": "mods/AI-Improvements-1.20-0.5.2.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_AI-Improvements-1.20-0.5.2.jar",
       "sha1": "11ad483d1fd1f7ebd84b4940b1dc0926b3e9daa8",
@@ -1389,8 +1396,8 @@
       "size": 87550
     },
     {
-      "path": "mods/Lets_Forge_BronzeAndIron_[1_20_1]_5_0.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_Lets_Forge_BronzeAndIron_.1_20_1._5_0.jar",
+      "path": "mods/Lets_Forge_BronzeAndIron_1_20_1_5_0.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_Lets_Forge_BronzeAndIron_1_20_1_5_0.jar",
       "sha1": "ebc937a0d0c4110bc36339f0b6cec4f8352512b2",
       "sha256": "740f9f31023b31cc06c2d7e700499192823beb5927e1b5493a0652ab08ededce",
       "size": 2008363
@@ -1443,13 +1450,6 @@
       "sha1": "de1c5adad2a77c7f6e168f2df6e7b82d9c3db719",
       "sha256": "803cc26575fd2051127a81ed7569bd81695086401961180bb836fff311afb1ae",
       "size": 220762
-    },
-    {
-      "path": "mods/[1.20.1-forge]-Epic-Knights-Japanese-Armory-1.6.2.jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_.1.20.1-forge.-Epic-Knights-Japanese-Armory-1.6.2.jar",
-      "sha1": "13b3cfef061bf313d1eddad832cdd77562309580",
-      "sha256": "d95ba4a712d9fc3e681e29c912a5ae98d2ff1b6f73a1be57b8aa43312996866b",
-      "size": 343504
     },
     {
       "path": "mods/aethoria-5.0.0.jar",
@@ -1606,8 +1606,8 @@
       "size": 1141555
     },
     {
-      "path": "mods/dungeons-and-taverns-3.0.3.f[Forge].jar",
-      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_dungeons-and-taverns-3.0.3.f.Forge..jar",
+      "path": "mods/dungeons-and-taverns-3.0.3.fForge.jar",
+      "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_dungeons-and-taverns-3.0.3.fForge.jar",
       "sha1": "3f324242f3daf4785a8b9338f228679418f4870a",
       "sha256": "251b531ff2882c61a4c2eba3bd7b1683aa22b6c2d459e27bfde04a2948c99e1e",
       "size": 13161907
@@ -2167,5 +2167,5 @@
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
   },
   "forgeInstallerSha1": "66bfea9963bfa60d88bab6b2750e74a958392715",
-  "signature": "ifeNTUbPp2T3Pjke2aL9kqFpNjzJHeZXKYhD70H0V+2bWM8ixg7WCYe/D08f1Tzl8M6iPOTadKUrxGe40TnZAQ=="
+  "signature": "Vh6UDIpYHv8QUQUhioO+Rl72QHsFtlGSXBD8a2voAqRB916AQ/ue0fGFs8CLqe3Eyk4VmAuQP9UJJtvDl5hHBA=="
 }
