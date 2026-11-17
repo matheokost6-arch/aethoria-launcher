@@ -323,6 +323,25 @@ function createWindow() {
     // introuvable : on l'affiche quand meme.
     if (!startHidden || !tray) mainWindow.show();
   });
+  // Filet de securite : si l'interface ne signale jamais qu'elle est prete
+  // (pilote graphique capricieux, chargement bloque), la fenetre resterait
+  // invisible et le launcher semblerait ne pas demarrer. On l'affiche apres 10 s.
+  const filetAffichage = setTimeout(() => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible() && (!startHidden || !tray)) mainWindow.show();
+  }, 10000);
+  mainWindow.once('closed', () => clearTimeout(filetAffichage));
+  // Page qui n'a pas pu se charger : on retente une fois plutot que d'afficher du blanc.
+  let rechargee = false;
+  mainWindow.webContents.on('did-fail-load', (_event, code, _description, url, principale) => {
+    if (!principale || code === -3 || rechargee) return; // -3 = chargement annule volontairement
+    rechargee = true;
+    setTimeout(() => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.loadURL(RENDERER_URL); }, 500);
+  });
+  // Le processus de l'interface a plante (memoire, pilote graphique) : on le recharge.
+  mainWindow.webContents.on('render-process-gone', (_event, details) => {
+    if (details.reason === 'clean-exit' || !mainWindow || mainWindow.isDestroyed()) return;
+    setTimeout(() => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.reload(); }, 500);
+  });
   if (isDev) mainWindow.webContents.openDevTools({ mode: 'detach' });
 
   // Toute navigation externe part dans le navigateur du systeme : la fenetre du
@@ -870,6 +889,34 @@ app.on('window-all-closed', () => {
 
 // Une exception non capturee dans le processus principal fermerait la fenetre
 // sans explication : on la montre au joueur.
+// Le detail est ecrit dans un fichier (a envoyer a l'equipe) ; le joueur lit
+// une phrase courte. Une seule boite : une erreur qui se repete ne doit pas
+// empiler des dizaines de fenetres.
+let erreurDejaMontree = false;
+function journaliserErreur(err) {
+  try {
+    const dossier = app.getPath('userData');
+    fs.mkdirSync(dossier, { recursive: true });
+    fs.appendFileSync(path.join(dossier, 'erreurs-launcher.log'), `[${new Date().toISOString()}] ${err?.stack || err}\n`, 'utf8');
+  } catch {
+    // journal impossible : tant pis, l'erreur est quand meme affichee
+  }
+}
+
 process.on('uncaughtException', (err) => {
-  dialog.showErrorBox('Erreur du launcher', err.stack || String(err));
+  journaliserErreur(err);
+  if (erreurDejaMontree) return;
+  erreurDejaMontree = true;
+  dialog.showErrorBox(
+    'Aethoria a rencontré un problème',
+    'Le launcher a eu une erreur inattendue. Ferme-le puis rouvre-le.\n'
+    + 'Si cela recommence, envoie le fichier « erreurs-launcher.log » (dossier %APPDATA%\\Aethoria) à l’équipe sur Discord.\n\n'
+    + String(err?.message || err),
+  );
+});
+
+// Une promesse rejetee sans personne pour l'attendre (reseau, disque...) ne doit
+// ni passer inapercue ni faire planter le launcher : on la note, c'est tout.
+process.on('unhandledRejection', (raison) => {
+  journaliserErreur(raison instanceof Error ? raison : new Error(String(raison)));
 });

@@ -6,7 +6,7 @@ const path = require('path');
 const { spawn } = require('child_process');
 const paths = require('./paths');
 const config = require('../../shared/config');
-const { downloadFile, secureFetch } = require('./downloader');
+const { downloadFile, fetchWithRetry, expliquerErreur } = require('./downloader');
 const { javaBinary } = require('./java');
 
 const INSTALL_TIMEOUT_MS = 15 * 60 * 1000;
@@ -35,6 +35,23 @@ function listVersionIds() {
 }
 
 /**
+ * Depuis Minecraft 1.17, l'installateur Forge fabrique lui-meme le jar patche
+ * du client (forge-<version>-client.jar). Si ce fichier manque alors que le JSON
+ * de version existe, l'installation a ete interrompue en route (coupure,
+ * antivirus) : le jeu planterait au demarrage, il faut relancer l'installateur.
+ */
+function fichiersGeneresManquants(data, id) {
+  const mc = String(data.inheritsFrom || data.jar || '');
+  const [, mineur] = /^1\.(\d+)/.exec(mc) || [];
+  if (!mineur || Number(mineur) < 17) return false;
+  const full = id.replace(/^.*?(\d+\.\d+(?:\.\d+)?)-forge-/i, '$1-');
+  const jar = path.join(paths.libraries, 'net', 'minecraftforge', 'forge', full, `forge-${full}-client.jar`);
+  // Id inattendu (autre convention de nom) : on ne peut pas conclure, on fait confiance.
+  if (!/-forge-/i.test(id) && !fs.existsSync(path.dirname(jar))) return false;
+  return !fs.existsSync(jar);
+}
+
+/**
  * Cherche une installation Forge deja presente pour ce couple de versions.
  * On se fie au JSON de version plutot qu'au seul nom de dossier : c'est le
  * fichier que le launcher lira reellement au lancement.
@@ -47,7 +64,7 @@ function findInstalledForge(mcVersion, forgeVersion) {
     try {
       const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
       const inherits = data.inheritsFrom || data.jar;
-      if (inherits === mcVersion && id.includes(forgeVersion)) return id;
+      if (inherits === mcVersion && id.includes(forgeVersion) && !fichiersGeneresManquants(data, id)) return id;
     } catch {
       // JSON illisible : installation interrompue, on la reinstallera.
     }
@@ -132,23 +149,38 @@ async function install(mcVersion, forgeVersion, javaHome, { onStatus, fullVersio
     // a defaut, on prend celle publiee par Forge.
     let expected = String(forgeInstallerSha1 || '').toLowerCase();
     if (!expected) {
-      const res = await secureFetch(`${coords.url}.sha1`);
-      expected = res.ok ? (await res.text()).trim().slice(0, 40) : '';
+      // Avec reessais : une coupure d'une seconde ne doit pas faire croire que Forge n'existe pas.
+      const res = await fetchWithRetry(`${coords.url}.sha1`);
+      expected = (await res.text()).trim().slice(0, 40);
     }
     if (!/^[0-9a-f]{40}$/i.test(expected)) throw new Error('empreinte de l’installateur introuvable');
     await downloadFile(coords.url, coords.jar, { sha1: expected });
   } catch (err) {
-    throw new Error(
-      `Forge ${coords.full} est introuvable sur le depot officiel (${err.message}). `
-      + 'Verifie minecraftVersion et forgeVersion dans le manifest.',
-    );
+    const clair = expliquerErreur(err) || 'Le launcher n’a pas pu télécharger Forge.';
+    throw new Error(`${clair} [Forge ${coords.full} : ${err.message}]`);
   }
 
   await ensureLauncherProfiles();
 
   const before = new Set(listVersionIds());
   onStatus?.('Installation de Forge (cela peut prendre quelques minutes)...');
-  await runInstaller(javaHome, coords.jar, (line) => onStatus?.(`Forge : ${line}`));
+  // L'installateur telecharge lui-meme des dizaines de fichiers : une coupure
+  // passagere le fait echouer. Il peut etre relance sans risque, donc deux essais.
+  try {
+    await runInstaller(javaHome, coords.jar, (line) => onStatus?.(`Forge : ${line}`));
+  } catch (premiere) {
+    onStatus?.('L’installation de Forge a échoué, nouvel essai...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      await runInstaller(javaHome, coords.jar, (line) => onStatus?.(`Forge : ${line}`));
+    } catch (seconde) {
+      throw new Error(
+        'L’installation de Forge a échoué. Vérifie ta connexion Internet, désactive un éventuel VPN, '
+        + 'et autorise le dossier du jeu dans ton antivirus, puis réessaie. '
+        + `[${seconde.message}]`,
+      );
+    }
+  }
 
   const created = listVersionIds().filter((id) => !before.has(id));
   const forgeId = created.find((id) => /forge/i.test(id))

@@ -262,6 +262,42 @@ async function ensureFrenchByDefault() {
 }
 
 /**
+ * Touches par defaut, appliquees UNE SEULE FOIS par installation (marqueur sur
+ * le disque). Objectif : supprimer les doublons de touches pour tout le monde
+ * (ancienne gestion de soldats Recruits vs nouvelle FactionTree, etc.) sans
+ * toucher aux autres reglages, et sans jamais reecrire si le joueur personnalise
+ * ensuite ses touches (le marqueur bloque tout second passage).
+ */
+const TOUCHES_DEFAUT = {
+  'key.factiontree.giveup': 'key.keyboard.unknown',        // etait J (conflit avec key.factiontree.jobs)
+  'key.recruits.team_screen_key': 'key.keyboard.unknown',  // ancienne gestion soldats -> remplacee par FactionTree
+  'key.recruits.map_screen_key': 'key.keyboard.unknown',   // ancienne carte -> remplacee
+  'Rouvrir le dernier menu': 'key.keyboard.unknown',       // etait U (encombre)
+  'key.smallships.ship_sail': 'key.keyboard.h',            // etait R -> libere R pour le mode commandement
+  'key.hide_icons': 'key.keyboard.unknown',                // libere H pour la voile
+  'key.astikorcartsredux.action': 'key.keyboard.semicolon',// etait R -> libere R
+  'iris.keybind.shaderPackSelection': 'key.keyboard.unknown', // etait O (shaders via F7)
+  'key.rpa.open_close': 'key.keyboard.period',             // etait O -> libere O
+};
+
+async function ensureDefaultKeybinds() {
+  const marqueur = path.join(paths.root, '.touches_aethoria_v1');
+  if (fs.existsSync(marqueur)) return;
+  const file = path.join(paths.root, 'options.txt');
+  let content = await fsp.readFile(file, 'utf8').catch(() => '');
+  const lignes = content.length ? content.split('\n') : [];
+  for (const [action, touche] of Object.entries(TOUCHES_DEFAUT)) {
+    const prefixe = `key_${action}:`;
+    const ligne = `${prefixe}${touche}`;
+    const i = lignes.findIndex((l) => l.startsWith(prefixe));
+    if (i >= 0) lignes[i] = ligne;
+    else lignes.push(ligne);
+  }
+  await fsp.writeFile(file, lignes.join('\n'), 'utf8');
+  await fsp.writeFile(marqueur, new Date().toISOString(), 'utf8');
+}
+
+/**
  * Prepare tout ce qui est necessaire puis demarre le jeu.
  * Les etapes sont volontairement sequentielles et annoncees une par une :
  * quand un lancement echoue, le joueur doit pouvoir dire a quel moment.
@@ -285,7 +321,17 @@ async function prepareAndStart({
 
   const settings = store.getSettings();
   if (settings.gameRoot) paths.setRoot(settings.gameRoot);
-  paths.ensureAll();
+  try {
+    paths.ensureAll();
+  } catch (err) {
+    // Disque debranche, dossier protege, antivirus, OneDrive... : on dit quoi faire.
+    throw new Error(
+      `Le launcher ne peut pas écrire dans le dossier du jeu (${paths.root}). `
+      + 'Si ce dossier est sur un disque externe, branche-le. Sinon choisis un autre dossier '
+      + 'dans les réglages (par exemple C:\\Aethoria), ou autorise-le dans ton antivirus. '
+      + `[${err.code || err.message}]`,
+    );
+  }
   downloader.setSpeed(settings.downloadSpeed);
 
   const status = (message) => { onStatus?.(message); };
@@ -304,7 +350,7 @@ async function prepareAndStart({
   await checkDiskSpace(status);
 
   step(1);
-  const { manifest, offline } = await modpack.fetchManifest({ onStatus: status });
+  const { manifest, offline, error: erreurManifest } = await modpack.fetchManifest({ onStatus: status });
   if (launcherTropVieux(manifest)) {
     onOutdated?.({ minimum: manifest.minLauncherVersion });
     throw new Error(MESSAGE_TROP_VIEUX);
@@ -312,7 +358,12 @@ async function prepareAndStart({
   // Sans liste fiable (premiere installation sans Internet, ou copie abimee),
   // impossible de savoir quels mods sont autorises : on ne lance pas.
   if (manifest.secours) {
-    throw new Error('Impossible de vérifier les mods d’Aethoria. Connecte-toi à Internet puis réessaie.');
+    // La vraie cause (connexion, limitation GitHub, signature) aide le joueur et l'equipe.
+    const cause = downloader.expliquerErreur(erreurManifest) || String(erreurManifest?.message || '');
+    throw new Error(
+      'Impossible de vérifier les mods d’Aethoria. Connecte-toi à Internet (sans VPN) puis réessaie.'
+      + (cause ? ` [${cause}]` : ''),
+    );
   }
   if (offline) status('Mode hors ligne : les fichiers sont vérifiés avec la dernière liste connue.');
 
@@ -379,6 +430,7 @@ async function prepareAndStart({
   status('Démarrage de Minecraft...');
   step(6);
   await ensureFrenchByDefault();
+  await ensureDefaultKeybinds();
   await ensureServerListed(serveur);
   await writeLaunchLog(command, account);
 

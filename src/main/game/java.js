@@ -9,7 +9,7 @@ const { execFile, execFileSync } = require('child_process');
 const { promisify } = require('util');
 const paths = require('./paths');
 const config = require('../../shared/config');
-const { downloadAll, getJson, secureFetch } = require('./downloader');
+const { downloadAll, getJson, secureFetch, expliquerErreur } = require('./downloader');
 
 const execFileAsync = promisify(execFile);
 
@@ -82,7 +82,13 @@ async function findSystemJava(requiredMajor) {
 
   for (const base of searchDirs) {
     if (!fs.existsSync(base)) continue;
-    for (const entry of fs.readdirSync(base)) {
+    let entries = [];
+    try {
+      entries = fs.readdirSync(base);
+    } catch {
+      continue; // dossier illisible (droits) : on passe au suivant
+    }
+    for (const entry of entries) {
       const home = path.join(base, entry);
       candidates.push(javaBinary(home, { console: true }));
       // Sous macOS, le home d'un JDK est dans Contents/Home.
@@ -90,15 +96,22 @@ async function findSystemJava(requiredMajor) {
     }
   }
 
+  // On prefere la version exacte. A defaut, un Java plus recent (17 ou plus)
+  // fait en general tourner Forge : mieux vaut cela que de bloquer le joueur.
+  let plusRecent = null;
   for (const candidate of candidates) {
     if (!fs.existsSync(candidate)) continue;
     const major = await probeJavaVersion(candidate);
-    if (major && (!requiredMajor || major === requiredMajor)) {
+    if (!major) continue;
+    if (!requiredMajor || major === requiredMajor) {
       // On renvoie le home, pas le binaire : l'appelant choisira java ou javaw.
       return path.dirname(path.dirname(candidate));
     }
+    if (!plusRecent && requiredMajor >= 17 && major > requiredMajor && major <= 25) {
+      plusRecent = path.dirname(path.dirname(candidate));
+    }
   }
-  return null;
+  return plusRecent;
 }
 
 /** Telecharge le runtime Java officiel correspondant au composant demande. */
@@ -106,7 +119,13 @@ async function downloadRuntime(component, { onProgress, onStatus } = {}) {
   if (!RUNTIME_PLATFORM) throw new Error(`Java officiel indisponible pour ${process.platform} ${process.arch}`);
   const home = path.join(paths.runtime, component, RUNTIME_PLATFORM);
   const markerFile = path.join(home, '.installed');
-  if (fs.existsSync(markerFile)) return home;
+  if (fs.existsSync(markerFile)) {
+    // Un antivirus peut supprimer java.exe/javaw.exe apres coup : sans ce
+    // controle, le jeu echouerait au demarrage avec une erreur incomprehensible.
+    // Le marqueur est retire et les fichiers manquants sont retelecharges.
+    if (fs.existsSync(javaBinary(home, { console: true })) && fs.existsSync(javaBinary(home))) return home;
+    await fsp.rm(markerFile, { force: true }).catch(() => {});
+  }
 
   onStatus?.(`Téléchargement de Java (${component})...`);
   const all = await getJson(config.endpoints.javaRuntime);
@@ -191,10 +210,10 @@ async function ensureJava(version, settings = {}, hooks = {}) {
     const home = settings.javaPath.match(/[/\\]bin[/\\]javaw?(\.exe)?$/i)
       ? path.dirname(path.dirname(settings.javaPath))
       : settings.javaPath;
-    if (!fs.existsSync(javaBinary(home, { console: true }))) {
-      throw new Error(`Le Java choisi dans les réglages est introuvable : ${settings.javaPath}`);
-    }
-    return home;
+    if (fs.existsSync(javaBinary(home, { console: true }))) return home;
+    // Un Java choisi autrefois puis desinstalle ne doit pas bloquer le joueur :
+    // on retombe sur le Java automatique du launcher.
+    hooks.onStatus?.('Le Java choisi dans les réglages est introuvable : utilisation du Java automatique.');
   }
 
   const component = version.javaVersion?.component || 'jre-legacy';
@@ -212,8 +231,10 @@ async function ensureJava(version, settings = {}, hooks = {}) {
       ? `Installe Java ${requiredMajor || 17} : sudo apt install openjdk-${requiredMajor || 17}-jre (Debian, Ubuntu, Mint) ou sudo dnf install java-${requiredMajor || 17}-openjdk (Fedora).`
       : process.platform === 'darwin'
         ? `Installe Java ${requiredMajor || 17} depuis adoptium.net, puis relance le launcher.`
-        : 'Installe Java manuellement puis indique son chemin dans les réglages du launcher.';
-    throw new Error(`Impossible d'obtenir Java ${requiredMajor || ''} (${err.message}). ${conseil}`);
+        : `Installe Java ${requiredMajor || 17} depuis adoptium.net, puis relance le launcher.`;
+    // Phrase claire d'abord (connexion, antivirus...), detail technique ensuite.
+    const clair = expliquerErreur(err) || 'Le launcher n’a pas réussi à télécharger Java.';
+    throw new Error(`${clair} Java ${requiredMajor || ''} est nécessaire. ${conseil} [${err.message}]`);
   }
 }
 
