@@ -262,39 +262,22 @@ async function ensureFrenchByDefault() {
 }
 
 /**
- * Touches par defaut, appliquees UNE SEULE FOIS par installation (marqueur sur
- * le disque). Objectif : supprimer les doublons de touches pour tout le monde
- * (ancienne gestion de soldats Recruits vs nouvelle FactionTree, etc.) sans
- * toucher aux autres reglages, et sans jamais reecrire si le joueur personnalise
- * ensuite ses touches (le marqueur bloque tout second passage).
+ * REMISE À ZÉRO des touches, UNE SEULE FOIS par installation (marqueur sur le
+ * disque). Les versions precedentes de cette fonction avaient desactive/deplace
+ * des touches et casse l'acces a la carte et a des menus. On remet donc tout a
+ * l'origine : on retire toutes les lignes "key_*" d'options.txt, et Minecraft
+ * les regenere a leur valeur par defaut au prochain lancement. Ensuite le
+ * marqueur bloque tout nouveau passage : le launcher ne touche plus aux touches.
  */
-const TOUCHES_DEFAUT = {
-  // v2 : on RESTAURE les touches par defaut. La v1 en desactivait trop (carte, menus), ce qui empechait d'ouvrir la carte et des menus.
-  'key.recruits.map_screen_key': 'key.keyboard.m',         // RESTAURE : la carte
-  'key.recruits.team_screen_key': 'key.keyboard.u',        // RESTAURE
-  'Rouvrir le dernier menu': 'key.keyboard.u',             // RESTAURE
-  'key.smallships.ship_sail': 'key.keyboard.r',            // RESTAURE
-  'key.hide_icons': 'key.keyboard.h',                      // RESTAURE
-  'key.astikorcartsredux.action': 'key.keyboard.r',        // RESTAURE
-  'iris.keybind.shaderPackSelection': 'key.keyboard.o',    // RESTAURE
-  'key.rpa.open_close': 'key.keyboard.o',                  // RESTAURE
-  'key.factiontree.giveup': 'key.keyboard.unknown',        // laisse libre (evite un abandon de faction accidentel sur la touche J des metiers)
-};
-
 async function ensureDefaultKeybinds() {
-  const marqueur = path.join(paths.root, '.touches_aethoria_v2');
+  const marqueur = path.join(paths.root, '.touches_aethoria_v3');
   if (fs.existsSync(marqueur)) return;
   const file = path.join(paths.root, 'options.txt');
-  let content = await fsp.readFile(file, 'utf8').catch(() => '');
-  const lignes = content.length ? content.split('\n') : [];
-  for (const [action, touche] of Object.entries(TOUCHES_DEFAUT)) {
-    const prefixe = `key_${action}:`;
-    const ligne = `${prefixe}${touche}`;
-    const i = lignes.findIndex((l) => l.startsWith(prefixe));
-    if (i >= 0) lignes[i] = ligne;
-    else lignes.push(ligne);
+  const content = await fsp.readFile(file, 'utf8').catch(() => '');
+  if (content) {
+    const lignes = content.split('\n').filter((l) => !l.startsWith('key_'));
+    await fsp.writeFile(file, lignes.join('\n'), 'utf8');
   }
-  await fsp.writeFile(file, lignes.join('\n'), 'utf8');
   await fsp.writeFile(marqueur, new Date().toISOString(), 'utf8');
 }
 

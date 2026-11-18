@@ -1454,9 +1454,9 @@
     {
       "path": "mods/aethoria-5.0.0.jar",
       "url": "https://github.com/aethoria-mc/aethoria/releases/download/pack-3.2.2/mods_aethoria-5.0.0.jar",
-      "sha1": "e1d7ac11cd8c4dfa6e62d4001d1cc4c3a98b84ec",
-      "sha256": "0909ed453f03ad1f80b42d35ed6d29ce14705cd6d8cfaef042deb58e83bd4744",
-      "size": 7040283
+      "sha1": "ce75692cfe476fe0bd3b5a24cf77241b9da718df",
+      "sha256": "50449fea6ddc6c6d76a6f4c2c00bc8ebccc3fc5072fe647e3297f6727fdf1bfd",
+      "size": 7040222
     },
     {
       "path": "mods/aethoria_deco-1.0.0.jar",
@@ -2167,5 +2167,5 @@
     "body": "À ta toute première connexion sur le serveur, tape dans le chat :\n/register motdepasse motdepasse\nPuis à chaque fois que tu reviens :\n/login motdepasse\nSans cela, n’importe qui peut jouer sous ton pseudo."
   },
   "forgeInstallerSha1": "66bfea9963bfa60d88bab6b2750e74a958392715",
-  "signature": "/zG/c+r2j/oyuPcRciQAovlnSAZBWxQ7swHosn/V0+Holfh3ba6HsHBiQJjifeR4mE4co/V2ODUNEMHCvberBg=="
+  "signature": "+jt/atoFwX9bF5Z8gxazg3t9885k1gBdc0KIZy+6m2XV0sXSYIVLL5SCaWhlq4CVeelHEqQi1yyrAfezEisbCg=="
 }
