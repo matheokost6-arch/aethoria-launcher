@@ -269,19 +269,20 @@ async function ensureFrenchByDefault() {
  * ensuite ses touches (le marqueur bloque tout second passage).
  */
 const TOUCHES_DEFAUT = {
-  'key.factiontree.giveup': 'key.keyboard.unknown',        // etait J (conflit avec key.factiontree.jobs)
-  'key.recruits.team_screen_key': 'key.keyboard.unknown',  // ancienne gestion soldats -> remplacee par FactionTree
-  'key.recruits.map_screen_key': 'key.keyboard.unknown',   // ancienne carte -> remplacee
-  'Rouvrir le dernier menu': 'key.keyboard.unknown',       // etait U (encombre)
-  'key.smallships.ship_sail': 'key.keyboard.h',            // etait R -> libere R pour le mode commandement
-  'key.hide_icons': 'key.keyboard.unknown',                // libere H pour la voile
-  'key.astikorcartsredux.action': 'key.keyboard.semicolon',// etait R -> libere R
-  'iris.keybind.shaderPackSelection': 'key.keyboard.unknown', // etait O (shaders via F7)
-  'key.rpa.open_close': 'key.keyboard.period',             // etait O -> libere O
+  // v2 : on RESTAURE les touches par defaut. La v1 en desactivait trop (carte, menus), ce qui empechait d'ouvrir la carte et des menus.
+  'key.recruits.map_screen_key': 'key.keyboard.m',         // RESTAURE : la carte
+  'key.recruits.team_screen_key': 'key.keyboard.u',        // RESTAURE
+  'Rouvrir le dernier menu': 'key.keyboard.u',             // RESTAURE
+  'key.smallships.ship_sail': 'key.keyboard.r',            // RESTAURE
+  'key.hide_icons': 'key.keyboard.h',                      // RESTAURE
+  'key.astikorcartsredux.action': 'key.keyboard.r',        // RESTAURE
+  'iris.keybind.shaderPackSelection': 'key.keyboard.o',    // RESTAURE
+  'key.rpa.open_close': 'key.keyboard.o',                  // RESTAURE
+  'key.factiontree.giveup': 'key.keyboard.unknown',        // laisse libre (evite un abandon de faction accidentel sur la touche J des metiers)
 };
 
 async function ensureDefaultKeybinds() {
-  const marqueur = path.join(paths.root, '.touches_aethoria_v1');
+  const marqueur = path.join(paths.root, '.touches_aethoria_v2');
   if (fs.existsSync(marqueur)) return;
   const file = path.join(paths.root, 'options.txt');
   let content = await fsp.readFile(file, 'utf8').catch(() => '');
